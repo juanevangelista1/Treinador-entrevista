@@ -1,0 +1,15 @@
+{
+  "extends": "@interview-trainer/config/typescript",
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["esnext"],
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@interview-trainer/domain": ["../../packages/domain/src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
