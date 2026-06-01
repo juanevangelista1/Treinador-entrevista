@@ -1,65 +1,139 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import Link from 'next/link'
+import { Brain, Zap, Trophy, Target, BookOpen, Code2 } from 'lucide-react'
+import { useUserProgressStore } from '@/store/userProgressStore'
+import { LevelBadge } from '@/components/gamification/LevelBadge'
+import { XpBar } from '@/components/gamification/XpBar'
+import { StreakCounter } from '@/components/gamification/StreakCounter'
+import type { SeniorityLevel, KnowledgeDomain } from '@interview-trainer/domain'
+
+const SENIORITY_OPTIONS: { value: SeniorityLevel; label: string; description: string }[] = [
+  { value: 'junior', label: 'Junior', description: '0-2 anos de experiência' },
+  { value: 'pleno', label: 'Pleno', description: '2-4 anos de experiência' },
+  { value: 'pleno-senior', label: 'Pleno/Sênior', description: '4-6 anos de experiência' },
+  { value: 'senior', label: 'Sênior', description: '6+ anos de experiência' },
+  { value: 'staff', label: 'Staff', description: 'Referência técnica' },
+]
+
+const DOMAIN_OPTIONS: { value: KnowledgeDomain; label: string; icon: React.ReactNode }[] = [
+  { value: 'javascript', label: 'JavaScript', icon: <Code2 className="h-4 w-4" /> },
+  { value: 'typescript', label: 'TypeScript', icon: <Code2 className="h-4 w-4" /> },
+  { value: 'react', label: 'React', icon: <Brain className="h-4 w-4" /> },
+  { value: 'nextjs', label: 'Next.js', icon: <BookOpen className="h-4 w-4" /> },
+  { value: 'algorithms', label: 'Algoritmos', icon: <Target className="h-4 w-4" /> },
+]
+
+export default function DashboardPage() {
+  const progress = useUserProgressStore()
+  const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(progress.currentLevel)
+  const [selectedDomains, setSelectedDomains] = useState<KnowledgeDomain[]>(['javascript', 'react'])
+
+  function toggleDomain(domain: KnowledgeDomain) {
+    setSelectedDomains((prev) =>
+      prev.includes(domain) ? prev.filter((d) => d !== domain) : [...prev, domain],
+    )
+  }
+
+  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}`
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen p-4 md:p-8">
+      <div className="mx-auto max-w-2xl space-y-8">
+        <header className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Brain className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold text-foreground">Interview Trainer</h1>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Treine para entrevistas técnicas com mentoria por IA
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        </header>
+
+        <section className="rounded-xl border border-border bg-card p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <LevelBadge level={progress.currentLevel} />
+              <StreakCounter streak={progress.currentStreak} />
+            </div>
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Trophy className="h-4 w-4" />
+              <span className="text-sm">{progress.unlockedAchievements.length} conquistas</span>
+            </div>
+          </div>
+          <XpBar totalXp={progress.totalXp} currentLevel={progress.currentLevel} />
+          <div className="grid grid-cols-2 gap-3 pt-1">
+            <div className="rounded-lg bg-secondary p-3 text-center">
+              <p className="text-lg font-bold text-foreground">{progress.sessionsCompleted}</p>
+              <p className="text-xs text-muted-foreground">Sessões</p>
+            </div>
+            <div className="rounded-lg bg-secondary p-3 text-center">
+              <p className="text-lg font-bold text-foreground">{progress.longestStreak}</p>
+              <p className="text-xs text-muted-foreground">Maior sequência</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+            <Target className="h-4 w-4 text-primary" />
+            Iniciar nova sessão
+          </h2>
+
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Nível de senioridade</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {SENIORITY_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setSelectedLevel(opt.value)}
+                  className={`text-left rounded-lg border px-4 py-3 text-sm transition-all ${
+                    selectedLevel === opt.value
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : 'border-border bg-card text-muted-foreground hover:border-primary/50'
+                  }`}
+                >
+                  <p className="font-semibold text-foreground">{opt.label}</p>
+                  <p className="text-xs text-muted-foreground">{opt.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Domínios (selecione um ou mais)</p>
+            <div className="flex flex-wrap gap-2">
+              {DOMAIN_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => toggleDomain(opt.value)}
+                  className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all ${
+                    selectedDomains.includes(opt.value)
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:border-primary/50'
+                  }`}
+                >
+                  {opt.icon}
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Link
+            href={selectedDomains.length > 0 ? sessionUrl : '#'}
+            className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-base font-bold transition-opacity ${
+              selectedDomains.length > 0
+                ? 'bg-primary text-primary-foreground hover:opacity-90'
+                : 'bg-secondary text-muted-foreground cursor-not-allowed'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            <Zap className="h-5 w-5" />
+            Começar sessão
+          </Link>
+        </section>
+      </div>
+    </main>
+  )
 }
