@@ -334,4 +334,535 @@ export const systemDesignQuestions: Question[] = [
     explanation: 'Estratégia Strangler Fig: substitua features gradualmente sem reescrever tudo de uma vez. Abordagem: (1) Identifique rotas/componentes mais estáveis e de menor risco para começar; (2) Isole novas features em React dentro do shell legado; (3) Use Web Components como fronteira entre React e framework legado; (4) Ou roteamento por URL: novas rotas são React, antigas permanecem no legado; (5) Extraia lógica de negócio para pure functions testáveis antes de migrar; (6) Nunca reescreva tudo de uma vez.',
     tags: ['migracao', 'legado', 'strangler-fig', 'jquery', 'angular', 'estrategia'],
   },
+  {
+    id: 'sd-031',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia o frontend de um sistema de chat em tempo real como WhatsApp Web?',
+    hints: ['WebSocket', 'Mensagens offline', 'Presença/typing indicators', 'Criptografia E2E'],
+    explanation: 'Componentes: (1) WebSocket persistente para mensagens em tempo real; (2) Message Queue no cliente para envio offline (service worker + IndexedDB); (3) Typing indicators: debounce de eventos, enviados via WebSocket com TTL curto; (4) Presença (online/offline): heartbeat a cada 30s; (5) Read receipts: confirmação de delivery e leitura; (6) Virtualização de listas longas de mensagens; (7) Criptografia E2E no frontend (Signal Protocol); (8) Compressão de imagens antes do upload; (9) Pull-to-refresh para histórico; (10) Sincronização entre tabs com BroadcastChannel.',
+    tags: ['chat', 'websocket', 'e2e-encryption', 'offline', 'real-time'],
+  },
+  {
+    id: 'sd-032',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como desenharia o frontend de uma plataforma de videoconferência como Google Meet?',
+    hints: ['WebRTC', 'Simulcast', 'Grid de vídeos', 'Qualidade adaptativa'],
+    explanation: 'Componentes: (1) WebRTC PeerConnection para streams de vídeo P2P (com SFU server para grupos maiores); (2) Simulcast: enviar múltiplas resoluções, servidor entrega a mais adequada a cada participante; (3) Grid dinâmico de vídeos com virtualização; (4) Detecção de atividade de voz (Voice Activity Detection) para destacar falante; (5) Screen sharing via `getDisplayMedia`; (6) Caption via Web Speech API; (7) Qualidade adaptativa baseada em bandwidth; (8) Background blur com ML (TFLite no browser); (9) Chat lateral com WebSocket; (10) Mute global por host.',
+    tags: ['video-conferencia', 'webrtc', 'simulcast', 'sfu', 'screen-share'],
+  },
+  {
+    id: 'sd-033',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como desenharia uma feature de comentários com threads aninhadas (como Reddit ou GitHub PR)?',
+    hints: ['Dados recursivos', 'Paginação por thread', 'Collapse/expand', 'Otimistic updates'],
+    explanation: 'Estrutura de dados: árvore de comentários com `parentId`. Estratégias de carregamento: (1) Shallow load: carregue apenas 1-2 níveis, load more sob demanda; (2) Cursor pagination por thread; (3) Virtualização para threads longas. Features: collapse/expand threads, "Continue thread" para aninhamento profundo. Optimistic updates para likes/respostas. Realtime: SSE ou WebSocket para novos comentários. Em React: componente `Comment` que renderiza recursivamente seus filhos — `children` é array de subcomentários.',
+    tags: ['comentarios', 'threads', 'recursivo', 'paginacao', 'collapse'],
+  },
+  {
+    id: 'sd-034',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar drag-and-drop com acessibilidade em React?',
+    hints: ['dnd-kit', 'Alternativa por teclado', 'aria-grabbed', 'Feedback visual'],
+    explanation: 'Bibliotecas: dnd-kit (acessível, mobile-friendly), react-beautiful-dnd (Atlassian). Componentes: DndContext, Draggable, Droppable, SortableContext. Acessibilidade obrigatória: (1) Alternativa por teclado (Space para "pegar", setas para mover, Space/Enter para soltar, Escape para cancelar); (2) aria-grabbed, aria-dropeffect; (3) Anúncios de screen reader via aria-live quando item move; (4) Sem drag-only — sempre ofereça alternativa. Feedback visual: cursor, ghost image, drop indicator. Para kanban: múltiplos containers, arrays de ordem.',
+    tags: ['drag-drop', 'dnd-kit', 'acessibilidade', 'teclado', 'sortable'],
+  },
+  {
+    id: 'sd-035',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia um editor de texto rico (Rich Text Editor) do zero?',
+    hints: ['contenteditable', 'Selection API', 'Tiptap/Slate', 'Operações de documento'],
+    explanation: 'Abordagem manual (complexa): `contenteditable` + Selection/Range API + comandos `document.execCommand` (deprecated). Abordagem moderna: use Tiptap (ProseMirror-based) ou Slate.js. Conceitos: (1) Document model: nós de bloco e inline com atributos; (2) Transforms: imutáveis — cada operação produz novo documento; (3) Cursor e seleção como state; (4) Plugins para extensões (mentions, embeds). Para colaboração: Yjs ou Automerge integrado ao editor. Problemas difíceis: listas, tabelas, paste de Word, IME para CJK.',
+    tags: ['rich-text', 'tiptap', 'slate', 'prosemirror', 'editor'],
+  },
+  {
+    id: 'sd-036',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar um sistema de undo/redo genérico para qualquer aplicação React?',
+    hints: ['Stack de histórico', 'immer produceWithPatches', 'Comandos Command Pattern'],
+    explanation: `Abordagem com Immer patches:
+\`\`\`typescript
+const useUndoable = (initialState) => {
+  const [{ past, present, future }, dispatch] = useReducer(undoReducer, {
+    past: [], present: initialState, future: [],
+  });
+  const update = (recipe) => dispatch({ type: "UPDATE", recipe });
+  const undo = () => dispatch({ type: "UNDO" });
+  const redo = () => dispatch({ type: "REDO" });
+  return { state: present, update, undo, redo,
+    canUndo: past.length > 0, canRedo: future.length > 0 };
+};
+// Cada "update" salva snapshot do estado anterior no stack "past"
+// Undo: move presente para future, restaura último do past
+\`\`\``,
+    tags: ['undo-redo', 'immer', 'historico', 'state', 'command-pattern'],
+  },
+  {
+    id: 'sd-037',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como desenharia um sistema de busca avançada com filtros (como o da Amazon ou Airbnb)?',
+    hints: ['URL state', 'Debounce', 'Faceted search', 'Skeleton loading'],
+    explanation: 'Componentes: (1) URL como state — filtros na query string para bookmark e compartilhamento (`?category=electronics&price=100-500&brand=sony`); (2) Debounce de inputs de texto; (3) Faceted search: contagem dinâmica por faceta vem da API; (4) Range slider para preço; (5) Skeleton loading durante busca; (6) Resultado parcial enquanto busca (optimistic); (7) Paginação com cursor (não offset); (8) Sync com API: `useSearchParams`, atualiza URL ao mudar filtros com `router.push` shallow. Back button restaura filtros.',
+    tags: ['busca', 'filtros', 'url-state', 'faceted-search', 'debounce'],
+  },
+  {
+    id: 'sd-038',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como desenharia uma aplicação offline-first (PWA)?',
+    hints: ['Service Worker cache', 'Background sync', 'Conflict resolution', 'IndexedDB'],
+    explanation: 'Offline-first: funciona sem conexão, sincroniza quando conecta. Componentes: (1) Service Worker com cache de assets (App Shell); (2) IndexedDB para dados locais; (3) Background Sync API para fila de operações pendentes; (4) Conflict resolution: Last-Write-Wins ou CRDT para dados colaborativos; (5) Indicador de status de conexão (`navigator.onLine`, `online/offline` events); (6) Optimistic UI com rollback em caso de falha de sync; (7) Version do cache para invalidação; (8) Delta sync: apenas diferenças desde último sync.',
+    tags: ['pwa', 'offline-first', 'service-worker', 'indexeddb', 'sync'],
+  },
+  {
+    id: 'sd-039',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar uma feature de exportação de dados (CSV, PDF, Excel) no frontend?',
+    hints: ['Blob e URL.createObjectURL', 'jsPDF para PDF', 'SheetJS para Excel'],
+    explanation: `Técnicas: (1) CSV: gerar string, criar Blob, link de download:
+\`\`\`javascript
+function exportCSV(data, filename) {
+  const csv = data.map(row => Object.values(row).join(",")).join("\\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+\`\`\`
+(2) PDF: jsPDF + html2canvas para capturar UI como PDF; (3) Excel: SheetJS (xlsx) para planilhas complexas. Para dados grandes: gere no servidor e forneça link de download — não bloqueie a UI.`,
+    tags: ['exportacao', 'csv', 'pdf', 'excel', 'blob'],
+  },
+  {
+    id: 'sd-040',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como desenharia um sistema de notificações in-app (como as do Facebook/LinkedIn)?',
+    hints: ['Badge count', 'Real-time via SSE', 'Read/unread state', 'Tipos de notificação'],
+    explanation: 'Componentes: (1) Badge no ícone de sino com contador (badge count via polling leve ou SSE); (2) Dropdown/painel de notificações com scroll infinito; (3) Real-time: SSE do servidor ao receber nova notificação; (4) Estado read/unread gerenciado localmente com optimistic update (marcar como lido sem esperar API); (5) Tipos de notificação com ícone e template por tipo; (6) Agrupamento: "João e mais 5 pessoas curtiram seu post"; (7) Push notifications para quando app está fechada; (8) Preferências por tipo de notificação.',
+    tags: ['notificacoes', 'badge', 'sse', 'unread', 'real-time'],
+  },
+  {
+    id: 'sd-041',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia um sistema de live coding collaborativo (tipo CodePair ou Replit)?',
+    hints: ['CRDT para sincronização', 'Language Server Protocol', 'Execução segura (sandbox)', 'Monaco Editor'],
+    explanation: 'Componentes: (1) Editor: Monaco Editor com colaboração via Yjs (CRDT); (2) Sincronização: WebSocket + Yjs para propagação de mudanças em tempo real com resolução automática de conflitos; (3) Language Server Protocol (LSP): autocomplete, erros, formatação; (4) Execução segura: sandbox (WebAssembly ou container isolado) para rodar código sem risco; (5) Terminal: xterm.js para output em tempo real; (6) Cursor e seleção de cada participante via Awareness do Yjs; (7) Replay de sessão para revisão; (8) Permissões: host vs guest.',
+    tags: ['live-coding', 'crdt', 'monaco', 'yjs', 'sandbox'],
+  },
+  {
+    id: 'sd-042',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você desenharia o frontend de um CMS (Content Management System) headless?',
+    hints: ['Preview', 'Block-based editor', 'Multi-channel', 'Versionamento de conteúdo'],
+    explanation: 'Componentes: (1) Editor de conteúdo: rico (Tiptap/ProseMirror) ou baseado em blocos (tipo Notion); (2) Preview em tempo real: iframe ou SSR-preview da página final; (3) Media library: upload, organização e busca de assets; (4) Content modeling: UI para definir tipos de conteúdo (campos, validações); (5) Versionamento: histórico de revisões, compare e rollback; (6) Workflow: rascunho → revisão → publicado; (7) Multi-idioma/locale; (8) Scheduled publishing; (9) API GraphQL ou REST para consumo pelos frontends. Contentful, Sanity, Strapi como referências.',
+    tags: ['cms', 'headless', 'editor-blocos', 'preview', 'versionamento'],
+  },
+  {
+    id: 'sd-043',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você desenharia um sistema de A/B testing de componentes React?',
+    hints: ['Feature flags com variants', 'Assignment consistente por usuário', 'Coleta de métricas', 'Statistical significance'],
+    explanation: 'Componentes: (1) Assignment: usuário recebe variante A ou B consistentemente (mesmo usuário sempre vê a mesma variante) — via userId hash ou cookie; (2) Variant delivery: feature flag service (GrowthBook, LaunchDarkly) retorna qual variante; (3) Componente: <Experiment name="checkout-cta" variants={{ A: <ButtonA/>, B: <ButtonB/> }} />; (4) Tracking: dispare evento "experiment_viewed" com variant e experiment_id para analytics; (5) Análise: significância estatística, minimum detectable effect; (6) Rollout seguro: expose para 5% → 50% → 100%.',
+    tags: ['a-b-testing', 'experiments', 'variants', 'feature-flags', 'metricas'],
+  },
+  {
+    id: 'sd-044',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar deep linking e universal links em uma PWA?',
+    hints: ['URL como estado', 'App manifest', 'share_target', 'protocol_handlers'],
+    explanation: 'Deep linking: URLs que abrem conteúdo específico na app. Em PWA: (1) URL scheme: cada rota mapeia para conteúdo — /products/123 abre produto 123; (2) Web App Manifest: start_url define URL de lançamento; (3) share_target: a PWA aparece nas opções de compartilhamento do SO; (4) protocol_handlers: registra handlers para protocolos customizados (web+myapp://); (5) Universal Links (iOS/Android): se o usuário tem a app instalada como PWA, links do SO abrem diretamente na PWA; (6) Compartilhar links que abram estado específico (filtros, posição de scroll via fragmento de URL).',
+    tags: ['deep-linking', 'pwa', 'universal-links', 'share-target', 'url-state'],
+  },
+  {
+    id: 'sd-045',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia o sistema de analytics de impressões e cliques de um feed de produtos?',
+    hints: ['Intersection Observer', 'Batching de eventos', 'Visibilidade mínima', 'Deduplicação'],
+    explanation: 'Sistema de impression tracking: (1) IntersectionObserver com threshold 50% e rootMargin — item conta como "visto" após 500ms visível; (2) Deduplicação: cada item só conta uma impressão por sessão — Set de IDs já vistos; (3) Batching: ao invés de enviar evento a cada impressão, coleta em buffer e envia em lote (a cada 5s ou ao desmontar/page hide); (4) Beacon API para envio durante page unload: navigator.sendBeacon("/analytics", data) — mais confiável que fetch; (5) Click tracking com posição e item_id; (6) Relatórios: CTR (clicks/impressions), posição média do clique.',
+    tags: ['analytics', 'impressoes', 'intersection-observer', 'beacon-api', 'batching'],
+  },
+  {
+    id: 'sd-046',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você desenharia o sistema de autosave de formulários (tipo Google Docs)?',
+    hints: ['Debounce para salvar', 'Status de "Salvando..."', 'Retry em falha', 'Conflito multi-tab'],
+    explanation: 'Autosave: (1) Debounce de 2-3 segundos após última mudança — não salve a cada keystroke; (2) State machine: IDLE → SAVING → SAVED → ERROR; (3) Status visual: "Salvando..." → "Salvo às 15:32" → "Falha ao salvar" com retry; (4) Compare com último estado salvo — só envie se houver mudanças (diff); (5) Conflito multi-tab: BroadcastChannel ou versão no servidor — ao detectar conflito, mostre modal de resolução; (6) Offline: salve em IndexedDB e sincronize ao reconectar; (7) Recovery: ao abrir, verifique se há versão local mais recente que a do servidor.',
+    tags: ['autosave', 'debounce', 'state-machine', 'conflito', 'offline'],
+  },
+  {
+    id: 'sd-047',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como implementar um sistema de permissões row-level (RLS) no frontend?',
+    hints: ['Backend é a autoridade', 'UI apenas esconde/mostra', 'Tenant isolation', 'Caching seguro'],
+    explanation: 'Row-Level Security no frontend: (1) SEMPRE verifique RLS no backend — frontend é apenas UX; (2) O backend retorna apenas os dados que o usuário tem acesso — o frontend não precisa saber sobre dados que não recebeu; (3) Para ações: botões de edit/delete só aparecem se o usuário tem permissão (via metadata na resposta: can_edit: true); (4) Caching: nunca cache dados de um usuário para outro — chave do cache deve incluir userId; (5) Tenant isolation em multi-tenant: inclua tenantId em todas as queries e verifique no middleware; (6) Ao logout: limpe todo o cache do React Query.',
+    tags: ['rls', 'permissoes', 'seguranca', 'tenant', 'cache'],
+  },
+  {
+    id: 'sd-048',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você desenharia a gestão de assets (imagens, vídeos) em uma aplicação de e-commerce?',
+    hints: ['CDN', 'Responsive images', 'Lazy loading', 'WebP/AVIF', 'Image optimization pipeline'],
+    explanation: 'Pipeline completo: (1) Upload: validação de tipo/tamanho, resize server-side, geração de múltiplas resoluções (thumb, medium, large), conversão para WebP/AVIF; (2) Storage: S3 ou similar, com CDN na frente; (3) Delivery: srcset para servir tamanho correto por viewport; (4) Lazy loading: loading="lazy" nativo ou IntersectionObserver; (5) Blur placeholder (LQIP): versão 10x10px em base64 exibida enquanto carrega; (6) Fallback: WebP → JPEG via <picture> element; (7) CLS prevention: sempre dimensões explícitas em imagens. Next.js Image automatiza muito disso.',
+    tags: ['assets', 'imagens', 'cdn', 'webp', 'srcset', 'pipeline'],
+  },
+  {
+    id: 'sd-049',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar "skeleton screens" de forma eficiente e acessível?',
+    hints: ['aria-busy', 'Animação CSS', 'Correspondência com layout real', 'Reduzir motion'],
+    explanation: 'Skeleton screens: placeholders animados que imitam o layout do conteúdo real. Implementação: (1) Componentes skeleton correspondentes: <ProductCardSkeleton> com mesmas dimensões que <ProductCard>; (2) Animação shimmer: background-position animado em CSS — sem JavaScript; (3) Acessibilidade: aria-busy="true" no container, aria-label="carregando" ou role="status" no skeleton; (4) prefers-reduced-motion: desative animação para usuários com sensibilidade a movimento; (5) Timing: mostre skeleton apenas se loading > 200ms (threshold perceptual). TailwindCSS: animate-pulse para skeleton simples.',
+    tags: ['skeleton', 'loading', 'aria-busy', 'animacao', 'acessibilidade'],
+  },
+  {
+    id: 'sd-050',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia a arquitetura frontend de uma aplicação bancária digital?',
+    hints: ['Segurança máxima', 'Offline mínimo', 'Timeout de sessão', 'Logs de auditoria'],
+    explanation: 'Requisitos especiais de segurança: (1) Session timeout: logout automático após inatividade (5-10 min), aviso antes de expirar; (2) Sem persistência sensível: nunca armazenar dados financeiros em localStorage/sessionStorage; (3) CSP rigoroso, HSTS, X-Frame-Options DENY; (4) Re-autenticação para ações críticas (transferências); (5) Mascaramento de dados sensíveis (CPF, conta) na UI; (6) Audit log: toda ação do usuário logada no servidor; (7) Sem offline mode para dados financeiros; (8) Biometria via WebAuthn para autenticação; (9) Certificate pinning em apps; (10) Sanitização de todos os inputs.',
+    tags: ['bancario', 'seguranca', 'session-timeout', 'webauthn', 'auditoria'],
+  },
+  {
+    id: 'sd-051',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você implementaria um sistema de logs de auditoria no frontend?',
+    hints: ['Interceptor de API', 'Quem fez o quê quando', 'Contexto de usuário'],
+    explanation: 'Audit log: registro imutável de ações do usuário para compliance e debugging. Implementação: (1) Interceptor de API (Axios interceptor ou fetch wrapper) que captura automaticamente todas as mutações (POST/PUT/DELETE); (2) Contexto: userId, sessionId, timestamp, ação, recurso afetado, antes/depois; (3) Enviar ao backend que armazena imutavelmente; (4) Para ações críticas: log explícito antes e depois da ação; (5) Rate limiting no log para evitar flood. Nunca log dados sensíveis (senhas, cartões). LGPD/GDPR: usuário pode pedir seus logs de auditoria.',
+    tags: ['auditoria', 'logs', 'compliance', 'interceptor', 'imutavel'],
+  },
+  {
+    id: 'sd-052',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como desenharia o sistema de busca de um marketplace (tipo Mercado Livre/Amazon)?',
+    hints: ['Algolia ou Elasticsearch', 'Faceted search', 'Spell correction', 'Relevância'],
+    explanation: 'Componentes: (1) Índice de busca (Algolia/Elasticsearch): indexado por produto com campos de texto, categorias, preço, avaliação; (2) Full-text search com análise de idioma (português); (3) Spell correction: "iphoen" → "iphone"; (4) Autocomplete: suggeste enquanto digita com debounce; (5) Faceted search: filtros dinâmicos (preço, marca, avaliação) com contagens; (6) Relevância: combinação de text score + popularidade + conversão histórica; (7) Personalização: boosting baseado no histórico do usuário; (8) Cache de queries frequentes no Redis. Frontend: URL como estado dos filtros para compartilhamento.',
+    tags: ['busca', 'marketplace', 'algolia', 'elasticsearch', 'faceted'],
+  },
+  {
+    id: 'sd-053',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar Deep Linking para manter estado de navegação em um app?',
+    hints: ['URL como estado', 'Query params para filtros', 'Hash para posição', 'Restoring state'],
+    explanation: 'Deep linking: cada estado significativo da UI tem uma URL única que pode ser bookmarkada/compartilhada. Estratégia: (1) Query params para filtros e pesquisa: /products?category=electronics&min=100&sort=price; (2) Path params para recursos: /products/123/reviews; (3) Hash para posição: /docs/guide#section-3; (4) Restaurar estado ao navegar diretamente pela URL — a página deve funcionar sem precisar do histórico de navegação; (5) Replace state para não poluir histórico com cada keystroke de filtro; (6) pushState para mudanças de "página". Em React: useSearchParams, useParams são suas ferramentas.',
+    tags: ['deep-linking', 'url-estado', 'query-params', 'bookmark', 'compartilhamento'],
+  },
+  {
+    id: 'sd-054',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você desenharia o frontend de um sistema de agendamento (tipo Calendly)?',
+    hints: ['Visualizações de calendário', 'Timezone handling', 'Conflitos', 'Disponibilidade'],
+    explanation: 'Componentes: (1) Visualizações: mês/semana/dia/lista (similar ao Google Calendar); (2) Timezone: mostrar disponibilidade no timezone do usuário, não do prestador — moment-timezone/date-fns-tz; (3) Slots disponíveis: calculados no servidor com regras de disponibilidade; (4) Drag-and-drop para reagendar; (5) Detecção de conflitos: verificar sobreposição ao criar novo evento; (6) Sincronização: webhook quando evento externo (Google Calendar) muda; (7) Confirmação: email com link de cancelamento/reagendamento; (8) Reminder: push notification antes do evento. Libs: FullCalendar, react-big-calendar.',
+    tags: ['agendamento', 'calendario', 'timezone', 'conflitos', 'disponibilidade'],
+  },
+  {
+    id: 'sd-055',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como implementar um sistema de permissões granulares no frontend (ABAC)?',
+    hints: ['Attribute-Based Access Control', 'Attributes: user, resource, environment', 'Policy engine'],
+    explanation: 'ABAC vs RBAC: RBAC: permissões baseadas em roles (admin, editor, viewer). ABAC: permissões baseadas em atributos (user.department, resource.owner, environment.time). Mais granular. Implementação ABAC no frontend: (1) Backend retorna políticas ou decisões de permissão junto com os dados; (2) Policy engine no cliente: can(user, "edit", document) — verifica se user.id === document.authorId ou user.role === "admin"; (3) Para cada recurso na UI: ocultar/desabilitar baseado na decisão; (4) Never trust client: backend verifica novamente em cada ação. Bibliotecas: CASL (mais popular para JS/React).',
+    tags: ['abac', 'rbac', 'permissoes', 'granular', 'casl'],
+  },
+  {
+    id: 'sd-056',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você implementaria um sistema de preview de imagens antes do upload?',
+    hints: ['FileReader.readAsDataURL', 'URL.createObjectURL', 'Dimensões e tamanho', 'Crop/resize'],
+    explanation: `Preview eficiente com URL.createObjectURL (mais rápido que FileReader):
+\`\`\`typescript
+function ImageUpload() {
+  const [previews, setPreviews] = useState<string[]>([]);
+
+  const handleFiles = (files: FileList) => {
+    // Revogar URLs anteriores para evitar memory leaks
+    previews.forEach(url => URL.revokeObjectURL(url));
+    const newPreviews = Array.from(files)
+      .filter(f => f.type.startsWith("image/") && f.size < 5 * 1024 * 1024)
+      .map(f => URL.createObjectURL(f)); // Muito mais rápido que FileReader
+    setPreviews(newPreviews);
+  };
+
+  useEffect(() => () => previews.forEach(URL.revokeObjectURL), []); // Cleanup
+
+  return (
+    <div>
+      <input type="file" multiple accept="image/*" onChange={e => handleFiles(e.target.files!)} />
+      {previews.map((url, i) => <img key={i} src={url} alt="Preview" />)}
+    </div>
+  );
+}
+\`\`\``,
+    tags: ['preview', 'upload', 'URL.createObjectURL', 'FileReader', 'imagem'],
+  },
+  {
+    id: 'sd-057',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia um sistema de monitoramento de performance em tempo real para um dashboard?',
+    hints: ['WebSocket para dados', 'Downsample de dados históricos', 'Alertas', 'Retenção de dados'],
+    explanation: 'Arquitetura: (1) Coleta: agentes nos servidores enviam métricas a cada segundo; (2) Streaming: WebSocket ou SSE para o dashboard; (3) Dados históricos: TSDB (TimescaleDB, InfluxDB) com downsampling automático — dados de 1 dia: resolução de 1s; 7 dias: 1 min; 90 dias: 5 min; (4) Alertas: thresholds configuráveis com notificações; (5) Frontend: gráfico de linha em tempo real com react-query + WebSocket, virtualização de datasets grandes, panning/zooming de time range; (6) Retention: dados são arquivados/deletados após período. Referências: Grafana, Datadog como UX.',
+    tags: ['monitoramento', 'performance', 'websocket', 'tsdb', 'alertas'],
+  },
+  {
+    id: 'sd-058',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar um sistema de menções (@usuario) em um editor de texto?',
+    hints: ['Detectar @ no input', 'Dropdown de sugestões', 'Inserir menção como token especial'],
+    explanation: 'Implementação de @mentions: (1) Detectar digitação de @ via keydown/input event — buscar texto após @; (2) Debounce de 200ms para buscar sugestões de usuários via API; (3) Dropdown posicionado no cursor (getBoundingClientRect); (4) Selecionar usuario → inserir como token especial (span não-editável ou caractere especial na data); (5) Rendering: token de menção exibido como @João com link/highlight; (6) Serialização: armazenar como {type: "mention", userId: "123", displayName: "@João"}; (7) Acessibilidade: role="listbox" no dropdown, aria-autocomplete. Tiptap e Draft.js têm extensões de mention prontas.',
+    tags: ['mencoes', 'at-mention', 'editor', 'dropdown', 'tokenization'],
+  },
+  {
+    id: 'sd-059',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar persistência de formulário (não perder dados ao recarregar)?',
+    hints: ['localStorage com debounce', 'Form state ao montar', 'Limpar ao submeter'],
+    explanation: `Salvar formulário no localStorage com auto-recovery:
+\`\`\`typescript
+function useFormPersistence<T>(formKey: string, initialValues: T) {
+  const saved = useMemo(() => {
+    try { const item = localStorage.getItem(formKey); return item ? JSON.parse(item) : null; }
+    catch { return null; }
+  }, [formKey]);
+
+  const { control, handleSubmit, watch } = useForm<T>({
+    defaultValues: saved ?? initialValues,
+  });
+
+  const values = watch();
+  const debouncedValues = useDebounce(values, 1000);
+  useEffect(() => {
+    localStorage.setItem(formKey, JSON.stringify(debouncedValues));
+  }, [formKey, debouncedValues]);
+
+  const onSubmit = (data: T) => {
+    localStorage.removeItem(formKey); // Limpa ao submeter
+    submitForm(data);
+  };
+  return { control, handleSubmit: handleSubmit(onSubmit) };
+}
+\`\`\``,
+    tags: ['formulario', 'persistencia', 'localStorage', 'recovery', 'debounce'],
+  },
+  {
+    id: 'sd-060',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como arquitetar um sistema de internacionalização (i18n) para suportar 30+ idiomas incluindo RTL?',
+    hints: ['Logical CSS properties', 'BiDi algorithm', 'Pluralização ICU', 'Lazy loading de traduções'],
+    explanation: 'Arquitetura i18n escalável: (1) Lazy loading: carregar apenas o idioma atual — não baixar 30 arquivos JSON; (2) Namespaces: dividir por seção (common, products, checkout) — lazy load por página; (3) ICU Message Format: pluralização correta ({count, plural, one {item} other {items}}), gênero, select; (4) RTL (Right-to-Left): CSS Logical Properties (margin-inline-start em vez de margin-left), dir="rtl" no html; (5) Fallback: se tradução ausente, mostrar idioma base; (6) Processo: exportar strings → tradutores (Phrase/Lokalise) → importar; (7) next-intl para Next.js. RTL testing: pseudolocalization.',
+    tags: ['i18n', 'rtl', 'css-logical', 'icu', 'namespace', '30-idiomas'],
+  },
+  {
+    id: 'sd-061',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar "print-friendly" CSS para uma aplicação web?',
+    hints: ['@media print', 'Ocultar elementos de UI', 'Expandir conteúdo colapsado'],
+    explanation: '@media print: estilização para impressão. Padrão: @media print { .no-print { display: none !important; } nav, footer, button, .sidebar { display: none; } body { font-size: 12pt; color: black; } a[href]:after { content: " (" attr(href) ")"; } }. Boas práticas: (1) Ocultar navegação, botões, menus; (2) Expandir accordions e dropdowns; (3) Converter links para mostrar URL; (4) Ajustar layout para coluna única; (5) Remover background images e cores (economizar tinta). `window.print()` para acionar programaticamente. Print preview: @page { margin: 2cm; }.',
+    tags: ['print', 'media-print', 'css', 'impressao', 'ux'],
+  },
+  {
+    id: 'sd-062',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como desenharia uma timeline de eventos (feed de atividades) eficiente?',
+    hints: ['Cursor pagination', 'Infinite scroll', 'Timestamp relativo', 'Diferentes tipos de evento'],
+    explanation: 'Timeline de atividades: (1) Cursor pagination por timestamp — não offset (evita drift quando novos eventos são inseridos); (2) Infinite scroll bidirecional: scroll para cima carrega eventos anteriores, scroll para baixo carrega mais recentes; (3) Timestamp relativo: "há 5 minutos" com update automático usando setInterval; (4) Tipos de evento: polimorfismo — cada tipo tem seu componente (UserCreated, OrderPlaced, etc.); (5) Agrupamento: "João e mais 3 curtiram sua foto"; (6) "New events" badge ao topo quando chegam via WebSocket; (7) Virtualização para timelines longas; (8) Skeleton loading para carregamento progressivo.',
+    tags: ['timeline', 'feed', 'cursor-pagination', 'infinite-scroll', 'eventos'],
+  },
+  {
+    id: 'sd-063',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você implementaria um sistema de busca de autocompletar escalável?',
+    hints: ['Trie no servidor', 'Debounce no cliente', 'Caching de queries frequentes', 'Prefetch'],
+    explanation: 'Autocomplete escalável: (1) Frontend: input com debounce 200ms + AbortController para cancelar requests anteriores + minimum 2 chars; (2) Cache local: Map de queries recentes para evitar requests repetidos; (3) Backend: Trie ou Elasticsearch prefix query; (4) CDN cache para queries frequentes (top 1000 searches por locale); (5) Indexação: dados indexados assincronamente, não em tempo real; (6) Personalização: boost itens relevantes para o usuário; (7) Analytics: logar queries sem resultado para melhorar o índice; (8) Accessibility: role="combobox", aria-autocomplete, navegação por teclado.',
+    tags: ['autocomplete', 'trie', 'debounce', 'caching', 'escalavel'],
+  },
+  {
+    id: 'sd-064',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como desenharia uma página de produto de e-commerce com todas as otimizações de performance?',
+    hints: ['LCP: imagem principal', 'CLS: dimensões explícitas', 'INP: interações rápidas'],
+    explanation: 'Otimizações para página de produto: (1) LCP: preload da imagem hero, next/image com priority, formato WebP; (2) CLS: dimensões explícitas em todas imagens, font-display: optional, nenhum elemento inserido acima do fold; (3) INP: event handlers leves, nada pesado no thread principal; (4) Server-side render do conteúdo crítico (preço, nome, disponibilidade); (5) Client-side: avaliações, perguntas, recomendações (lazy); (6) ISR com revalidação por tag ao mudar preço/estoque; (7) Galeria de imagens com lazy loading; (8) Add-to-cart optimistic; (9) Prefetch de páginas relacionadas ao hover.',
+    tags: ['produto', 'lcp', 'cls', 'inp', 'ecommerce', 'performance'],
+  },
+  {
+    id: 'sd-065',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar "undo" para formulários (desfazer alterações não salvas)?',
+    hints: ['Histórico de estados', 'Ctrl+Z', 'Máximo de histórico', 'Dirty state'],
+    explanation: `Undo em formulários com histórico:
+\`\`\`typescript
+function useFormUndo<T>(initialValues: T) {
+  const [history, setHistory] = useState<T[]>([initialValues]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const current = history[currentIndex];
+  const update = (newValues: T) => {
+    // Descarta o futuro (redo history) e adiciona novo estado
+    const newHistory = [...history.slice(0, currentIndex + 1), newValues];
+    // Limite de 50 ações
+    if (newHistory.length > 50) newHistory.shift();
+    setHistory(newHistory);
+    setCurrentIndex(newHistory.length - 1);
+  };
+  const undo = () => setCurrentIndex(i => Math.max(0, i - 1));
+  const redo = () => setCurrentIndex(i => Math.min(history.length - 1, i + 1));
+  const isDirty = currentIndex > 0;
+  return { values: current, update, undo, redo, isDirty, canUndo: currentIndex > 0, canRedo: currentIndex < history.length - 1 };
+}
+\`\`\``,
+    tags: ['undo', 'formulario', 'historico', 'dirty-state', 'ctrl-z'],
+  },
+  {
+    id: 'sd-066',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como você desenharia a arquitetura de testes de uma aplicação Next.js grande?',
+    hints: ['Pirâmide de testes', 'Storybook', 'E2E críticos', 'CI pipeline'],
+    explanation: 'Arquitetura de testes: (1) Static: TypeScript + ESLint + Prettier (pre-commit); (2) Unit: Vitest + RTL para hooks e utils puros; (3) Integration: Vitest + RTL + MSW para componentes com dados; (4) Visual: Storybook + Chromatic para componentes; (5) E2E: Playwright para fluxos críticos (checkout, login, cadastro); (6) Acessibilidade: axe-playwright em cada rota principal. Pipeline CI: lint → type-check → unit/integration → build → e2e → chromatic. PR check: falha se coverage cair ou violações de a11y. Budget: unit tests < 30s, integration < 2min, e2e < 10min total.',
+    tags: ['testes', 'arquitetura', 'nextjs', 'pipeline', 'ci'],
+  },
+  {
+    id: 'sd-067',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar um sistema de cookies de consentimento GDPR/LGPD?',
+    hints: ['Categorias', 'Opt-in antes de scripts', 'Armazenar consentimento', 'Revogar'],
+    explanation: 'Cookie consent GDPR-compliant: (1) Categorias: Essenciais (sempre ativos), Analytics (opt-in), Marketing (opt-in); (2) Bloqueio antes do consentimento: scripts de analytics e marketing NÃO carregados até consentimento — use next/script com strategy e conditional load; (3) Armazenar consentimento: cookie httpOnly com validade de 12 meses; (4) Granular: usuário escolhe por categoria, não "aceitar tudo" forçado; (5) Revogação: opção sempre acessível no footer; (6) Re-perguntar ao mudar política; (7) Server-side: respeitar opt-out nos logs; (8) Documentar quais dados cada categoria coleta.',
+    tags: ['gdpr', 'lgpd', 'cookies', 'consentimento', 'privacidade'],
+  },
+  {
+    id: 'sd-068',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como implementar um sistema de tutoriais/onboarding (tipo Shepherd.js)?',
+    hints: ['Highlighting de elementos', 'Portal', 'Step navigation', 'Persistência de progresso'],
+    explanation: 'Onboarding flow: (1) Passo atual armazenado em localStorage/BD para retomar após reload; (2) Highlight: elemento alvo com z-index elevado + overlay escuro atrás; (3) Tooltip: posicionado ao elemento com Floating UI/Popper; (4) Scroll automático até o elemento do passo atual; (5) Navegação: Anterior/Próximo/Pular; (6) Exit: Escape fecha com confirmação se no meio do fluxo; (7) Acessibilidade: aria-describedby, focus trap no tooltip, anúncio de passos via aria-live; (8) Condicional: não mostrar para usuários experientes ou que já completaram. Lib: Shepherd.js, react-joyride.',
+    tags: ['onboarding', 'tutorial', 'highlight', 'shepherd', 'tooltip'],
+  },
+  {
+    id: 'sd-069',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 4,
+    targetLevel: ['senior', 'staff'],
+    text: 'Como desenharia a infraestrutura de deploy de um app Next.js com zero downtime?',
+    hints: ['Blue-green deployment', 'Canary', 'Health checks', 'Rollback'],
+    explanation: 'Zero downtime deployment: (1) Blue-green: manter duas versões em produção — nova (green) recebe tráfego gradualmente, antiga (blue) disponível para rollback imediato; (2) Canary: 5% → 20% → 50% → 100% do tráfego via feature flags ou load balancer; (3) Health checks: /health endpoint que verifica DB, APIs externas — só envia tráfego quando saudável; (4) Rollback: monitorar error rate e latência — rollback automático se métricas piorarem; (5) Database migrations: backward compatible — compatíveis com a versão anterior antes de deployar; (6) Vercel: faz tudo isso automaticamente para Next.js com preview deployments em PRs.',
+    tags: ['blue-green', 'canary', 'zero-downtime', 'health-check', 'rollback'],
+  },
+  {
+    id: 'sd-070',
+    domain: 'software_engineering',
+    type: 'open_text',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: 'Como você implementaria um dark mode que respeita o sistema operacional e a preferência manual?',
+    hints: ['prefers-color-scheme', 'localStorage para override', 'CSS variables', 'SSR sem flash'],
+    explanation: 'Implementação robusta: (1) CSS variables no :root para todos os tokens de cor; (2) .dark class no html para override manual; (3) prefers-color-scheme como default se não houver preferência salva; (4) localStorage para persistir escolha manual; (5) Para SSR sem flash (FOUC): script bloqueante ANTES do body que lê localStorage e aplica a classe imediatamente; (6) Sincronização entre abas: BroadcastChannel ou storage event; (7) Watch para mudança de preferência do sistema: window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ...); (8) Botão toggle com opção "sistema".',
+    tags: ['dark-mode', 'prefers-color-scheme', 'localStorage', 'css-variables', 'fouc'],
+  },
 ]
