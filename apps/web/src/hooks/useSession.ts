@@ -110,6 +110,40 @@ export function useSession() {
     [sessionStore, submitFeedbackRequest],
   )
 
+  const submitAnswerMC = useCallback(
+    (selectedId: string, isCorrect: boolean) => {
+      if (!sessionStore.session) return
+
+      const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+      if (!currentQuestion) return
+
+      const score = isCorrect ? 100 : 0
+      const answer = {
+        questionId: currentQuestion.id,
+        value: selectedId,
+        submittedAt: Date.now(),
+      }
+
+      const { xpEarned } = processAnswer({
+        score,
+        domain: currentQuestion.domain as KnowledgeDomain,
+        difficulty: currentQuestion.difficulty,
+        verdict: isCorrect ? 'correct' : 'incorrect',
+      })
+
+      const updated = advanceSession(sessionStore.session, answer, score, xpEarned)
+
+      if (updated.status === 'reviewing') {
+        sessionStore.updateSession(completeSession(updated))
+        incrementSessionsCompleted()
+      } else {
+        sessionStore.updateSession(updated)
+      }
+      sessionStore.setPendingAnswer(null)
+    },
+    [sessionStore, processAnswer, incrementSessionsCompleted],
+  )
+
   const finishSession = useCallback(() => {
     if (!sessionStore.session) return
     const finished = completeSession(sessionStore.session)
@@ -129,6 +163,7 @@ export function useSession() {
     isLoadingFeedback: isStreamingFeedback,
     startSession,
     submitAnswer,
+    submitAnswerMC,
     finishSession,
     clearSession: sessionStore.clearSession,
   }

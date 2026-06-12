@@ -2,8 +2,9 @@
 
 import { useEffect, useState, use } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Brain } from 'lucide-react'
+import { ArrowLeft, Brain } from 'lucide-react'
 import { useSession } from '@/hooks/useSession'
 import { useGamification } from '@/hooks/useGamification'
 import { QuestionCard } from '@/components/session/QuestionCard'
@@ -34,13 +35,13 @@ export default function SessionPage({ params }: PageProps) {
     isLoadingFeedback,
     startSession,
     submitAnswer,
+    submitAnswerMC,
     finishSession,
     clearSession,
   } = useSession()
 
   const { progress } = useGamification()
   const [pendingAchievement, setPendingAchievement] = useState<Achievement | null>(null)
-  const [sessionXpTotal, setSessionXpTotal] = useState(0)
   const [showFeedback, setShowFeedback] = useState(false)
 
   useEffect(() => {
@@ -99,10 +100,16 @@ export default function SessionPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen p-4 md:p-8">
-      <div className="mx-auto max-w-xl space-y-6">
+      <div className="mx-auto max-w-xl space-y-5">
         <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Link>
             <LevelBadge level={levelId as SeniorityLevel} size="sm" />
           </div>
           <StreakCounter streak={progress.currentStreak} />
@@ -117,6 +124,7 @@ export default function SessionPage({ params }: PageProps) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
               className="space-y-4"
             >
               <QuestionCard
@@ -127,6 +135,8 @@ export default function SessionPage({ params }: PageProps) {
               <AnswerInput
                 question={currentQuestion}
                 onSubmit={submitAnswer}
+                onAnswered={submitAnswerMC}
+                isLastQuestion={isLastQuestion}
                 disabled={isLoadingFeedback}
               />
             </motion.div>
@@ -137,6 +147,7 @@ export default function SessionPage({ params }: PageProps) {
               key="feedback"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <FeedbackPanel
                 feedback={streamingFeedback ?? feedback ?? {}}
