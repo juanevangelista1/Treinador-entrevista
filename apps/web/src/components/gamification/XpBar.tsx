@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { getLevelProgress, getXpToNextLevel, LEVEL_ORDER } from '@interview-trainer/domain'
+import { getLevelProgress, getXpToNextLevel } from '@interview-trainer/domain'
 import type { SeniorityLevel } from '@interview-trainer/domain'
 
 interface XpBarProps {

@@ -150,7 +150,7 @@ export default function SessionPage({ params }: PageProps) {
               transition={{ duration: 0.2 }}
             >
               <FeedbackPanel
-                feedback={streamingFeedback ?? feedback ?? {}}
+                feedback={(streamingFeedback ?? feedback ?? {}) as Partial<import('@interview-trainer/domain').AiFeedbackResponse>}
                 isStreaming={isLoadingFeedback}
                 onNext={handleNext}
                 isLastQuestion={isLastQuestion}

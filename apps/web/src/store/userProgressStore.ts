@@ -29,7 +29,7 @@ const initialProgress: UserProgress = {
 
 export const useUserProgressStore = create<UserProgress & UserProgressActions>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       ...initialProgress,
 
       addXpEvent: (event) =>
