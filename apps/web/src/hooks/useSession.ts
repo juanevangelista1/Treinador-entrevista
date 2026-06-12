@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { experimental_useObject as useObject } from 'ai/react'
+import { experimental_useObject as useObject } from '@ai-sdk/react'
 import { z } from 'zod'
 import { useSessionStore } from '@/store/sessionStore'
 import { useGamification } from './useGamification'

@@ -22,7 +22,7 @@ export type {
 
 export type { AiFeedbackRequest, AiFeedbackResponse } from './feedback/types'
 
-export { XP_THRESHOLDS, LEVEL_ORDER, calculateLevel, getXpToNextLevel } from './gamification/levelResolver'
+export { XP_THRESHOLDS, LEVEL_ORDER, calculateLevel, getXpToNextLevel, getLevelProgress } from './gamification/levelResolver'
 export { calculateXp, DIFFICULTY_XP_BASE, STREAK_MULTIPLIERS } from './gamification/xpCalculator'
 export { ACHIEVEMENTS, checkUnlockedAchievements } from './gamification/achievementEngine'
 export { selectQuestions } from './session/questionSelector'
