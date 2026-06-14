@@ -7,7 +7,7 @@ import { useUserProgressStore } from '@/store/userProgressStore'
 import { LevelBadge } from '@/components/gamification/LevelBadge'
 import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
-import type { SeniorityLevel, KnowledgeDomain } from '@interview-trainer/domain'
+import type { SeniorityLevel, KnowledgeDomain, QuestionLanguage } from '@interview-trainer/domain'
 
 const SENIORITY_OPTIONS: { value: SeniorityLevel; label: string; description: string }[] = [
   { value: 'junior', label: 'Junior', description: '0-2 anos de experiência' },
@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const progress = useUserProgressStore()
   const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(progress.currentLevel)
   const [selectedDomains, setSelectedDomains] = useState<KnowledgeDomain[]>(['javascript', 'react'])
+  const [language, setLanguage] = useState<QuestionLanguage>('pt')
 
   function toggleDomain(domain: KnowledgeDomain) {
     setSelectedDomains((prev) =>
@@ -36,7 +37,7 @@ export default function DashboardPage() {
     )
   }
 
-  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}`
+  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}&lang=${language}`
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -121,6 +122,34 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">Idioma das perguntas</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setLanguage('pt')}
+                className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
+                  language === 'pt'
+                    ? 'border-primary bg-primary/10 text-foreground'
+                    : 'border-border text-muted-foreground hover:border-primary/50'
+                }`}
+              >
+                <span className="text-base leading-none">🇧🇷</span>
+                Português
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
+                  language === 'en'
+                    ? 'border-primary bg-primary/10 text-foreground'
+                    : 'border-border text-muted-foreground hover:border-primary/50'
+                }`}
+              >
+                <span className="text-base leading-none">🇺🇸</span>
+                English
+              </button>
+            </div>
+          </div>
+
           <Link
             href={selectedDomains.length > 0 ? sessionUrl : '#'}
             className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-base font-bold transition-opacity ${
@@ -130,7 +159,7 @@ export default function DashboardPage() {
             }`}
           >
             <Zap className="h-5 w-5" />
-            Começar sessão
+            {language === 'en' ? 'Start session' : 'Começar sessão'}
           </Link>
         </section>
       </div>

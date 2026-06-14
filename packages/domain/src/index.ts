@@ -9,6 +9,7 @@ export type {
 
 export type {
   QuestionType,
+  QuestionLanguage,
   KnowledgeDomain,
   DifficultyLevel,
   MultipleChoiceOption,

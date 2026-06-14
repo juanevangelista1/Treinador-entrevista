@@ -47,7 +47,8 @@ export function selectQuestions(options: SelectQuestionsOptions): Question[] {
     (q) =>
       config.domains.includes(q.domain) &&
       q.targetLevel.includes(config.seniorityLevel) &&
-      !recentQuestionIds.includes(q.id),
+      !recentQuestionIds.includes(q.id) &&
+      (q.language ?? 'pt') === config.language,
   )
 
   const weighted = eligible.map((question) => ({

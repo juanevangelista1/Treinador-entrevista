@@ -11,6 +11,7 @@ import { systemDesignQuestions } from './system-design'
 import { webApisQuestions } from './web-apis'
 import { softwareEngineeringQuestions } from './software-engineering'
 import { careerInterviewQuestions } from './career-interview'
+import { questionsEn } from './questions-en'
 import type { Question } from '../session/types'
 
 export const ALL_QUESTIONS: Question[] = [
@@ -27,6 +28,7 @@ export const ALL_QUESTIONS: Question[] = [
   ...webApisQuestions,
   ...softwareEngineeringQuestions,
   ...careerInterviewQuestions,
+  ...questionsEn,
 ]
 
 export {

@@ -15,7 +15,7 @@ import { AchievementToast } from '@/components/gamification/AchievementToast'
 import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
 import { LevelBadge } from '@/components/gamification/LevelBadge'
-import type { SeniorityLevel, KnowledgeDomain, Achievement } from '@interview-trainer/domain'
+import type { SeniorityLevel, KnowledgeDomain, QuestionLanguage, Achievement } from '@interview-trainer/domain'
 
 interface PageProps {
   params: Promise<{ levelId: string }>
@@ -26,6 +26,7 @@ export default function SessionPage({ params }: PageProps) {
   const searchParams = useSearchParams()
   const domainsParam = searchParams.get('domains') ?? 'javascript'
   const domains = domainsParam.split(',') as KnowledgeDomain[]
+  const language = (searchParams.get('lang') ?? 'pt') as QuestionLanguage
 
   const {
     session,
@@ -49,6 +50,7 @@ export default function SessionPage({ params }: PageProps) {
       seniorityLevel: levelId as SeniorityLevel,
       domains,
       totalQuestions: 5,
+      language,
     })
     return () => clearSession()
   }, [])
@@ -88,7 +90,7 @@ export default function SessionPage({ params }: PageProps) {
             totalXpEarned={totalXpEarned}
             onRestart={() => {
               clearSession()
-              startSession({ seniorityLevel: levelId as SeniorityLevel, domains, totalQuestions: 5 })
+              startSession({ seniorityLevel: levelId as SeniorityLevel, domains, totalQuestions: 5, language })
             }}
           />
         </div>

@@ -19,6 +19,8 @@ export interface MultipleChoiceOption {
   readonly isCorrect: boolean
 }
 
+export type QuestionLanguage = 'pt' | 'en'
+
 export interface Question {
   readonly id: string
   readonly domain: KnowledgeDomain
@@ -31,6 +33,7 @@ export interface Question {
   readonly hints: string[]
   readonly explanation: string
   readonly tags: string[]
+  readonly language?: QuestionLanguage
 }
 
 export interface Answer {
@@ -45,6 +48,7 @@ export interface SessionConfig {
   readonly seniorityLevel: SeniorityLevel
   readonly domains: KnowledgeDomain[]
   readonly totalQuestions: number
+  readonly language: QuestionLanguage
 }
 
 export interface QuestionResult {
