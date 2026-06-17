@@ -3,6 +3,9 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
 import { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS, SENIORITY_LEVELS } from '@interview-trainer/domain'
 import type { AiFeedbackRequest } from '@interview-trainer/domain'
+import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
+
+const RATE_LIMIT = { limit: 10, windowMs: 60_000 }
 
 const feedbackSchema = z.object({
   score: z.number().min(0).max(100),
@@ -56,6 +59,14 @@ Avalie esta resposta e retorne o JSON estruturado solicitado.`
 }
 
 export async function POST(req: Request) {
+  const rateLimit = checkRateLimit(getClientKey(req), RATE_LIMIT)
+  if (!rateLimit.allowed) {
+    return Response.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) } },
+    )
+  }
+
   const body = await req.json()
   const parsed = requestSchema.safeParse(body)
 
