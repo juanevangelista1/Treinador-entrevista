@@ -1,4 +1,6 @@
-export type SeniorityLevel = 'junior' | 'pleno' | 'pleno-senior' | 'senior' | 'staff'
+export const SENIORITY_LEVELS = ['junior', 'pleno', 'pleno-senior', 'senior', 'staff'] as const
+
+export type SeniorityLevel = (typeof SENIORITY_LEVELS)[number]
 
 export type XpEventType =
   | 'correct_answer'

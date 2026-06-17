@@ -6,6 +6,7 @@ export type {
   DomainStats,
   UserProgress,
 } from './gamification/types'
+export { SENIORITY_LEVELS } from './gamification/types'
 
 export type {
   QuestionType,
@@ -20,6 +21,7 @@ export type {
   QuestionResult,
   Session,
 } from './session/types'
+export { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS } from './session/types'
 
 export type { AiFeedbackRequest, AiFeedbackResponse } from './feedback/types'
 

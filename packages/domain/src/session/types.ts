@@ -2,16 +2,21 @@ import type { SeniorityLevel } from '../gamification/types'
 
 export type QuestionType = 'multiple_choice' | 'open_text' | 'true_false'
 
-export type KnowledgeDomain =
-  | 'javascript'
-  | 'typescript'
-  | 'react'
-  | 'nextjs'
-  | 'algorithms'
-  | 'data_structures'
-  | 'software_engineering'
+export const KNOWLEDGE_DOMAINS = [
+  'javascript',
+  'typescript',
+  'react',
+  'nextjs',
+  'algorithms',
+  'data_structures',
+  'software_engineering',
+] as const
 
-export type DifficultyLevel = 1 | 2 | 3 | 4 | 5
+export type KnowledgeDomain = (typeof KNOWLEDGE_DOMAINS)[number]
+
+export const DIFFICULTY_LEVELS = [1, 2, 3, 4, 5] as const
+
+export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number]
 
 export interface MultipleChoiceOption {
   readonly id: string

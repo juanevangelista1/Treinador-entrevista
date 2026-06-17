@@ -1,6 +1,7 @@
 import { streamObject } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
+import { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS, SENIORITY_LEVELS } from '@interview-trainer/domain'
 import type { AiFeedbackRequest } from '@interview-trainer/domain'
 
 const feedbackSchema = z.object({
@@ -16,15 +17,15 @@ const feedbackSchema = z.object({
 const requestSchema = z.object({
   question: z.object({
     id: z.string(),
-    text: z.string(),
-    domain: z.string(),
-    difficulty: z.number(),
-    explanation: z.string(),
-    hints: z.array(z.string()),
+    text: z.string().max(2000),
+    domain: z.enum(KNOWLEDGE_DOMAINS),
+    difficulty: z.union(DIFFICULTY_LEVELS.map((level) => z.literal(level))),
+    explanation: z.string().max(2000),
+    hints: z.array(z.string().max(500)).max(20),
   }),
   userAnswer: z.string().min(1).max(5000),
-  seniorityLevel: z.enum(['junior', 'pleno', 'pleno-senior', 'senior', 'staff']),
-  domain: z.string(),
+  seniorityLevel: z.enum(SENIORITY_LEVELS),
+  domain: z.enum(KNOWLEDGE_DOMAINS),
 })
 
 function buildSystemPrompt(seniorityLevel: string): string {
