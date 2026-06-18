@@ -24,7 +24,26 @@ interface GamificationResult {
 }
 
 export function useGamification() {
-  const store = useUserProgressStore()
+  const totalXp = useUserProgressStore((s) => s.totalXp)
+  const currentLevel = useUserProgressStore((s) => s.currentLevel)
+  const xpToNextLevel = useUserProgressStore((s) => s.xpToNextLevel)
+  const currentStreak = useUserProgressStore((s) => s.currentStreak)
+  const longestStreak = useUserProgressStore((s) => s.longestStreak)
+  const unlockedAchievements = useUserProgressStore((s) => s.unlockedAchievements)
+  const domainStats = useUserProgressStore((s) => s.domainStats)
+  const xpHistory = useUserProgressStore((s) => s.xpHistory)
+  const sessionsCompleted = useUserProgressStore((s) => s.sessionsCompleted)
+
+  // Action references are stable across renders (zustand keeps the same
+  // function identity unless the store creator itself changes), so selecting
+  // them individually doesn't add re-renders but keeps the useCallback below
+  // from being recreated on every unrelated state change.
+  const incrementStreak = useUserProgressStore((s) => s.incrementStreak)
+  const resetStreak = useUserProgressStore((s) => s.resetStreak)
+  const updateDomainStats = useUserProgressStore((s) => s.updateDomainStats)
+  const addXpEvent = useUserProgressStore((s) => s.addXpEvent)
+  const unlockAchievement = useUserProgressStore((s) => s.unlockAchievement)
+  const incrementSessionsCompleted = useUserProgressStore((s) => s.incrementSessionsCompleted)
 
   const processAnswer = useCallback(
     (options: ProcessAnswerOptions): GamificationResult => {
@@ -34,23 +53,23 @@ export function useGamification() {
       const isPartial = verdict === 'partial'
 
       if (isCorrect || score >= 70) {
-        store.incrementStreak()
+        incrementStreak()
       } else {
-        store.resetStreak()
+        resetStreak()
       }
 
-      store.updateDomainStats(domain, score)
+      updateDomainStats(domain, score)
 
       const progressSnapshot = {
-        totalXp: store.totalXp,
-        currentLevel: store.currentLevel,
-        xpToNextLevel: store.xpToNextLevel,
-        currentStreak: store.currentStreak + (isCorrect || score >= 70 ? 1 : 0),
-        longestStreak: store.longestStreak,
-        unlockedAchievements: store.unlockedAchievements,
-        domainStats: store.domainStats,
-        xpHistory: store.xpHistory,
-        sessionsCompleted: store.sessionsCompleted,
+        totalXp,
+        currentLevel,
+        xpToNextLevel,
+        currentStreak: currentStreak + (isCorrect || score >= 70 ? 1 : 0),
+        longestStreak,
+        unlockedAchievements,
+        domainStats,
+        xpHistory,
+        sessionsCompleted,
       }
 
       const xpEvent = calculateXp({
@@ -60,31 +79,46 @@ export function useGamification() {
         eventType: isCorrect ? 'correct_answer' : isPartial ? 'partial_answer' : 'partial_answer',
       })
 
-      store.addXpEvent(xpEvent)
+      addXpEvent(xpEvent)
 
       const newAchievements = checkUnlockedAchievements(progressSnapshot)
-      newAchievements.forEach((achievement) => store.unlockAchievement(achievement))
+      newAchievements.forEach((achievement) => unlockAchievement(achievement))
 
       return {
         xpEarned: xpEvent.totalXp,
         unlockedAchievements: newAchievements,
       }
     },
-    [store],
+    [
+      incrementStreak,
+      resetStreak,
+      updateDomainStats,
+      addXpEvent,
+      unlockAchievement,
+      totalXp,
+      currentLevel,
+      xpToNextLevel,
+      currentStreak,
+      longestStreak,
+      unlockedAchievements,
+      domainStats,
+      xpHistory,
+      sessionsCompleted,
+    ],
   )
 
   return {
     progress: {
-      totalXp: store.totalXp,
-      currentLevel: store.currentLevel,
-      xpToNextLevel: store.xpToNextLevel,
-      currentStreak: store.currentStreak,
-      longestStreak: store.longestStreak,
-      unlockedAchievements: store.unlockedAchievements,
-      domainStats: store.domainStats,
-      sessionsCompleted: store.sessionsCompleted,
+      totalXp,
+      currentLevel,
+      xpToNextLevel,
+      currentStreak,
+      longestStreak,
+      unlockedAchievements,
+      domainStats,
+      sessionsCompleted,
     },
     processAnswer,
-    incrementSessionsCompleted: store.incrementSessionsCompleted,
+    incrementSessionsCompleted,
   }
 }

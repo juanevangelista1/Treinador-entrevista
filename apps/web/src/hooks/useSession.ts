@@ -25,7 +25,15 @@ const feedbackSchema = z.object({
 })
 
 export function useSession() {
-  const sessionStore = useSessionStore()
+  const session = useSessionStore((s) => s.session)
+  const currentFeedback = useSessionStore((s) => s.currentFeedback)
+  const pendingAnswer = useSessionStore((s) => s.pendingAnswer)
+  const setSession = useSessionStore((s) => s.setSession)
+  const updateSession = useSessionStore((s) => s.updateSession)
+  const setFeedback = useSessionStore((s) => s.setFeedback)
+  const setPendingAnswer = useSessionStore((s) => s.setPendingAnswer)
+  const clearSession = useSessionStore((s) => s.clearSession)
+
   const { progress, processAnswer, incrementSessionsCompleted } = useGamification()
 
   const {
@@ -37,9 +45,9 @@ export function useSession() {
     api: '/api/feedback',
     schema: feedbackSchema,
     onFinish: ({ object }) => {
-      if (!object || !sessionStore.session || !sessionStore.pendingAnswer) return
+      if (!object || !session || !pendingAnswer) return
 
-      const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+      const currentQuestion = session.questions[session.currentQuestionIndex]
       if (!currentQuestion) return
 
       const { xpEarned } = processAnswer({
@@ -49,24 +57,17 @@ export function useSession() {
         verdict: object.verdict,
       })
 
-      const updatedSession = advanceSession(
-        sessionStore.session,
-        sessionStore.pendingAnswer,
-        object.score,
-        xpEarned,
-      )
+      const updatedSession = advanceSession(session, pendingAnswer, object.score, xpEarned)
 
-      sessionStore.updateSession(updatedSession)
-      sessionStore.setFeedback(object as ReturnType<typeof feedbackSchema.parse>)
-      sessionStore.setPendingAnswer(null)
+      updateSession(updatedSession)
+      setFeedback(object as ReturnType<typeof feedbackSchema.parse>)
+      setPendingAnswer(null)
     },
   })
 
   const startSession = useCallback(
     (config: SessionConfig) => {
-      const recentIds = (sessionStore.session?.results ?? [])
-        .slice(-10)
-        .map((r) => r.question.id)
+      const recentIds = (session?.results ?? []).slice(-10).map((r) => r.question.id)
 
       const questions = selectQuestions({
         config,
@@ -84,17 +85,17 @@ export function useSession() {
         recentQuestionIds: recentIds,
       })
 
-      const session = createSession(config, questions)
-      sessionStore.setSession(session)
+      const newSession = createSession(config, questions)
+      setSession(newSession)
     },
-    [sessionStore, progress],
+    [session, progress, setSession],
   )
 
   const submitAnswer = useCallback(
     (answerValue: string) => {
-      if (!sessionStore.session) return
+      if (!session) return
 
-      const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+      const currentQuestion = session.questions[session.currentQuestionIndex]
       if (!currentQuestion) return
 
       const answer = {
@@ -103,37 +104,37 @@ export function useSession() {
         submittedAt: Date.now(),
       }
 
-      sessionStore.setPendingAnswer(answer)
+      setPendingAnswer(answer)
 
       submitFeedbackRequest({
         question: currentQuestion,
         userAnswer: answerValue,
-        seniorityLevel: sessionStore.session.config.seniorityLevel,
+        seniorityLevel: session.config.seniorityLevel,
         domain: currentQuestion.domain,
       })
     },
-    [sessionStore, submitFeedbackRequest],
+    [session, setPendingAnswer, submitFeedbackRequest],
   )
 
   const retryFeedback = useCallback(() => {
-    if (!sessionStore.session || !sessionStore.pendingAnswer) return
+    if (!session || !pendingAnswer) return
 
-    const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+    const currentQuestion = session.questions[session.currentQuestionIndex]
     if (!currentQuestion) return
 
     submitFeedbackRequest({
       question: currentQuestion,
-      userAnswer: sessionStore.pendingAnswer.value,
-      seniorityLevel: sessionStore.session.config.seniorityLevel,
+      userAnswer: pendingAnswer.value,
+      seniorityLevel: session.config.seniorityLevel,
       domain: currentQuestion.domain,
     })
-  }, [sessionStore, submitFeedbackRequest])
+  }, [session, pendingAnswer, submitFeedbackRequest])
 
   const submitAnswerMC = useCallback(
     (selectedId: string, isCorrect: boolean) => {
-      if (!sessionStore.session) return
+      if (!session) return
 
-      const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+      const currentQuestion = session.questions[session.currentQuestionIndex]
       if (!currentQuestion) return
 
       const score = isCorrect ? 100 : 0
@@ -150,34 +151,32 @@ export function useSession() {
         verdict: isCorrect ? 'correct' : 'incorrect',
       })
 
-      const updated = advanceSession(sessionStore.session, answer, score, xpEarned)
+      const updated = advanceSession(session, answer, score, xpEarned)
 
       if (updated.status === 'reviewing') {
-        sessionStore.updateSession(completeSession(updated))
+        updateSession(completeSession(updated))
         incrementSessionsCompleted()
       } else {
-        sessionStore.updateSession(updated)
+        updateSession(updated)
       }
-      sessionStore.setPendingAnswer(null)
+      setPendingAnswer(null)
     },
-    [sessionStore, processAnswer, incrementSessionsCompleted],
+    [session, processAnswer, incrementSessionsCompleted, updateSession, setPendingAnswer],
   )
 
   const finishSession = useCallback(() => {
-    if (!sessionStore.session) return
-    const finished = completeSession(sessionStore.session)
-    sessionStore.updateSession(finished)
+    if (!session) return
+    const finished = completeSession(session)
+    updateSession(finished)
     incrementSessionsCompleted()
-  }, [sessionStore, incrementSessionsCompleted])
+  }, [session, updateSession, incrementSessionsCompleted])
 
-  const currentQuestion = sessionStore.session
-    ? sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
-    : null
+  const currentQuestion = session ? session.questions[session.currentQuestionIndex] : null
 
   return {
-    session: sessionStore.session,
+    session,
     currentQuestion,
-    feedback: sessionStore.currentFeedback,
+    feedback: currentFeedback,
     streamingFeedback,
     isLoadingFeedback: isStreamingFeedback,
     feedbackError,
@@ -186,6 +185,6 @@ export function useSession() {
     submitAnswerMC,
     retryFeedback,
     finishSession,
-    clearSession: sessionStore.clearSession,
+    clearSession,
   }
 }

@@ -26,8 +26,13 @@ const DOMAIN_OPTIONS: { value: KnowledgeDomain; label: string; icon: React.React
 ]
 
 export default function DashboardPage() {
-  const progress = useUserProgressStore()
-  const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(progress.currentLevel)
+  const currentLevel = useUserProgressStore((s) => s.currentLevel)
+  const currentStreak = useUserProgressStore((s) => s.currentStreak)
+  const totalXp = useUserProgressStore((s) => s.totalXp)
+  const sessionsCompleted = useUserProgressStore((s) => s.sessionsCompleted)
+  const longestStreak = useUserProgressStore((s) => s.longestStreak)
+  const unlockedAchievementsCount = useUserProgressStore((s) => s.unlockedAchievements.length)
+  const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(currentLevel)
   const [selectedDomains, setSelectedDomains] = useState<KnowledgeDomain[]>(['javascript', 'react'])
   const [language, setLanguage] = useState<QuestionLanguage>('pt')
 
@@ -55,22 +60,22 @@ export default function DashboardPage() {
         <section className="rounded-xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <LevelBadge level={progress.currentLevel} />
-              <StreakCounter streak={progress.currentStreak} />
+              <LevelBadge level={currentLevel} />
+              <StreakCounter streak={currentStreak} />
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <Trophy className="h-4 w-4" />
-              <span className="text-sm">{progress.unlockedAchievements.length} conquistas</span>
+              <span className="text-sm">{unlockedAchievementsCount} conquistas</span>
             </div>
           </div>
-          <XpBar totalXp={progress.totalXp} currentLevel={progress.currentLevel} />
+          <XpBar totalXp={totalXp} currentLevel={currentLevel} />
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div className="rounded-lg bg-secondary p-3 text-center">
-              <p className="text-lg font-bold text-foreground">{progress.sessionsCompleted}</p>
+              <p className="text-lg font-bold text-foreground">{sessionsCompleted}</p>
               <p className="text-xs text-muted-foreground">Sessões</p>
             </div>
             <div className="rounded-lg bg-secondary p-3 text-center">
-              <p className="text-lg font-bold text-foreground">{progress.longestStreak}</p>
+              <p className="text-lg font-bold text-foreground">{longestStreak}</p>
               <p className="text-xs text-muted-foreground">Maior sequência</p>
             </div>
           </div>
