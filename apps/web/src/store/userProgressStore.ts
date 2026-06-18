@@ -5,6 +5,8 @@ import { persist } from 'zustand/middleware'
 import type { UserProgress, XpEvent, Achievement } from '@interview-trainer/domain'
 import { calculateLevel, getXpToNextLevel } from '@interview-trainer/domain'
 
+const MAX_XP_HISTORY = 200
+
 interface UserProgressActions {
   addXpEvent: (event: XpEvent) => void
   unlockAchievement: (achievement: Achievement) => void
@@ -39,7 +41,7 @@ export const useUserProgressStore = create<UserProgress & UserProgressActions>()
             totalXp: newTotalXp,
             currentLevel: calculateLevel(newTotalXp),
             xpToNextLevel: getXpToNextLevel(newTotalXp),
-            xpHistory: [...state.xpHistory, event],
+            xpHistory: [...state.xpHistory, event].slice(-MAX_XP_HISTORY),
           }
         }),
 
