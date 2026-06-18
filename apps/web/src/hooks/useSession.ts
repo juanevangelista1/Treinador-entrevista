@@ -5,8 +5,8 @@ import { experimental_useObject as useObject } from '@ai-sdk/react'
 import { z } from 'zod'
 import { useSessionStore } from '@/store/sessionStore'
 import { useGamification } from './useGamification'
+import { selectSessionQuestions } from '@/app/session/actions'
 import {
-  selectQuestions,
   createSession,
   advanceSession,
   completeSession,
@@ -66,12 +66,12 @@ export function useSession() {
   })
 
   const startSession = useCallback(
-    (config: SessionConfig) => {
+    async (config: SessionConfig) => {
       const recentIds = (session?.results ?? []).slice(-10).map((r) => r.question.id)
 
-      const questions = selectQuestions({
+      const questions = await selectSessionQuestions(
         config,
-        progress: {
+        {
           totalXp: progress.totalXp,
           currentLevel: progress.currentLevel,
           xpToNextLevel: progress.xpToNextLevel,
@@ -82,8 +82,8 @@ export function useSession() {
           xpHistory: [],
           sessionsCompleted: progress.sessionsCompleted,
         },
-        recentQuestionIds: recentIds,
-      })
+        recentIds,
+      )
 
       const newSession = createSession(config, questions)
       setSession(newSession)
