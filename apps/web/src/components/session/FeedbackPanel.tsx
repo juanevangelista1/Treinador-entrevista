@@ -113,6 +113,7 @@ export function FeedbackPanel({
 
       {!isStreaming && (
         <button
+          type="button"
           onClick={onNext}
           className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
         >

@@ -93,6 +93,8 @@ export default function DashboardPage() {
               {SENIORITY_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
+                  type="button"
+                  aria-pressed={selectedLevel === opt.value}
                   onClick={() => setSelectedLevel(opt.value)}
                   className={`text-left rounded-lg border px-4 py-3 text-sm transition-all ${
                     selectedLevel === opt.value
@@ -113,6 +115,8 @@ export default function DashboardPage() {
               {DOMAIN_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
+                  type="button"
+                  aria-pressed={selectedDomains.includes(opt.value)}
                   onClick={() => toggleDomain(opt.value)}
                   className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-all ${
                     selectedDomains.includes(opt.value)
@@ -131,6 +135,8 @@ export default function DashboardPage() {
             <p className="text-sm font-medium text-muted-foreground">Idioma das perguntas</p>
             <div className="flex gap-2">
               <button
+                type="button"
+                aria-pressed={language === 'pt'}
                 onClick={() => setLanguage('pt')}
                 className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
                   language === 'pt'
@@ -142,6 +148,8 @@ export default function DashboardPage() {
                 Português
               </button>
               <button
+                type="button"
+                aria-pressed={language === 'en'}
                 onClick={() => setLanguage('en')}
                 className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
                   language === 'en'
@@ -155,17 +163,25 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <Link
-            href={selectedDomains.length > 0 ? sessionUrl : '#'}
-            className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-base font-bold transition-opacity ${
-              selectedDomains.length > 0
-                ? 'bg-primary text-primary-foreground hover:opacity-90'
-                : 'bg-secondary text-muted-foreground cursor-not-allowed'
-            }`}
-          >
-            <Zap className="h-5 w-5" />
-            {language === 'en' ? 'Start session' : 'Começar sessão'}
-          </Link>
+          {selectedDomains.length > 0 ? (
+            <Link
+              href={sessionUrl}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-4 text-base font-bold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Zap className="h-5 w-5" />
+              {language === 'en' ? 'Start session' : 'Começar sessão'}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-4 text-base font-bold text-muted-foreground"
+            >
+              <Zap className="h-5 w-5" />
+              {language === 'en' ? 'Start session' : 'Começar sessão'}
+            </button>
+          )}
         </section>
       </div>
     </main>

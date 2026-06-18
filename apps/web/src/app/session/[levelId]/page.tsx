@@ -164,6 +164,7 @@ export default function SessionPage({ params }: PageProps) {
                 Houve um erro ao conversar com o mentor de IA. Verifique sua conexão e tente novamente.
               </p>
               <button
+                type="button"
                 onClick={retryFeedback}
                 className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
               >

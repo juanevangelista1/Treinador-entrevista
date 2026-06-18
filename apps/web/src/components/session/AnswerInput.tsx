@@ -56,35 +56,42 @@ function MultipleChoiceInput({
 
   return (
     <div className="space-y-2">
-      {options.map((option) => (
-        <button
-          key={option.id}
-          onClick={() => handleSelect(option.id)}
-          disabled={revealed}
-          className={cn(
-            'w-full text-left rounded-xl border px-4 py-3.5 text-sm transition-all',
-            getOptionClassName(option),
-          )}
-        >
-          <div className="flex items-start gap-3">
-            <span
-              className={cn(
-                'shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5 transition-all',
-                getBadgeClassName(option),
-              )}
-            >
-              {option.id.toUpperCase()}
-            </span>
-            <span className="leading-relaxed">{option.text}</span>
-          </div>
-        </button>
-      ))}
+      <div role="radiogroup" aria-label="Opções de resposta" className="space-y-2">
+        {options.map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            role="radio"
+            aria-checked={option.id === selected}
+            onClick={() => handleSelect(option.id)}
+            disabled={revealed}
+            className={cn(
+              'w-full text-left rounded-xl border px-4 py-3.5 text-sm transition-all',
+              getOptionClassName(option),
+            )}
+          >
+            <div className="flex items-start gap-3">
+              <span
+                className={cn(
+                  'shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold mt-0.5 transition-all',
+                  getBadgeClassName(option),
+                )}
+              >
+                {option.id.toUpperCase()}
+              </span>
+              <span className="leading-relaxed">{option.text}</span>
+            </div>
+          </button>
+        ))}
+      </div>
 
       {revealed && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
+          role="status"
+          aria-live="polite"
           className="space-y-3 pt-2"
         >
           <div
@@ -114,6 +121,7 @@ function MultipleChoiceInput({
           </div>
 
           <button
+            type="button"
             onClick={() => onAnswered(selected!, isCorrect)}
             className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
@@ -138,6 +146,7 @@ function OpenTextInput({
   return (
     <div className="space-y-3">
       <textarea
+        aria-label="Sua resposta"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         disabled={disabled}
@@ -152,6 +161,7 @@ function OpenTextInput({
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">{value.length} caracteres</span>
         <button
+          type="button"
           onClick={() => onSubmit(value.trim())}
           disabled={!isValid || disabled}
           className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
