@@ -28,7 +28,12 @@ export function useSession() {
   const sessionStore = useSessionStore()
   const { progress, processAnswer, incrementSessionsCompleted } = useGamification()
 
-  const { object: streamingFeedback, submit: submitFeedbackRequest, isLoading: isStreamingFeedback } = useObject({
+  const {
+    object: streamingFeedback,
+    submit: submitFeedbackRequest,
+    isLoading: isStreamingFeedback,
+    error: feedbackError,
+  } = useObject({
     api: '/api/feedback',
     schema: feedbackSchema,
     onFinish: ({ object }) => {
@@ -110,6 +115,20 @@ export function useSession() {
     [sessionStore, submitFeedbackRequest],
   )
 
+  const retryFeedback = useCallback(() => {
+    if (!sessionStore.session || !sessionStore.pendingAnswer) return
+
+    const currentQuestion = sessionStore.session.questions[sessionStore.session.currentQuestionIndex]
+    if (!currentQuestion) return
+
+    submitFeedbackRequest({
+      question: currentQuestion,
+      userAnswer: sessionStore.pendingAnswer.value,
+      seniorityLevel: sessionStore.session.config.seniorityLevel,
+      domain: currentQuestion.domain,
+    })
+  }, [sessionStore, submitFeedbackRequest])
+
   const submitAnswerMC = useCallback(
     (selectedId: string, isCorrect: boolean) => {
       if (!sessionStore.session) return
@@ -161,9 +180,11 @@ export function useSession() {
     feedback: sessionStore.currentFeedback,
     streamingFeedback,
     isLoadingFeedback: isStreamingFeedback,
+    feedbackError,
     startSession,
     submitAnswer,
     submitAnswerMC,
+    retryFeedback,
     finishSession,
     clearSession: sessionStore.clearSession,
   }

@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, Brain } from 'lucide-react'
+import { ArrowLeft, AlertTriangle, Brain } from 'lucide-react'
 import { useSession } from '@/hooks/useSession'
 import { useGamification } from '@/hooks/useGamification'
 import { QuestionCard } from '@/components/session/QuestionCard'
@@ -34,9 +34,11 @@ export default function SessionPage({ params }: PageProps) {
     feedback,
     streamingFeedback,
     isLoadingFeedback,
+    feedbackError,
     startSession,
     submitAnswer,
     submitAnswerMC,
+    retryFeedback,
     finishSession,
     clearSession,
   } = useSession()
@@ -144,12 +146,39 @@ export default function SessionPage({ params }: PageProps) {
             </motion.div>
           )}
 
-          {showFeedback && (
+          {showFeedback && feedbackError && (
+            <motion.div
+              key="feedback-error"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              role="alert"
+              aria-live="assertive"
+              className="space-y-4 rounded-xl border border-red-500/30 bg-red-500/10 p-5"
+            >
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-red-400" />
+                <span className="font-semibold text-foreground">Não foi possível avaliar sua resposta</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Houve um erro ao conversar com o mentor de IA. Verifique sua conexão e tente novamente.
+              </p>
+              <button
+                onClick={retryFeedback}
+                className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Tentar novamente
+              </button>
+            </motion.div>
+          )}
+
+          {showFeedback && !feedbackError && (
             <motion.div
               key="feedback"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
+              aria-live="polite"
             >
               <FeedbackPanel
                 feedback={(streamingFeedback ?? feedback ?? {}) as Partial<import('@interview-trainer/domain').AiFeedbackResponse>}

@@ -67,7 +67,13 @@ export async function POST(req: Request) {
     )
   }
 
-  const body = await req.json()
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return Response.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
   const parsed = requestSchema.safeParse(body)
 
   if (!parsed.success) {
@@ -81,6 +87,9 @@ export async function POST(req: Request) {
     schema: feedbackSchema,
     system: buildSystemPrompt(feedbackRequest.seniorityLevel),
     prompt: buildUserPrompt(feedbackRequest),
+    onError: ({ error }) => {
+      console.error('streamObject failed for /api/feedback', error)
+    },
   })
 
   return result.toTextStreamResponse()
