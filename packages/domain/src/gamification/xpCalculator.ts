@@ -22,7 +22,7 @@ function getStreakMultiplier(streak: number): number {
     .sort((a, b) => b - a)
 
   const matched = thresholds.find((threshold) => streak >= threshold)
-  return matched ? STREAK_MULTIPLIERS[matched] : 1
+  return matched !== undefined ? STREAK_MULTIPLIERS[matched] ?? 1 : 1
 }
 
 interface CalculateXpOptions {

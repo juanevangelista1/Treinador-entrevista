@@ -16,7 +16,7 @@ describe('calculateXp', () => {
   it('applies streak multiplier at streak 3', () => {
     const event = calculateXp({ score: 100, difficulty: 1, currentStreak: 3 })
     expect(event.multiplier).toBe(STREAK_MULTIPLIERS[3])
-    expect(event.totalXp).toBe(Math.round(DIFFICULTY_XP_BASE[1] * STREAK_MULTIPLIERS[3]))
+    expect(event.totalXp).toBe(Math.round(DIFFICULTY_XP_BASE[1] * STREAK_MULTIPLIERS[3]!))
   })
 
   it('applies highest applicable streak multiplier', () => {

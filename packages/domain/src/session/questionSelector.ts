@@ -33,7 +33,8 @@ function pickWeighted<T>(
       return random <= 0
     })
     const picked = index >= 0 ? index : 0
-    result.push(remaining[picked].value)
+    // Safe: the while condition guarantees remaining.length > 0, so `picked` is in bounds.
+    result.push(remaining[picked]!.value)
     remaining.splice(picked, 1)
   }
 
