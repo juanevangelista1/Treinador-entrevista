@@ -3464,4 +3464,322 @@ function List({ items }) {
     explanation: 'The `key` prop helps React identify which list items changed, were added, or removed between renders — but its absence only produces a console warning, without preventing rendering. On the first render (or in lists that are never reordered/filtered), the visual result is identical with or without `key`. The real problems with skipping `key` show up in future reconciliations: component state can "leak" into the wrong item when the list gets reordered.',
     tags: ['key-prop', 'lists', 'reconciliation', 'output-prediction'],
   },
+  {
+    id: 'en-react-pred-031',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `In React 18+, the user clicks once anywhere on the page. How many times is 'render' logged (not counting the mount)?
+
+\`\`\`jsx
+function App() {
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  console.log('render');
+
+  useEffect(() => {
+    function handler() {
+      setA(x => x + 1);
+      setB(x => x + 1);
+    }
+    window.addEventListener('click', handler);
+    return () => window.removeEventListener('click', handler);
+  }, []);
+
+  return null;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '2 times, one per `setState` call', isCorrect: false },
+      { id: 'b', text: '1 time', isCorrect: true },
+      { id: 'c', text: "0 times, native listeners don't trigger re-renders", isCorrect: false },
+      { id: 'd', text: 'Depends on the browser', isCorrect: false },
+    ],
+    hints: ['Since React 18, "automatic batching" applies to ALL state updates, not just ones triggered by React\'s own synthetic event handlers', 'Before React 18, updates inside native listeners (`addEventListener`), promises, or timeouts were NOT batched — each one caused its own re-render'],
+    explanation: 'Starting with React 18, automatic batching applies to ANY state update, regardless of where it happens — including native DOM event listeners (`addEventListener`), Promise callbacks, and `setTimeout`. Before that (React 17), only updates inside React\'s own synthetic handlers were batched; outside of them, each `setState` caused a separate re-render. Here, even with `setA` and `setB` inside a native listener, both get batched into a single re-render.',
+    tags: ['automatic-batching', 'react-18', 'addEventListener', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-032',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After clicking 3 times, what appears as the BUTTON TEXT on screen (not in the console)?
+
+\`\`\`jsx
+function App() {
+  const countRef = useRef(0);
+  function handleClick() {
+    countRef.current += 1;
+    console.log(countRef.current);
+  }
+  return <button onClick={handleClick}>{countRef.current}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '"3" (follows the clicks)', isCorrect: false },
+      { id: 'b', text: '"0" (never updates visually)', isCorrect: true },
+      { id: 'c', text: '"1", then "2", then "3" (updates on every click)', isCorrect: false },
+      { id: 'd', text: 'Throws an error reading a ref during render', isCorrect: false },
+    ],
+    hints: ['Mutating a ref\'s `.current` NEVER triggers a re-render by itself', 'The `console.log` shows the correct value (1, 2, 3), but the SCREEN is not updated, since nothing triggers a new render'],
+    explanation: 'This contrasts with the `useRef` + `forceUpdate` question earlier: here there is NO state (`useState`) at all and nothing triggers a re-render. `countRef.current += 1` genuinely increments the ref\'s internal value (and `console.log` confirms it, showing `1`, `2`, `3`), but since mutating a ref does not cause a re-render, the JSX `{countRef.current}` is never re-evaluated on screen — the button text stays frozen at `"0"` forever, even though the ref\'s actual value has changed.',
+    tags: ['useRef', 'no-re-render', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-033',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After clicking the button 3 times, how many times does 'effect ran' appear in total (including the mount)?
+
+\`\`\`jsx
+function App() {
+  const [n, setN] = useState(0);
+  function getValue() {
+    return 5;
+  }
+  useEffect(() => {
+    console.log('effect ran');
+  }, [getValue]);
+  return <button onClick={() => setN(n + 1)}>{n}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1 time (only the mount)', isCorrect: false },
+      { id: 'b', text: '4 times', isCorrect: true },
+      { id: 'c', text: '3 times (not counting the mount)', isCorrect: false },
+      { id: 'd', text: 'Throws an invalid-dependency error', isCorrect: false },
+    ],
+    hints: ['`function getValue() {...}` declared inside the component is recreated (new reference) on every render', 'Even though `getValue` always returns `5` and never "changes behavior", `useEffect` only compares REFERENCES, not what the function does'],
+    explanation: 'The `getValue` function is redeclared from scratch on every render of `App`, getting a new reference even though its behavior never changes. Since `useEffect` uses referential comparison (`Object.is`) on its dependencies, it always sees `getValue` as "different" from before and runs again: once on mount, and once more on each of the 3 clicks — totaling 4 runs.',
+    tags: ['useEffect', 'dependencies', 'reference', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-034',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What is shown on screen after clicking the button?
+
+\`\`\`jsx
+function Form() {
+  const [user, setUser] = useState({ name: 'Ana', age: 25 });
+  function updateName() {
+    setUser({ name: 'Bia' });
+  }
+  return <button onClick={updateName}>{JSON.stringify(user)}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '{"name":"Bia","age":25}', isCorrect: false },
+      { id: 'b', text: '{"name":"Bia"}', isCorrect: true },
+      { id: 'c', text: '{"name":"Ana","age":25}', isCorrect: false },
+      { id: 'd', text: 'Throws TypeError: missing `age` property', isCorrect: false },
+    ],
+    hints: ['Unlike `this.setState` in class components, the `useState` setter does NOT automatically merge objects', 'The setter REPLACES the previous state entirely with the new value'],
+    explanation: "An important difference between `useState` and class components' `this.setState`: `this.setState` does an automatic shallow merge, but the `useState` setter simply REPLACES the previous state value with the new one, with no merging at all. Since `setUser({ name: 'Bia' })` passes an object without `age`, the `age` property is completely lost. The correct approach is to spread the previous state: `setUser(prev => ({ ...prev, name: 'Bia' }))`.",
+    tags: ['useState', 'object-state', 'merge', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-035',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the fix for the previous bug. What is shown on screen after clicking the button?
+
+\`\`\`jsx
+function Form() {
+  const [user, setUser] = useState({ name: 'Ana', age: 25 });
+  function updateName() {
+    setUser(prev => ({ ...prev, name: 'Bia' }));
+  }
+  return <button onClick={updateName}>{JSON.stringify(user)}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '{"name":"Bia"}', isCorrect: false },
+      { id: 'b', text: '{"name":"Bia","age":25}', isCorrect: true },
+      { id: 'c', text: '{"name":"Ana","age":25}', isCorrect: false },
+      { id: 'd', text: 'Throws an invalid-spread error', isCorrect: false },
+    ],
+    hints: ['`{ ...prev, name: \'Bia\' }` copies all existing properties and only overwrites `name`'],
+    explanation: 'By spreading the previous state (`...prev`) before overwriting only the desired field, every other property (like `age: 25`) is preserved in the new object. This is the idiomatic pattern for simulating a "partial merge" of object state with `useState`, since React does not do that automatically.',
+    tags: ['useState', 'object-state', 'spread', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-036',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `The user clicks "Change" (which changes \`App\`'s \`n\` state, passed as \`initialName\`). Does \`<Profile>\` start showing "Bia"?
+
+\`\`\`jsx
+function Profile({ initialName }) {
+  const [name, setName] = useState(initialName);
+  return <p>{name}</p>;
+}
+function App() {
+  const [n, setN] = useState('Ana');
+  return (
+    <>
+      <Profile initialName={n} />
+      <button onClick={() => setN('Bia')}>Change</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, `Profile` automatically syncs with the new prop', isCorrect: false },
+      { id: 'b', text: 'No, it still shows "Ana"', isCorrect: true },
+      { id: 'c', text: 'Throws an uncontrolled-state error', isCorrect: false },
+      { id: 'd', text: 'Shows "Ana Bia" (concatenated)', isCorrect: false },
+    ],
+    hints: ['`useState(initialName)` only uses the prop\'s value to set state on the FIRST render of that component instance', "After mount, the internal `name` state lives its own life, fully decoupled from future changes to `initialName`"],
+    explanation: 'The argument passed to `useState` is only used as the initial value on the FIRST render of that component instance — React never "re-runs" the initializer on subsequent renders, even if the original prop changes. As the prop\'s own name suggests (`initialName`), it only matters at the start. After that, `name` is independent state, and changing `n` in `App` has no effect at all on the `name` that already exists inside `Profile`.',
+    tags: ['useState', 'props-as-initial-state', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-037',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `The user clicks the "+" button. Does 'B render' log again, even though \`DisplayB\` never reads \`count\` from the context?
+
+\`\`\`jsx
+const CountContext = createContext();
+
+function DisplayA() {
+  const { count } = useContext(CountContext);
+  console.log('A render');
+  return <p>{count}</p>;
+}
+function DisplayB() {
+  useContext(CountContext); // doesn't use the value
+  console.log('B render');
+  return <p>static</p>;
+}
+function App() {
+  const [count, setCount] = useState(0);
+  return (
+    <CountContext.Provider value={{ count }}>
+      <DisplayA />
+      <DisplayB />
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </CountContext.Provider>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "No, `DisplayB` never uses `count`, so React ignores it", isCorrect: false },
+      { id: 'b', text: "Yes, any consumer of the context re-renders when the Provider's `value` changes", isCorrect: true },
+      { id: 'c', text: 'No, only `DisplayA` re-renders', isCorrect: false },
+      { id: 'd', text: 'Only on the very first change to `count`', isCorrect: false },
+    ],
+    hints: ["Context has no per-field/granular subscription — any component calling `useContext` on that context re-renders when the Provider's `value` changes", '`{ count }` is also a brand-new object on every render of `App`, so the Provider\'s `value` changes reference every time'],
+    explanation: "Unlike more granular state management libraries, `useContext` doesn't let you \"subscribe\" to just a part of the value — EVERY component calling `useContext(CountContext)` re-renders whenever the `value` passed to the `Provider` changes reference, even if that component never reads the field that actually changed. Since `{ count }` is recreated on every render of `App`, the Provider's `value` changes reference every time, forcing even `DisplayB` (which doesn't even use the value) to re-render.",
+    tags: ['Context', 'useContext', 're-render', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-038',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `The user clicks the button. Does the displayed name update to "Bia"?
+
+\`\`\`jsx
+function App() {
+  const [user, setUser] = useState({ name: 'Ana' });
+  function rename() {
+    user.name = 'Bia'; // direct mutation
+    setUser(user); // same reference
+  }
+  return <button onClick={rename}>{user.name}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, it shows "Bia"', isCorrect: false },
+      { id: 'b', text: 'No, it still shows "Ana"', isCorrect: true },
+      { id: 'c', text: 'Throws TypeError: immutable object', isCorrect: false },
+      { id: 'd', text: 'Shows "Bia" only after the second click', isCorrect: false },
+    ],
+    hints: ['The `user` object was mutated DIRECTLY (`user.name = \'Bia\'`), then the SAME reference was passed to `setUser`', "React compares the received reference with the previous one via `Object.is` — since it's the SAME object, it decides \"nothing changed\" and skips the update"],
+    explanation: "Even though `user.name = 'Bia'` genuinely changes the object's content in memory, `setUser(user)` is passing the EXACT same reference that was already stored as state. React compares the new reference against the old one via `Object.is`, sees they're the SAME object, and decides to skip the re-render — even though the internal content was changed outside the rules of immutability. That's why the screen still shows \"Ana\", even though `user.name` is already `'Bia'` internally.",
+    tags: ['useState', 'direct-mutation', 'immutability', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-039',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `The user clicks the button. Does the number shown on screen change from "2" to "3"?
+
+\`\`\`jsx
+function App() {
+  const [items, setItems] = useState([1, 2]);
+  function add() {
+    items.push(3);
+    setItems(items);
+  }
+  return <button onClick={add}>{items.length}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, it becomes "3"', isCorrect: false },
+      { id: 'b', text: 'No, it still shows "2"', isCorrect: true },
+      { id: 'c', text: 'Throws an error: state arrays are read-only and `.push` fails', isCorrect: false },
+      { id: 'd', text: 'Becomes "3" only after clicking twice', isCorrect: false },
+    ],
+    hints: ['`.push()` mutates the original array IN PLACE and returns the new length (not a new array)', 'Passing the same array reference back to `setItems` makes React skip the re-render, exactly like with a mutated object'],
+    explanation: "Same bug pattern as the previous question, now with an array: `.push(3)` modifies the `items` array directly, in place, without creating a new reference. When `setItems(items)` is called with that SAME reference, React detects no change at all (`Object.is` considers them equal) and skips the re-render — even though the array already has `3` elements internally. The fix would be `setItems([...items, 3])`, creating a brand-new array.",
+    tags: ['useState', 'array-mutation', 'immutability', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-040',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After ONE click, what is the final value of \`count\`?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    for (let i = 0; i < 5; i++) {
+      setCount(count + 1);
+    }
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '5', isCorrect: false },
+      { id: 'b', text: '1', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: '4', isCorrect: false },
+    ],
+    hints: ['All 5 calls inside the loop read the SAME `count` variable, captured by this render\'s closure', "It doesn't matter how many times you call `setCount(count + 1)` in the same handler — they all compute exactly the same result"],
+    explanation: 'Each of the 5 calls to `setCount(count + 1)` inside the loop reads the same `count` variable (captured by the current render\'s closure, say `0`), so all of them compute exactly `0 + 1 = 1` and schedule that same update repeatedly. The final result is `1`, not `5` — running the loop more times doesn\'t help when you don\'t use the functional form of the setter.',
+    tags: ['useState', 'stale-closure', 'loop', 'output-prediction'],
+  },
 ]
