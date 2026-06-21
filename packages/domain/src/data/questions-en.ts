@@ -3782,4 +3782,317 @@ function App() {
     explanation: 'Each of the 5 calls to `setCount(count + 1)` inside the loop reads the same `count` variable (captured by the current render\'s closure, say `0`), so all of them compute exactly `0 + 1 = 1` and schedule that same update repeatedly. The final result is `1`, not `5` — running the loop more times doesn\'t help when you don\'t use the functional form of the setter.',
     tags: ['useState', 'stale-closure', 'loop', 'output-prediction'],
   },
+  {
+    id: 'en-react-pred-041',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the fix for the previous bug. After ONE click, what is the final value of \`count\`?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    for (let i = 0; i < 5; i++) {
+      setCount(c => c + 1);
+    }
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1', isCorrect: false },
+      { id: 'b', text: '5', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: 'Undefined, depends on the browser', isCorrect: false },
+    ],
+    hints: ['Each functional call receives the PENDING result of the previous one, forming a chain of updates'],
+    explanation: 'Using the functional form (`c => c + 1`), each of the 5 calls inside the loop receives the most up-to-date value available in the update queue — forming a chain: the first receives `0` and produces `1`; the second receives that pending `1` and produces `2`; and so on, until the fifth produces `5`. React applies this entire chain at once, resulting in `count = 5`.',
+    tags: ['useState', 'functional-update', 'loop', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-042',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What is rendered for each \`<Greeting>\`?
+
+\`\`\`jsx
+function Greeting({ name = 'Guest' }) {
+  return <p>Hello, {name}</p>;
+}
+function App() {
+  return (
+    <>
+      <Greeting name={undefined} />
+      <Greeting name={null} />
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '"Hello, Guest" for both', isCorrect: false },
+      { id: 'b', text: '"Hello, Guest" for the first; "Hello, " (nothing visible after) for the second', isCorrect: true },
+      { id: 'c', text: '"Hello, undefined" for the first; "Hello, null" for the second', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError on the second, since `null` has no default', isCorrect: false },
+    ],
+    hints: ['Destructuring default values for props work exactly like any function parameter: they only kick in for `undefined`', '`null` is a "valid" value that does not trigger the default — and React simply renders `null` as nothing in JSX'],
+    explanation: "This is the same plain-JavaScript destructuring rule, applied to props: the default value (`= 'Guest'`) only kicks in when the prop is exactly `undefined`. In the first `<Greeting>`, `name` is `undefined`, so the default applies: \"Hello, Guest\". In the second, `name` is `null` — an explicit value that does NOT trigger the default — so `name` stays `null`, and since React simply doesn't render `null`/`undefined`/`false`/`true` in the tree, only \"Hello, \" shows up with nothing visible after it.",
+    tags: ['default-props', 'destructuring', 'null-vs-undefined', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-043',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when this component mounts?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  setCount(count + 1); // called directly in the render body
+  return <p>{count}</p>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Renders normally, showing "1"', isCorrect: false },
+      { id: 'b', text: 'React detects a loop and throws an error ("Too many re-renders")', isCorrect: true },
+      { id: 'c', text: 'The `setCount` is silently ignored during render', isCorrect: false },
+      { id: 'd', text: 'Renders only once, showing "0"', isCorrect: false },
+    ],
+    hints: ['Calling a state setter directly in the component body (outside any handler or effect), with no stopping condition, IMMEDIATELY triggers another render', "Since there's no condition to stop it (`setCount` runs unconditionally on every render), this repeats forever"],
+    explanation: 'Calling `setCount` directly in the component body, during rendering, immediately triggers another render — which runs the body again, which calls `setCount` again, and so on, with no condition ever stopping the cycle. React detects this pattern (state updates repeatedly triggered during rendering itself) and throws a protective error, something like "Too many re-renders. React limits the number of renders to prevent an infinite loop", instead of letting the browser actually hang.',
+    tags: ['useState', 'setState-during-render', 'infinite-loop', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-044',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `The user clicks the button several times. How many times does 'effect ran' get logged in total (including the mount)?
+
+\`\`\`jsx
+function Child({ setCount }) {
+  useEffect(() => {
+    console.log('effect ran');
+  }, [setCount]);
+  return null;
+}
+function Parent() {
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <Child setCount={setCount} />
+      <button onClick={() => setCount(c => c + 1)}>{count}</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Once per click, plus the mount', isCorrect: false },
+      { id: 'b', text: 'Just 1 time (only on mount)', isCorrect: true },
+      { id: 'c', text: "Never — `setCount` isn't a valid dependency", isCorrect: false },
+      { id: 'd', text: 'Depends on how many components consume `setCount`', isCorrect: false },
+    ],
+    hints: ['React GUARANTEES that the setter function returned by `useState` is stable — the SAME reference across all renders of the component', "Unlike a regular function declared inside the component, `setCount` is never \"recreated\""],
+    explanation: "Unlike regular functions declared inside a component's body (which get recreated on every render, with new references), the setter returned by `useState` (here, `setCount`) is guaranteed stable by React — it's always the SAME function reference, across every render, for the entire lifetime of the component. Since `setCount` never \"changes\" as a dependency, the effect in `Child` runs just once, on mount, and never again, no matter how many clicks happen.",
+    tags: ['useState', 'stable-setter', 'useEffect', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-045',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This component has a conditional \`return\` BEFORE the final JSX. Does it violate the Rules of Hooks?
+
+\`\`\`jsx
+function Profile({ user }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!user) {
+    return <p>Loading...</p>;
+  }
+  return <button onClick={() => setExpanded(!expanded)}>{user.name}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, any `if` before a `return` breaks the rules of hooks', isCorrect: false },
+      { id: 'b', text: 'No, because the `useState` hook is called unconditionally, before any `if`', isCorrect: true },
+      { id: 'c', text: 'Yes, but it only causes an error in production, not in development', isCorrect: false },
+      { id: 'd', text: 'No, but only because there is just one hook in this component', isCorrect: false },
+    ],
+    hints: ['The Rules of Hooks forbid HOOKS THEMSELVES from being called conditionally or inside loops — they do not forbid conditional `return`s', 'Here, `useState` always runs, on every call of the function, before any `if`'],
+    explanation: "This code is perfectly valid. The Rules of Hooks require hooks to be called in the exact same order, unconditionally, on every render — but that doesn't prevent the returned JSX (i.e., the `return` statement) from being conditional. Here, `useState(false)` always runs before any conditional check, so the order of hooks never varies between renders, regardless of `user`'s value.",
+    tags: ['rules-of-hooks', 'useState', 'conditional-return', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-046',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `The counter is incremented a few times (count > 0). After that, the user clicks "Reset" (which changes \`key\`). What happens to the \`Counter\`?
+
+\`\`\`jsx
+function Counter({ resetKey }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => console.log('mounted with count reset to', count), []);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+function App() {
+  const [key, setKey] = useState(0);
+  return (
+    <>
+      <Counter key={key} />
+      <button onClick={() => setKey(k => k + 1)}>Reset</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "Nothing happens to `Counter`, since `key` isn't used internally", isCorrect: false },
+      { id: 'b', text: '`Counter` is unmounted and remounted from scratch: `count` resets to 0, and the mount log fires again', isCorrect: true },
+      { id: 'c', text: "Only the button's text resets, but the effect doesn't run again", isCorrect: false },
+      { id: 'd', text: "Throws an error: `key` can't change after mount", isCorrect: false },
+    ],
+    hints: ["When an element's `key` value changes, React treats it as a LOGICALLY DIFFERENT component, not an update of the same one", 'A "different component" means the old one gets unmounted (losing all its state) and a new one mounts from scratch'],
+    explanation: 'Changing the special `key` prop\'s value signals to React that this element now represents a LOGICALLY DIFFERENT instance, even though it\'s the same component type. Instead of simply updating the existing instance, React fully unmounts the old one (discarding all its internal state, like `count`) and mounts a completely new instance from scratch. That\'s why `count` resets to `0` and the mount `console.log` fires again — this is actually a common intentional pattern used to "reset" a component\'s state.',
+    tags: ['key-prop', 'remount', 'useState', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-047',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `The user clicks the button (which triggers both \`handleChildClick\` directly and \`handleParentClick\` via DOM event bubbling). In React 18+, how many times is 'render' logged, and what is the final value of \`count\`?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  console.log('render');
+
+  function handleParentClick() {
+    setCount(c => c + 1);
+  }
+  function handleChildClick() {
+    setCount(c => c + 1);
+  }
+
+  return (
+    <div onClick={handleParentClick}>
+      <button onClick={handleChildClick}>Click</button>
+    </div>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'render' logs twice, count increases by 2", isCorrect: false },
+      { id: 'b', text: "'render' logs once, count increases by 2", isCorrect: true },
+      { id: 'c', text: "'render' logs once, count increases by 1 (only the button's handler fires)", isCorrect: false },
+      { id: 'd', text: "'render' logs twice, count increases by 1", isCorrect: false },
+    ],
+    hints: ['Clicking the `<button>` makes the event "bubble" through the DOM, also triggering the parent `<div>`\'s `onClick`, both as part of the SAME native browser event', "React 18's automatic batching groups ALL state updates triggered while processing the same native event, even across multiple handlers reached via bubbling"],
+    explanation: "Clicking the button triggers `handleChildClick` directly, and the event keeps \"bubbling\" through the DOM up to the parent `<div>`, also triggering `handleParentClick` — both are part of the same native click event. React 18's automatic batching groups every state update that occurs while processing that single event, no matter how many different handlers run via bubbling. That's why `render` logs just 1 more time (not 2), and since both handlers use the functional setter form, `count` correctly increases by 2.",
+    tags: ['automatic-batching', 'react-18', 'event-bubbling', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-048',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What gets rendered on screen?
+
+\`\`\`jsx
+function Labels() {
+  return (
+    <div>
+      {false}{null}{undefined}{true}{0}{NaN}{'text'}
+    </div>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Nothing shows up: all of these values are ignored by React', isCorrect: false },
+      { id: 'b', text: '"0NaNtext"', isCorrect: true },
+      { id: 'c', text: '"falsenullundefinedtrue0NaNtext"', isCorrect: false },
+      { id: 'd', text: 'Throws an error: `NaN` cannot be rendered', isCorrect: false },
+    ],
+    hints: ['React has a short, specific list of values it renders as "nothing": `false`, `null`, `undefined`, and `true`', 'Numbers (including `0` and `NaN`) and strings ARE rendered normally, with no special handling'],
+    explanation: 'React silently renders nothing for exactly four values: `false`, `null`, `undefined`, and `true` — a short, specific list, not "any falsy value". Numbers (including `0` and `NaN`, which are also "falsy" in JavaScript) and strings render normally as text. That\'s why the final concatenated result, with no separators, is `"0NaNtext"`.',
+    tags: ['jsx', 'falsy-values', 'conditional-rendering', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-049',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `\`showExtra\` changes from \`true\` to \`false\` between two renders. What happens?
+
+\`\`\`jsx
+function App({ showExtra }) {
+  const [a, setA] = useState('a');
+  if (showExtra) {
+    const [b, setB] = useState('b');
+  }
+  const [c, setC] = useState('c');
+  return null;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'It works fine; React dynamically adjusts the hooks', isCorrect: false },
+      { id: 'b', text: 'React throws an error, something like "Rendered fewer hooks than expected"', isCorrect: true },
+      { id: 'c', text: 'The `c` hook simply receives `undefined` on this render', isCorrect: false },
+      { id: 'd', text: 'No error, but `a` and `c` swap values with each other', isCorrect: false },
+    ],
+    hints: ['React tracks each hook\'s state by the ORDER in which they are called during render, not by the variable name', 'Skipping a hook call between renders shifts the position of EVERY hook declared after it'],
+    explanation: 'React identifies each hook by its POSITION in the sequence of calls during render (like an internal linked list), not by the variable name in the code. When `showExtra` is `true`, the call order is `[a, b, c]`; when it becomes `false`, the `b` hook is skipped and the order becomes `[a, c]` — making the third declared hook (`c`) occupy the POSITION that previously belonged to `b`. React detects this inconsistency between renders and throws a protective error, which is exactly why the Rules of Hooks forbid calling them conditionally.',
+    tags: ['rules-of-hooks', 'useState', 'conditional-hooks', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-050',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the definitive fix for this block's very first bug (stale closure in \`setInterval\`). Does the counter shown on screen correctly increment every second?
+
+\`\`\`jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setCount(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <p>{count}</p>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'No, it stays stuck at 0, like the first version', isCorrect: false },
+      { id: 'b', text: 'Yes, it correctly increments every second', isCorrect: true },
+      { id: 'c', text: "No, since the effect with `[]` only runs once", isCorrect: false },
+      { id: 'd', text: 'Only if `count` is added to the dependencies', isCorrect: false },
+    ],
+    hints: ['Even though the `setInterval` (and its closure) is created only once, the FUNCTIONAL form of the setter always receives the most up-to-date state from React when it actually runs', 'This completely avoids the stale-closure problem, without needing `useRef` or recreating the effect on every `count` change'],
+    explanation: 'This is the most idiomatic fix for the bug seen in this block\'s first question. Even though the `useEffect` only runs once (`[]`) and the `setInterval` function is created a single time, the functional setter form (`prev => prev + 1`) does not rely on the closure capturing the right value — it directly receives, from React itself, the most up-to-date state value at the moment it runs. That\'s why the counter correctly increments every second, with no need for `useRef` or recreating the `setInterval` on every state change.',
+    tags: ['useEffect', 'functional-update', 'setInterval', 'stale-closure-fix', 'output-prediction'],
+  },
 ]
