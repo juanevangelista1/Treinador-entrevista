@@ -1765,4 +1765,251 @@ process("hi");
     explanation: 'Funções de type predicate (`value is string`) ajudam o COMPILADOR a estreitar tipos depois de chamadas a essas funções, mas o resultado de fato retornado em tempo de execução depende inteiramente da lógica real dentro da função — aqui, `typeof value === "string"`. Para `process(42)`, `isString(42)` retorna `false` (42 não é string), então cai no `else`, imprimindo `\'not a string\'`. Para `process("hi")`, `isString("hi")` retorna `true`, e o TypeScript já considera `value` como `string` dentro do `if`, permitindo `.toUpperCase()` sem erro de compilação: imprime `\'HI\'`.',
     tags: ['type-predicate', 'type-guards', 'unknown', 'output-prediction'],
   },
+  {
+    id: 'ts-pred-021',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+function wrap<T>(value: T): T[] {
+  return [value];
+}
+console.log(wrap(5), wrap("hi"));
+\`\`\``,
+    options: [
+      { id: 'a', text: "[5], ['hi']", isCorrect: true },
+      { id: 'b', text: "'T[5]', 'T[hi]'", isCorrect: false },
+      { id: 'c', text: 'Erro de compilação: é preciso especificar `<number>` e `<string>` explicitamente', isCorrect: false },
+      { id: 'd', text: '[5], [5] (o segundo argumento é ignorado)', isCorrect: false },
+    ],
+    hints: ['O parâmetro de tipo genérico `T` é inferido automaticamente a partir do argumento passado, sem precisar ser especificado', 'Em tempo de execução, genéricos são completamente apagados — a função apenas embrulha o valor recebido em um array, seja ele do tipo que for'],
+    explanation: 'TypeScript infere o tipo genérico `T` automaticamente a partir do valor passado como argumento — não é necessário escrever `wrap<number>(5)` explicitamente. Em tempo de execução, toda a informação de tipo genérico é apagada: a função `wrap` simplesmente faz `return [value]`, sem nenhuma lógica condicionada ao tipo. Por isso `wrap(5)` retorna `[5]` e `wrap("hi")` retorna `[\'hi\']`, normalmente.',
+    tags: ['generics', 'type-inference', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-022',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+interface Dictionary {
+  [key: string]: number;
+}
+const scores: Dictionary = { alice: 10, bob: 20 };
+console.log(scores.carol);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Erro de compilação: "carol" não existe em `scores`', isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: 'NaN', isCorrect: false },
+    ],
+    hints: ['Uma "index signature" (`[key: string]: number`) diz ao TypeScript "qualquer chave de string mapeia para um number" — mas isso é uma promessa de tipos, não uma garantia de que a chave realmente existe', 'Em tempo de execução, `scores.carol` é simplesmente uma propriedade que nunca foi definida no objeto'],
+    explanation: 'A index signature informa ao compilador que QUALQUER acesso por chave de string deve ser tratado como `number`, então `scores.carol` compila sem erro algum (o TypeScript "acredita" que será um number). Mas essa é apenas uma promessa de tipos — na realidade, o objeto `scores` nunca teve uma propriedade `carol` definida, então em tempo de execução o acesso retorna genuinamente `undefined`, como em qualquer objeto JavaScript. (Nota: ativar a flag `noUncheckedIndexedAccess` no `tsconfig.json` faria o TypeScript tipar esse acesso como `number | undefined`, forçando você a tratar esse caso explicitamente.)',
+    tags: ['index-signature', 'noUncheckedIndexedAccess', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-023',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+interface Config { nested: { value: number } }
+const config: Readonly<Config> = Object.freeze({ nested: { value: 1 } });
+config.nested.value = 99;
+console.log(config.nested.value);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1 (Readonly protege toda a árvore de propriedades)', isCorrect: false },
+      { id: 'b', text: '99', isCorrect: true },
+      { id: 'c', text: 'Erro de compilação ao tentar atribuir `config.nested.value`', isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução', isCorrect: false },
+    ],
+    hints: ['O tipo utilitário `Readonly<T>` é SUPERFICIAL (shallow): ele só torna as propriedades de PRIMEIRO NÍVEL somente leitura no sistema de tipos', '`Object.freeze()` também é raso em tempo de execução — ambos deixam `nested` (um objeto aninhado) completamente mutável'],
+    explanation: 'Tanto `Readonly<T>` (no nível de tipos) quanto `Object.freeze()` (em tempo de execução) são superficiais: eles protegem apenas as propriedades de PRIMEIRO NÍVEL do objeto. `config.nested` continua sendo uma referência a um objeto comum, totalmente mutável — nem o tipo `Readonly<Config>` nem o `Object.freeze()` aplicado a `config` afetam esse objeto aninhado. Por isso `config.nested.value = 99` funciona sem erro, e o valor final impresso é `99`.',
+    tags: ['Readonly', 'Object.freeze', 'shallow', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-024',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+interface Greeter {
+  greet(): string;
+}
+class Person implements Greeter {
+  greet() { return "hi"; }
+}
+console.log(typeof Greeter);
+\`\`\``,
+    options: [
+      { id: 'a', text: "Compila e imprime 'function'", isCorrect: false },
+      { id: 'b', text: "Erro de compilação: 'Greeter' se refere a um tipo, mas está sendo usado como um valor", isCorrect: true },
+      { id: 'c', text: "Compila e imprime 'object'", isCorrect: false },
+      { id: 'd', text: "Compila e imprime 'undefined'", isCorrect: false },
+    ],
+    hints: ['Assim como `type` aliases, `interface` declara algo que existe SOMENTE no mundo dos tipos — nunca gera nenhum valor ou objeto em JavaScript', 'A classe `Person` que implementa `Greeter` existe normalmente em runtime; a interface `Greeter` em si, não'],
+    explanation: 'Interfaces (assim como `type` aliases) são apagadas completamente durante a compilação — elas nunca geram nenhum código ou objeto em JavaScript. `Person`, sendo uma `class`, EXISTE em tempo de execução (classes geram funções construtoras reais), mas `Greeter` em si nunca existiu como valor. Tentar usá-la dentro de `typeof Greeter` é tentar referenciar um identificador que nunca foi declarado como variável, gerando o erro "\'Greeter\' only refers to a type, but is being used as a value here".',
+    tags: ['interface', 'type-vs-value', 'erro-de-compilacao', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-025',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+abstract class Shape {
+  abstract area(): number;
+}
+const shape = new Shape();
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compila normalmente; o erro só aparece ao chamar `shape.area()`', isCorrect: false },
+      { id: 'b', text: 'Erro de compilação: não é possível criar uma instância de uma classe abstrata', isCorrect: true },
+      { id: 'c', text: 'Compila e `shape` se torna `undefined`', isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução, mas compila sem problemas', isCorrect: false },
+    ],
+    hints: ['Classes `abstract` existem para serem ESTENDIDAS, nunca instanciadas diretamente', 'O método `abstract area()` não tem corpo/implementação — instanciar `Shape` diretamente deixaria esse método "vazio", o que o TypeScript proíbe em tempo de compilação'],
+    explanation: 'Classes declaradas como `abstract` não podem ser instanciadas diretamente com `new` — elas servem como base para subclasses concretas, que devem implementar todos os métodos `abstract`. Como `Shape.area()` é abstrato (sem corpo), o TypeScript bloqueia a tentativa de `new Shape()` em tempo de COMPILAÇÃO, com o erro "Cannot create an instance of an abstract class", antes mesmo de qualquer execução acontecer.',
+    tags: ['abstract-class', 'erro-de-compilacao', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-026',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+interface Options { timeout?: number; }
+const opts: Options = {};
+console.log("timeout" in opts, Object.keys(opts).length);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, 1', isCorrect: false },
+      { id: 'b', text: 'false, 0', isCorrect: true },
+      { id: 'c', text: 'true, 0', isCorrect: false },
+      { id: 'd', text: 'false, 1', isCorrect: false },
+    ],
+    hints: ['Uma propriedade opcional (`?`) significa que ela PODE estar completamente AUSENTE do objeto — não que ela existe com valor `undefined`', 'Como `opts` foi criado como `{}`, a propriedade `timeout` literalmente não existe nesse objeto em tempo de execução'],
+    explanation: 'O `?` em uma propriedade opcional (`timeout?: number`) significa que ela pode estar totalmente AUSENTE do objeto, e não que ela está presente com o valor `undefined`. Como `opts` é literalmente `{}`, a chave `timeout` nunca foi adicionada ao objeto — por isso `"timeout" in opts` retorna `false` (o operador `in` checa a EXISTÊNCIA da chave, não seu valor) e `Object.keys(opts)` retorna um array vazio, com `.length` igual a `0`.',
+    tags: ['optional-property', 'undefined-vs-ausente', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-027',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O \`tsconfig.json\` deste projeto tem \`noImplicitAny: true\`. O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+function add(a, b) {
+  return a + b;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compila normalmente; `a` e `b` recebem o tipo `any` implicitamente', isCorrect: false },
+      { id: 'b', text: "Erro de compilação: o parâmetro 'a' tem implicitamente um tipo 'any'", isCorrect: true },
+      { id: 'c', text: 'Compila, mas com um aviso (warning), não um erro', isCorrect: false },
+      { id: 'd', text: 'Erro de compilação apenas se a função for exportada', isCorrect: false },
+    ],
+    hints: ['Sem anotação de tipo nos parâmetros, e sem conseguir inferir um tipo a partir de um valor padrão ou contexto, TypeScript normalmente trataria isso como `any`', 'Com `noImplicitAny: true`, exatamente essa situação ("any" implícito, não explícito) se torna um erro de compilação, em vez de passar silenciosamente'],
+    explanation: 'Sem anotações de tipo em `a` e `b`, e sem nenhuma forma de inferir o tipo a partir do contexto, o TypeScript normalmente atribuiria o tipo `any` a ambos por padrão. A flag `noImplicitAny: true` (presente no `tsconfig.base.json` real deste projeto) transforma exatamente esse cenário em um erro de compilação — forçando que todo "any" no código seja uma escolha explícita do desenvolvedor (`a: any`), nunca um descuido silencioso.',
+    tags: ['noImplicitAny', 'erro-de-compilacao', 'tsconfig', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-028',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+type Greeting = \`Hello, \${string}!\`;
+const msg: Greeting = \`Hello, \${"world"}!\`;
+console.log(msg.length);
+\`\`\``,
+    options: [
+      { id: 'a', text: '13', isCorrect: true },
+      { id: 'b', text: '21 (contando os caracteres do tipo template literal)', isCorrect: false },
+      { id: 'c', text: 'Erro de compilação: tipos não podem ter `.length`', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`type Greeting = \\`Hello, \\${string}!\\`` é um TIPO de template literal — ele só valida o FORMATO da string em tempo de compilação, sem nenhum efeito em runtime', 'Em tempo de execução, `msg` é simplesmente a string normal "Hello, world!", criada por um template literal comum do JavaScript'],
+    explanation: 'Tipos de template literal (`\\`Hello, \\${string}!\\``) são um recurso puramente de tipos: eles restringem quais strings literais SÃO COMPATÍVEIS com aquele formato durante a compilação, mas não geram nenhum código especial. Em tempo de execução, `msg` é apenas a string normal `"Hello, world!"`, produzida por interpolação de template literal comum do JavaScript — sem nenhuma relação com o sistema de tipos. `"Hello, world!".length` é `13`.',
+    tags: ['template-literal-types', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-029',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    text: `Este código é compilado com TypeScript 5.x. O que acontece ao chamar \`handle({ success: true, data: "ok" })\`?
+
+\`\`\`typescript
+type Result =
+  | { success: true; data: string }
+  | { success: false; error: string };
+
+function handle(result: Result) {
+  const isSuccess = result.success;
+  if (isSuccess) {
+    console.log(result.data);
+  }
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "Erro de compilação: TypeScript não consegue estreitar `result` através da variável `isSuccess`", isCorrect: false },
+      { id: 'b', text: "Compila normalmente e imprime 'ok'", isCorrect: true },
+      { id: 'c', text: "Compila, mas `result.data` é tipado como `string | undefined`", isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução', isCorrect: false },
+    ],
+    hints: ['Desde o TypeScript 4.4, o compilador ganhou "control flow analysis of aliased conditions and discriminants" — ele consegue rastrear condições guardadas em uma variável `const`', 'Como `isSuccess` é um `const` que nunca é reatribuído, TypeScript consegue seguir que `if (isSuccess)` implica `result.success === true`, estreitando `result` corretamente dentro do bloco'],
+    explanation: 'Esse é um caso onde a intuição mais comum ("estreitamento de union discriminada só funciona checando a propriedade diretamente no `if`") está desatualizada. Desde o TypeScript 4.4, o compilador analisa condições "aliased" (guardadas em uma variável `const`) e consegue propagar o estreitamento mesmo assim — contanto que a variável nunca seja reatribuída entre a leitura e o uso. Por isso este código compila perfeitamente, com `result.data` corretamente tipado como `string` dentro do `if`, e a chamada imprime `\'ok\'` normalmente.',
+    tags: ['discriminated-union', 'control-flow-analysis', 'type-narrowing', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-030',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que acontece ao executar este código?
+
+\`\`\`typescript
+interface ApiUser { id: number; name: string; }
+const json = '{"id": 1}'; // sem o campo "name"
+const user = JSON.parse(json) as ApiUser;
+console.log(user.name.toUpperCase());
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Erro de compilação: o JSON literal não satisfaz `ApiUser`', isCorrect: false },
+      { id: 'b', text: "Compila, mas lança um erro em tempo de execução: Cannot read properties of undefined", isCorrect: true },
+      { id: 'c', text: "Imprime 'UNDEFINED'", isCorrect: false },
+      { id: 'd', text: 'Imprime uma string vazia', isCorrect: false },
+    ],
+    hints: ['`JSON.parse` retorna `any`, e `as ApiUser` é apenas uma PROMESSA ao compilador — TypeScript nunca valida de fato a estrutura real do objeto recebido', 'Como o JSON real não tem a propriedade "name", `user.name` é genuinely `undefined`, e chamar `.toUpperCase()` nesse `undefined` falha exatamente como em JavaScript puro'],
+    explanation: 'Esse é o perigo central de usar `as` para "confiar" em dados externos (APIs, JSON, etc.): `JSON.parse` retorna `any`, e `as ApiUser` apenas instrui o compilador a TRATAR o resultado como se fosse daquele tipo, sem nenhuma validação real da estrutura. Como o JSON de entrada não tem a propriedade `name`, o objeto resultante também não tem — `user.name` é `undefined` em tempo de execução, e chamar `.toUpperCase()` nele lança o erro padrão do JavaScript: `TypeError: Cannot read properties of undefined (reading \'toUpperCase\')`. A forma seguro seria validar o formato (com Zod, por exemplo) em vez de apenas usar `as`.',
+    tags: ['type-assertion', 'as', 'JSON.parse', 'erro-de-runtime', 'output-prediction'],
+  },
 ]
