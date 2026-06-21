@@ -4095,4 +4095,257 @@ function Counter() {
     explanation: 'This is the most idiomatic fix for the bug seen in this block\'s first question. Even though the `useEffect` only runs once (`[]`) and the `setInterval` function is created a single time, the functional setter form (`prev => prev + 1`) does not rely on the closure capturing the right value — it directly receives, from React itself, the most up-to-date state value at the moment it runs. That\'s why the counter correctly increments every second, with no need for `useRef` or recreating the `setInterval` on every state change.',
     tags: ['useEffect', 'functional-update', 'setInterval', 'stale-closure-fix', 'output-prediction'],
   },
+  // ─── Output prediction (TypeScript) ────────────────────────────────────────
+  {
+    id: 'en-ts-pred-001',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+enum Color { Red, Green, Blue }
+console.log(Color.Red, Color[0], Color[Color.Red]);
+\`\`\``,
+    options: [
+      { id: 'a', text: "0, 'Red', 'Red'", isCorrect: true },
+      { id: 'b', text: "'Red', 0, 'Red'", isCorrect: false },
+      { id: 'c', text: '0, undefined, 0', isCorrect: false },
+      { id: 'd', text: "undefined, 'Red', undefined", isCorrect: false },
+    ],
+    hints: ['Numeric enums automatically get values `0, 1, 2...`, in declaration order', 'Numeric enums generate a "reverse mapping" at runtime: you can also access the NAME from the number'],
+    explanation: 'Numeric enums automatically assign incrementing values: `Color.Red` is `0`. Unlike string enums, numeric enums generate a JavaScript object with a reverse mapping at runtime — that\'s why `Color[0]` returns the name `\'Red\'`. And `Color[Color.Red]` is just `Color[0]`, so it also returns `\'Red\'`.',
+    tags: ['enum', 'reverse-mapping', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-002',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+enum Status { Active = "ACTIVE", Inactive = "INACTIVE" }
+console.log(Status.Active, Status["ACTIVE"]);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'ACTIVE', 'Active'", isCorrect: false },
+      { id: 'b', text: "'ACTIVE', undefined", isCorrect: true },
+      { id: 'c', text: "'ACTIVE', 'ACTIVE'", isCorrect: false },
+      { id: 'd', text: 'Throws a compile error', isCorrect: false },
+    ],
+    hints: ['Unlike numeric enums, STRING enums do not generate a reverse mapping at runtime', '`Status["ACTIVE"]` is trying to access a property named "ACTIVE", which does not exist on the generated object — only the "Active" property (the member name) exists'],
+    explanation: 'Only NUMERIC enums generate a reverse (value → name) mapping at runtime. String enums lack that structure, since it could collide if a member name happened to match another string value. `Status.Active` correctly returns `\'ACTIVE\'` (accessing by the member NAME), but `Status["ACTIVE"]` tries to access a property literally named `"ACTIVE"`, which simply does not exist on the object — returning `undefined`.',
+    tags: ['enum', 'string-enum', 'reverse-mapping', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-003',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This project's \`tsconfig.json\` has \`isolatedModules: true\`. What happens when you try to compile this code?
+
+\`\`\`typescript
+const enum Direction { Up, Down }
+console.log(Direction.Up);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'It compiles normally and logs 0', isCorrect: false },
+      { id: 'b', text: 'Compile error: const enums are not allowed with isolatedModules', isCorrect: true },
+      { id: 'c', text: 'It compiles but fails at runtime', isCorrect: false },
+      { id: 'd', text: 'It logs "Up" instead of 0', isCorrect: false },
+    ],
+    hints: ['`const enum` is "inlined" by the compiler — every usage is replaced directly with the numeric value, with no runtime object generated at all', '`isolatedModules` requires that each file be compilable on its own, without information from other files — and const enum inlining breaks that guarantee across files'],
+    explanation: '`const enum` is an optimization where the compiler "inlines" usages directly (replacing `Direction.Up` with the literal `0`), without ever generating a real `Direction` object at runtime. That inlining requires the compiler to have complete information about the enum during compilation — incompatible with `isolatedModules: true`, which requires every file to be transpilable on its own (by tools like Babel or esbuild, with no cross-file type checking). That\'s why, since TypeScript 5.0, `const enum` is a compile error when `isolatedModules` is enabled — exactly the setting used in this project.',
+    tags: ['const-enum', 'isolatedModules', 'compile-error', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-004',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+interface Box { width: number; }
+interface Box { height: number; }
+const b: Box = { width: 10, height: 20 };
+console.log(b);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compile error: duplicate identifier "Box"', isCorrect: false },
+      { id: 'b', text: '{ width: 10, height: 20 }', isCorrect: true },
+      { id: 'c', text: '{ height: 20 } (the second declaration overrides the first)', isCorrect: false },
+      { id: 'd', text: '{ width: 10 } (only the first declaration is used)', isCorrect: false },
+    ],
+    hints: ['`interface` supports "declaration merging": multiple declarations with the same name get combined into one', '`type` aliases do NOT support this behavior — declaring one twice would be a duplicate-identifier error'],
+    explanation: 'Interfaces have a feature called "declaration merging": declaring the same interface multiple times makes TypeScript COMBINE all properties into a single definition, instead of erroring. Here, `Box` ends up with both `width` AND `height`. This is an important difference between `interface` and `type`: a type alias (`type Box = {...}`) declared twice would produce a "Duplicate identifier" error.',
+    tags: ['interface', 'declaration-merging', 'type-vs-interface', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-005',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when you try to compile (and then run) this code?
+
+\`\`\`typescript
+interface Point { x: number; y: number; }
+function printPoint(p: Point) {
+  console.log(p.x, p.y);
+}
+const obj = { x: 1, y: 2, z: 3 };
+printPoint(obj);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compile error: excess property "z"', isCorrect: false },
+      { id: 'b', text: 'It compiles normally and logs 1 2', isCorrect: true },
+      { id: 'c', text: 'It compiles, but throws an excess-property error at runtime', isCorrect: false },
+      { id: 'd', text: 'Compile error: missing properties on "Point"', isCorrect: false },
+    ],
+    hints: ["TypeScript's excess property check only applies to OBJECT LITERALS passed DIRECTLY", "Passing a variable that was already assigned beforehand (instead of a literal `{...}` directly in the call) bypasses that check, since structural typing allows \"having more properties than required\""],
+    explanation: 'TypeScript uses structural typing: an object with AT LEAST the required properties is compatible, even with extra ones. The "excess property" check is an additional safeguard, but it only applies when an object literal (`{...}`) is passed DIRECTLY as an argument — passing a variable (`obj`) that was already assigned beforehand bypasses that extra check. If the call were `printPoint({ x: 1, y: 2, z: 3 })` directly, it would be a compile error for the excess property.',
+    tags: ['structural-typing', 'excess-property-check', 'interface', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-006',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+const value = "42" as unknown as number;
+console.log(typeof value);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'number'", isCorrect: false },
+      { id: 'b', text: "'string'", isCorrect: true },
+      { id: 'c', text: "'unknown'", isCorrect: false },
+      { id: 'd', text: 'Throws a runtime conversion error', isCorrect: false },
+    ],
+    hints: ['`as` (type assertion) NEVER converts or transforms the value at runtime — it only changes how TypeScript "sees" the type during compilation', 'At runtime, the value remains exactly the same string `"42"` it always was'],
+    explanation: 'Type assertions (`as`) are purely an instruction to the TypeScript compiler, with zero runtime effect — unlike a real conversion such as `Number("42")`. The `value` variable remains, at runtime, the original string `"42"`. `typeof value` reflects the actual JavaScript reality, not what TypeScript "believes" the type to be — so it returns `\'string\'`, even though the code "convinced" the compiler that `value` is a `number`.',
+    tags: ['type-assertion', 'as', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-007',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+const config = { mode: "dark" } satisfies { mode: string };
+console.log(config.mode);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'dark'", isCorrect: true },
+      { id: 'b', text: 'Throws an error: "dark" does not satisfy the generic string type', isCorrect: false },
+      { id: 'c', text: "'string' (satisfies converts the value to the type's name)", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`satisfies` has ZERO runtime effect — it\'s a purely compile-time check, generating no extra code', 'Unlike a `: Type` annotation, `satisfies` validates compatibility WITHOUT widening the literal\'s inferred type'],
+    explanation: '`satisfies` is a purely compile-time operator: it checks whether the value is compatible with the indicated type, without changing absolutely anything at runtime and without "widening" the inferred type (unlike a `: { mode: string }` annotation, which would make TypeScript forget that `mode` is literally `"dark"`). The generated JavaScript is identical to what it would be if `satisfies` did not exist — so the code simply logs `\'dark\'`, as normal.',
+    tags: ['satisfies', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-008',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when this code runs?
+
+\`\`\`typescript
+function getLength(s?: string) {
+  return s!.length;
+}
+console.log(getLength(undefined));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Logs 0, since `!` converts undefined into an empty string', isCorrect: false },
+      { id: 'b', text: 'Throws a runtime error: Cannot read properties of undefined', isCorrect: true },
+      { id: 'c', text: 'Compile error: `!` cannot be used on optional parameters', isCorrect: false },
+      { id: 'd', text: 'Logs undefined, with no error thrown', isCorrect: false },
+    ],
+    hints: ['The non-null assertion operator (`!`) is only an instruction to the COMPILER to ignore the possibility of `null`/`undefined` — it inserts NO real check at runtime', 'Since `s` is genuinely `undefined` here, accessing `.length` on it fails exactly as it would in plain JavaScript'],
+    explanation: 'The `!` operator (non-null assertion) is a promise made TO THE COMPILER, saying "trust me, this will never be null/undefined here" — but that promise generates no actual checking code. If the promise turns out false (as here, where `s` is genuinely `undefined`), the plain JavaScript runtime error happens normally: trying to read `.length` off `undefined` throws `TypeError: Cannot read properties of undefined (reading \'length\')`. `!` offers ZERO runtime safety — it\'s purely a compiler suppression.',
+    tags: ['non-null-assertion', 'runtime-vs-compile-time', 'runtime-error', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-009',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+function process(value: string | number) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
+process(42);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'42.00'", isCorrect: true },
+      { id: 'b', text: "'42'", isCorrect: false },
+      { id: 'c', text: "Compile error: `toFixed` doesn't exist on `string | number`", isCorrect: false },
+      { id: 'd', text: 'Throws a runtime error', isCorrect: false },
+    ],
+    hints: ['`typeof value === "string"` is a type check that ALSO RUNS at runtime — it\'s not just a hint for the compiler', 'Inside the `else`, both TypeScript and the runtime know `value` can only be `number`'],
+    explanation: 'The check `typeof value === "string"` does double duty: at runtime, it genuinely checks the value\'s type; and the TypeScript compiler uses that same check to "narrow" the type inside each branch of the `if`/`else`. Since `42` is a `number`, the condition is `false`, running the `else` branch, where TypeScript already (correctly) knows `value` is `number`, allowing `.toFixed(2)` with no compile error. `(42).toFixed(2)` returns the string `\'42.00\'`.',
+    tags: ['type-narrowing', 'typeof', 'union-types', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-010',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when you try to compile this code?
+
+\`\`\`typescript
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+  }
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'It compiles normally; the "square" case simply returns undefined at runtime', isCorrect: false },
+      { id: 'b', text: 'Compile error: not all code paths return a value', isCorrect: true },
+      { id: 'c', text: 'It compiles, but throws a runtime error when receiving a "square"', isCorrect: false },
+      { id: 'd', text: 'Compile error: switch must always have a "default" case', isCorrect: false },
+    ],
+    hints: ['The function explicitly declares it returns `number` (`: number`)', 'The "square" case has no `return` at all — that code path would "fall through" out of the function without returning anything, conflicting with the declared return type'],
+    explanation: 'Since the function has an explicit return annotation (`: number`), TypeScript checks whether EVERY possible execution path actually returns a `number`. The `switch` only handles the `"circle"` case — if `shape.kind` is `"square"`, execution simply "falls through" out of the switch with no `return`, implicitly returning `undefined`. That conflicts with the declared return type, producing the error "Function lacks ending return statement and return type does not include \'undefined\'."',
+    tags: ['discriminated-union', 'switch', 'return-type', 'compile-error', 'output-prediction'],
+  },
 ]
