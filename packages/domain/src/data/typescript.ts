@@ -1499,4 +1499,270 @@ function area(shape: Shape): number {
     explanation: 'Como a função tem uma anotação de retorno explícita (`: number`), o TypeScript verifica se TODOS os caminhos possíveis de execução realmente retornam um `number`. O `switch` só trata o caso `"circle"` — se `shape.kind` for `"square"`, a execução simplesmente "cai" para fora do switch sem nenhum `return`, retornando implicitamente `undefined`. Isso conflita com o tipo de retorno declarado, gerando o erro "Function lacks ending return statement and return type does not include \'undefined\'."',
     tags: ['discriminated-union', 'switch', 'tipo-de-retorno', 'erro-de-compilacao', 'output-prediction'],
   },
+  {
+    id: 'ts-pred-011',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+interface User { id: number; name: string; }
+type UserKey = keyof User;
+
+function logType() {
+  console.log(UserKey);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compila e imprime "id" | "name"', isCorrect: false },
+      { id: 'b', text: "Erro de compilação: 'UserKey' se refere a um tipo, mas está sendo usado como um valor", isCorrect: true },
+      { id: 'c', text: 'Compila e imprime undefined', isCorrect: false },
+      { id: 'd', text: 'Compila e imprime um array `["id", "name"]`', isCorrect: false },
+    ],
+    hints: ['`keyof User` é um TIPO (uma união de literais de string), não um array ou objeto que existe em tempo de execução', 'Tipos e valores vivem em "namespaces" separados no TypeScript — `UserKey` só existe no mundo dos tipos, nunca foi declarado como uma variável'],
+    explanation: '`type UserKey = keyof User` declara um TIPO (no caso, a união `"id" | "name"`), que existe apenas durante a compilação e é completamente apagado do JavaScript gerado. Tentar usar `UserKey` dentro de `console.log(...)` é tentar usá-lo como um VALOR em tempo de execução — mas ele nunca foi declarado como uma variável, então o compilador rejeita com o erro "\'UserKey\' only refers to a type, but is being used as a value here".',
+    tags: ['keyof', 'type-vs-value', 'erro-de-compilacao', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-012',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+type ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;
+
+function greet() { return "hi"; }
+type GreetReturn = ReturnOf<typeof greet>; // tipo: string
+
+const result: GreetReturn = greet();
+console.log(result);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'hi'", isCorrect: true },
+      { id: 'b', text: "'string'", isCorrect: false },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Lança um erro: tipos condicionais não podem ser usados em tempo de execução', isCorrect: false },
+    ],
+    hints: ['Tipos condicionais com `infer` são resolvidos inteiramente durante a compilação, sem gerar NENHUM código JavaScript adicional', 'Depois de remover todas as anotações de tipo, o que resta é simplesmente `function greet() { return "hi"; } console.log(greet());`'],
+    explanation: 'Toda a "mágica" de tipos condicionais e `infer` acontece exclusivamente durante a verificação de tipos, sem deixar nenhum rastro no JavaScript final — toda anotação de tipo é apagada na compilação. O código gerado é, essencialmente, apenas `function greet() { return "hi"; }` seguido de `console.log(greet())`. Por isso o resultado é simplesmente a string `\'hi\'`, exatamente o que a função sempre retornou, independente de toda a engenharia de tipos em volta.',
+    tags: ['conditional-types', 'infer', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-013',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+function double(nums: readonly number[]) {
+  return nums.map(n => n * 2);
+}
+const arr = [1, 2, 3];
+console.log(double(arr));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Erro de compilação: `.map` não está disponível em arrays `readonly`', isCorrect: false },
+      { id: 'b', text: '[2, 4, 6]', isCorrect: true },
+      { id: 'c', text: '[1, 2, 3] (readonly impede qualquer transformação)', isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução', isCorrect: false },
+    ],
+    hints: ['`readonly number[]` só bloqueia métodos que MUTAM o array original (como `.push`, `.sort`, `.splice`)', 'Métodos que retornam um NOVO array sem alterar o original (como `.map`, `.filter`, `.slice`) continuam disponíveis normalmente'],
+    explanation: '`readonly number[]` restringe, em tempo de compilação, apenas os métodos que mutam o array original (`.push`, `.pop`, `.sort`, `.splice` etc. não estariam disponíveis nesse tipo). Métodos como `.map()`, que sempre retornam um array NOVO sem alterar o original, continuam totalmente permitidos. Por isso `double(arr)` funciona normalmente, retornando `[2, 4, 6]`.',
+    tags: ['readonly', 'array', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-014',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+function combine(a: string, b: string): string;
+function combine(a: number, b: number): number;
+function combine(a: any, b: any): any {
+  return a + b;
+}
+console.log(combine(1, 2), combine("a", "b"));
+\`\`\``,
+    options: [
+      { id: 'a', text: "3, 'ab'", isCorrect: true },
+      { id: 'b', text: "'3', 'ab'", isCorrect: false },
+      { id: 'c', text: 'Erro de compilação: sobrecargas de função não podem compartilhar implementação', isCorrect: false },
+      { id: 'd', text: "NaN, 'ab'", isCorrect: false },
+    ],
+    hints: ['Sobrecargas (overloads) só existem para o COMPILADOR checar como a função pode ser chamada — existe apenas UMA implementação real, em tempo de execução', 'A implementação real (`function combine(a: any, b: any): any {...}`) é a única que de fato roda, para QUALQUER chamada válida'],
+    explanation: 'As assinaturas de sobrecarga (as duas primeiras declarações de `combine`) existem apenas para o TypeScript checar, em tempo de compilação, quais combinações de tipos de argumento são válidas — elas nunca geram código JavaScript próprio. Em tempo de execução, existe apenas UMA função real (a última declaração, com a implementação), que processa todas as chamadas igualmente. `combine(1, 2)` executa `1 + 2 = 3`; `combine("a", "b")` executa `"a" + "b" = "ab"` — o mesmo operador `+` se comportando de forma diferente conforme os tipos reais em tempo de execução.',
+    tags: ['function-overloads', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-015',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+class Box {
+  value = this.getDefault();
+  getDefault() { return 10; }
+  constructor() {
+    console.log(this.value);
+  }
+}
+new Box();
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Lança um erro: `getDefault` ainda não existe quando `value` é inicializado', isCorrect: false },
+      { id: 'b', text: '10', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'NaN', isCorrect: false },
+    ],
+    hints: ['Inicializadores de campos de classe rodam ANTES do corpo do construtor, mas DEPOIS que os métodos já estão disponíveis no prototype', 'Métodos de classe são adicionados ao `prototype` na definição da classe, não "durante" a construção da instância — por isso já estão disponíveis quando os campos são inicializados'],
+    explanation: 'A ordem de inicialização em uma classe é: primeiro os inicializadores de campos (na ordem em que são declarados), e só depois o corpo do construtor explícito executa. Métodos de instância, como `getDefault`, já estão disponíveis no `prototype` da classe desde sua definição — eles não dependem de nenhuma etapa de inicialização da instância. Por isso, quando `value = this.getDefault()` executa, `getDefault` já está pronto para ser chamado, retornando `10`. O construtor então imprime esse valor já inicializado.',
+    tags: ['class-fields', 'ordem-de-inicializacao', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-016',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+class Account {
+  private balance = 100;
+  #secret = "hidden";
+}
+const acc = new Account();
+console.log((acc as any).balance);
+console.log((acc as any).secret);
+\`\`\``,
+    options: [
+      { id: 'a', text: "100, 'hidden'", isCorrect: false },
+      { id: 'b', text: '100, undefined', isCorrect: true },
+      { id: 'c', text: 'undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Lança um erro de acesso privado em ambos', isCorrect: false },
+    ],
+    hints: ['`private` é uma restrição puramente do COMPILADOR TypeScript — a propriedade existe normalmente como uma propriedade pública no objeto JavaScript real, acessível via `as any`', '`#secret` é privacidade REAL do JavaScript (ES2022 private fields) — o nome do campo nem é "secret", é literalmente `#secret`, então `acc.secret` não corresponde a nada'],
+    explanation: '`private balance` é uma restrição que existe SOMENTE durante a compilação — em tempo de execução, `balance` é uma propriedade pública comum no objeto, então usar `as any` para contornar a checagem de tipos permite acessá-la normalmente, retornando `100`. Já `#secret` usa a sintaxe de campos privados nativos do JavaScript (não é uma feature do TypeScript): o `#` faz parte do próprio nome do campo, então não existe NENHUMA propriedade chamada `secret` (sem `#`) no objeto — `acc.secret` simplesmente acessa uma propriedade inexistente, retornando `undefined`, mesmo com o cast `as any` (que só afeta a checagem de tipos, não cria a propriedade).',
+    tags: ['private', 'private-fields', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-017',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+class Service {
+  name!: string;
+  constructor() {
+    console.log(this.name);
+  }
+}
+new Service();
+\`\`\``,
+    options: [
+      { id: 'a', text: "'' (string vazia)", isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: 'Erro de compilação: `name` precisa ser inicializado no construtor', isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução', isCorrect: false },
+    ],
+    hints: ['O `!` em `name!: string` é o "definite assignment assertion" — ele só diz ao compilador "confie em mim, isso será atribuído antes de ser usado", sem inicializar NADA de fato', 'Como nenhum valor é realmente atribuído a `name` antes do `console.log`, a propriedade simplesmente não existe ainda, e seu valor é `undefined`'],
+    explanation: 'A asserção de atribuição definitiva (`!` depois do nome do campo) é puramente uma instrução para o compilador parar de reclamar sobre a propriedade não ser inicializada — ela NÃO gera nenhum código que efetivamente atribua um valor. Como o construtor nunca atribui nada a `this.name` antes de logá-lo, a propriedade continua sem valor (`undefined`) nesse ponto, mesmo que o TypeScript "acredite" (incorretamente, devido ao `!`) que ela sempre será uma `string`.',
+    tags: ['definite-assignment-assertion', 'class-fields', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-018',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+enum StatusCode {
+  OK = 200,
+  Created,
+  Accepted,
+}
+console.log(StatusCode.Created, StatusCode.Accepted);
+\`\`\``,
+    options: [
+      { id: 'a', text: '201, 202', isCorrect: true },
+      { id: 'b', text: '1, 2', isCorrect: false },
+      { id: 'c', text: '200, 200', isCorrect: false },
+      { id: 'd', text: 'Erro de compilação: todos os membros precisam de valor explícito após o primeiro', isCorrect: false },
+    ],
+    hints: ['Quando um membro de enum numérico não tem valor explícito, ele recebe o valor do membro anterior + 1', '`OK = 200` define o ponto de partida; os membros seguintes continuam a contagem a partir dali'],
+    explanation: 'Em um enum numérico, membros sem valor explícito automaticamente recebem o valor do membro ANTERIOR mais `1` — não necessariamente começando do zero. Como `OK` foi explicitamente definido como `200`, os membros seguintes continuam a sequência a partir dali: `Created` é `201`, e `Accepted` é `202`.',
+    tags: ['enum', 'auto-incremento', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-019',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+const colors = ["red", "green", "blue"] as const;
+console.log(Object.isFrozen(colors));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'Erro de compilação: `as const` exige que o array já esteja congelado', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`as const` é uma instrução puramente de tipos — ela NÃO chama `Object.freeze()` nem nenhuma outra função em tempo de execução', 'Em tempo de execução, `colors` é um array JavaScript completamente normal e mutável, idêntico ao que seria sem o `as const`'],
+    explanation: '`as const` instrui o TypeScript a inferir o tipo mais específico possível (uma tupla `readonly ["red", "green", "blue"]`, em vez do tipo mais genérico `string[]`) — mas isso é PURAMENTE uma instrução de tipos, sem nenhum efeito em tempo de execução. O array gerado em JavaScript é um array comum e totalmente mutável, exatamente como seria sem `as const`. Para realmente impedir mutações em runtime, seria necessário chamar `Object.freeze(colors)` explicitamente — algo que `as const` nunca faz.',
+    tags: ['as-const', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-020',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+function process(value: unknown) {
+  if (isString(value)) {
+    console.log(value.toUpperCase());
+  } else {
+    console.log("not a string");
+  }
+}
+process(42);
+process("hi");
+\`\`\``,
+    options: [
+      { id: 'a', text: "'not a string', 'HI'", isCorrect: true },
+      { id: 'b', text: "'42', 'hi'", isCorrect: false },
+      { id: 'c', text: "'HI', 'not a string'", isCorrect: false },
+      { id: 'd', text: 'Erro de compilação: type predicates não podem ser usados com `unknown`', isCorrect: false },
+    ],
+    hints: ['A sintaxe `value is string` (type predicate) só "estreita" o tipo para o COMPILADOR — quem realmente decide o resultado é a checagem `typeof value === "string"` DENTRO da função, em tempo de execução', 'O comportamento real da função depende inteiramente do código JavaScript de verificação, não de "magia" do sistema de tipos'],
+    explanation: 'Funções de type predicate (`value is string`) ajudam o COMPILADOR a estreitar tipos depois de chamadas a essas funções, mas o resultado de fato retornado em tempo de execução depende inteiramente da lógica real dentro da função — aqui, `typeof value === "string"`. Para `process(42)`, `isString(42)` retorna `false` (42 não é string), então cai no `else`, imprimindo `\'not a string\'`. Para `process("hi")`, `isString("hi")` retorna `true`, e o TypeScript já considera `value` como `string` dentro do `if`, permitindo `.toUpperCase()` sem erro de compilação: imprime `\'HI\'`.',
+    tags: ['type-predicate', 'type-guards', 'unknown', 'output-prediction'],
+  },
 ]
