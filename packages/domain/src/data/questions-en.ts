@@ -4624,4 +4624,261 @@ process("hi");
     explanation: 'Type predicate functions (`value is string`) help the COMPILER narrow types after calls to them, but the actual result returned at runtime depends entirely on the real logic inside the function — here, `typeof value === "string"`. For `process(42)`, `isString(42)` returns `false` (42 isn\'t a string), falling into the `else`, logging `\'not a string\'`. For `process("hi")`, `isString("hi")` returns `true`, and TypeScript already treats `value` as `string` inside the `if`, allowing `.toUpperCase()` with no compile error: it logs `\'HI\'`.',
     tags: ['type-predicate', 'type-guards', 'unknown', 'output-prediction'],
   },
+  {
+    id: 'en-ts-pred-021',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+function wrap<T>(value: T): T[] {
+  return [value];
+}
+console.log(wrap(5), wrap("hi"));
+\`\`\``,
+    options: [
+      { id: 'a', text: "[5], ['hi']", isCorrect: true },
+      { id: 'b', text: "'T[5]', 'T[hi]'", isCorrect: false },
+      { id: 'c', text: 'Compile error: you must explicitly specify `<number>` and `<string>`', isCorrect: false },
+      { id: 'd', text: '[5], [5] (the second argument is ignored)', isCorrect: false },
+    ],
+    hints: ['The generic type parameter `T` is automatically inferred from the passed argument, with no need to specify it', 'At runtime, generics are completely erased — the function just wraps the received value in an array, whatever its type'],
+    explanation: 'TypeScript automatically infers the generic type `T` from the value passed as an argument — there is no need to write `wrap<number>(5)` explicitly. At runtime, all generic type information is erased: the `wrap` function simply does `return [value]`, with no logic conditioned on the type. So `wrap(5)` returns `[5]` and `wrap("hi")` returns `[\'hi\']`, as expected.',
+    tags: ['generics', 'type-inference', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-022',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+interface Dictionary {
+  [key: string]: number;
+}
+const scores: Dictionary = { alice: 10, bob: 20 };
+console.log(scores.carol);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compile error: "carol" does not exist on `scores`', isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: 'NaN', isCorrect: false },
+    ],
+    hints: ['An "index signature" (`[key: string]: number`) tells TypeScript "any string key maps to a number" — but that\'s a type-level promise, not a guarantee that the key actually exists', 'At runtime, `scores.carol` is simply a property that was never defined on the object'],
+    explanation: 'The index signature tells the compiler that ANY string-key access should be treated as `number`, so `scores.carol` compiles with no error at all (TypeScript "believes" it will be a number). But that is only a type-level promise — in reality, the `scores` object never had a `carol` property defined, so at runtime the access genuinely returns `undefined`, like in any JavaScript object. (Note: enabling the `noUncheckedIndexedAccess` flag in `tsconfig.json` would make TypeScript type this access as `number | undefined`, forcing you to handle that case explicitly.)',
+    tags: ['index-signature', 'noUncheckedIndexedAccess', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-023',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+interface Config { nested: { value: number } }
+const config: Readonly<Config> = Object.freeze({ nested: { value: 1 } });
+config.nested.value = 99;
+console.log(config.nested.value);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1 (Readonly protects the whole property tree)', isCorrect: false },
+      { id: 'b', text: '99', isCorrect: true },
+      { id: 'c', text: 'Compile error when trying to assign `config.nested.value`', isCorrect: false },
+      { id: 'd', text: 'Throws a runtime error', isCorrect: false },
+    ],
+    hints: ['The `Readonly<T>` utility type is SHALLOW: it only makes the FIRST-LEVEL properties read-only in the type system', '`Object.freeze()` is also shallow at runtime — both leave `nested` (a nested object) fully mutable'],
+    explanation: 'Both `Readonly<T>` (at the type level) and `Object.freeze()` (at runtime) are shallow: they only protect the object\'s FIRST-LEVEL properties. `config.nested` remains a reference to a regular, fully mutable object — neither the `Readonly<Config>` type nor the `Object.freeze()` applied to `config` affects that nested object. That\'s why `config.nested.value = 99` works with no error, and the final logged value is `99`.',
+    tags: ['Readonly', 'Object.freeze', 'shallow', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-024',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What happens when you try to compile this code?
+
+\`\`\`typescript
+interface Greeter {
+  greet(): string;
+}
+class Person implements Greeter {
+  greet() { return "hi"; }
+}
+console.log(typeof Greeter);
+\`\`\``,
+    options: [
+      { id: 'a', text: "It compiles and logs 'function'", isCorrect: false },
+      { id: 'b', text: "Compile error: 'Greeter' refers to a type, but is being used as a value here", isCorrect: true },
+      { id: 'c', text: "It compiles and logs 'object'", isCorrect: false },
+      { id: 'd', text: "It compiles and logs 'undefined'", isCorrect: false },
+    ],
+    hints: ['Just like `type` aliases, `interface` declares something that exists ONLY in the type world — it never generates any value or object in JavaScript', '`Person`, the class implementing `Greeter`, exists normally at runtime; the `Greeter` interface itself does not'],
+    explanation: 'Interfaces (just like `type` aliases) are completely erased during compilation — they never generate any code or object in JavaScript. `Person`, being a `class`, DOES exist at runtime (classes generate real constructor functions), but `Greeter` itself never existed as a value. Trying to use it inside `typeof Greeter` is trying to reference an identifier that was never declared as a variable, producing the error "\'Greeter\' only refers to a type, but is being used as a value here".',
+    tags: ['interface', 'type-vs-value', 'compile-error', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-025',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What happens when you try to compile this code?
+
+\`\`\`typescript
+abstract class Shape {
+  abstract area(): number;
+}
+const shape = new Shape();
+\`\`\``,
+    options: [
+      { id: 'a', text: "It compiles normally; the error only shows up when calling `shape.area()`", isCorrect: false },
+      { id: 'b', text: 'Compile error: cannot create an instance of an abstract class', isCorrect: true },
+      { id: 'c', text: 'It compiles and `shape` becomes `undefined`', isCorrect: false },
+      { id: 'd', text: 'Throws a runtime error, but compiles fine', isCorrect: false },
+    ],
+    hints: ['`abstract` classes exist to be EXTENDED, never instantiated directly', "The `abstract area()` method has no body/implementation — instantiating `Shape` directly would leave that method \"empty\", which TypeScript forbids at compile time"],
+    explanation: 'Classes declared as `abstract` cannot be instantiated directly with `new` — they serve as a base for concrete subclasses, which must implement every `abstract` method. Since `Shape.area()` is abstract (no body), TypeScript blocks the `new Shape()` attempt at COMPILE time, with the error "Cannot create an instance of an abstract class", before any execution even happens.',
+    tags: ['abstract-class', 'compile-error', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-026',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+interface Options { timeout?: number; }
+const opts: Options = {};
+console.log("timeout" in opts, Object.keys(opts).length);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, 1', isCorrect: false },
+      { id: 'b', text: 'false, 0', isCorrect: true },
+      { id: 'c', text: 'true, 0', isCorrect: false },
+      { id: 'd', text: 'false, 1', isCorrect: false },
+    ],
+    hints: ['An optional property (`?`) means it MAY be completely ABSENT from the object — not that it exists with the value `undefined`', 'Since `opts` was created as `{}`, the `timeout` property literally does not exist on this object at runtime'],
+    explanation: 'The `?` on an optional property (`timeout?: number`) means it may be entirely ABSENT from the object, not that it is present with the value `undefined`. Since `opts` is literally `{}`, the `timeout` key was never added to the object — that\'s why `"timeout" in opts` returns `false` (the `in` operator checks key EXISTENCE, not its value) and `Object.keys(opts)` returns an empty array, with `.length` equal to `0`.',
+    tags: ['optional-property', 'undefined-vs-absent', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-027',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `This project's \`tsconfig.json\` has \`noImplicitAny: true\`. What happens when you try to compile this code?
+
+\`\`\`typescript
+function add(a, b) {
+  return a + b;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'It compiles normally; `a` and `b` implicitly get type `any`', isCorrect: false },
+      { id: 'b', text: "Compile error: parameter 'a' implicitly has an 'any' type", isCorrect: true },
+      { id: 'c', text: 'It compiles, but with a warning, not an error', isCorrect: false },
+      { id: 'd', text: 'Compile error only if the function is exported', isCorrect: false },
+    ],
+    hints: ['With no type annotation on the parameters, and no way to infer a type from a default value or context, TypeScript would normally treat them as `any`', 'With `noImplicitAny: true`, exactly this situation (an implicit, not explicit, "any") becomes a compile error instead of silently passing'],
+    explanation: 'With no type annotations on `a` and `b`, and no way to infer the type from context, TypeScript would normally default both to type `any`. The `noImplicitAny: true` flag (present in this project\'s actual `tsconfig.base.json`) turns exactly that scenario into a compile error — forcing every "any" in the code to be an explicit choice by the developer (`a: any`), never a silent oversight.',
+    tags: ['noImplicitAny', 'compile-error', 'tsconfig', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-028',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+type Greeting = \`Hello, \${string}!\`;
+const msg: Greeting = \`Hello, \${"world"}!\`;
+console.log(msg.length);
+\`\`\``,
+    options: [
+      { id: 'a', text: '13', isCorrect: true },
+      { id: 'b', text: '21 (counting the template literal type\'s characters)', isCorrect: false },
+      { id: 'c', text: "Compile error: types can't have `.length`", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`type Greeting = \\`Hello, \\${string}!\\`` is a template literal TYPE — it only validates the string\'s FORMAT at compile time, with zero runtime effect', 'At runtime, `msg` is simply the normal string "Hello, world!", created by a regular JavaScript template literal'],
+    explanation: 'Template literal types (`\\`Hello, \\${string}!\\``) are a purely type-level feature: they restrict which string literals ARE COMPATIBLE with that format during compilation, but generate no special code. At runtime, `msg` is just the regular string `"Hello, world!"`, produced by normal JavaScript template literal interpolation — with no relation to the type system. `"Hello, world!".length` is `13`.',
+    tags: ['template-literal-types', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-029',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `This code is compiled with TypeScript 5.x. What happens when calling \`handle({ success: true, data: "ok" })\`?
+
+\`\`\`typescript
+type Result =
+  | { success: true; data: string }
+  | { success: false; error: string };
+
+function handle(result: Result) {
+  const isSuccess = result.success;
+  if (isSuccess) {
+    console.log(result.data);
+  }
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "Compile error: TypeScript can't narrow `result` through the `isSuccess` variable", isCorrect: false },
+      { id: 'b', text: "It compiles normally and logs 'ok'", isCorrect: true },
+      { id: 'c', text: "It compiles, but `result.data` is typed as `string | undefined`", isCorrect: false },
+      { id: 'd', text: 'It throws a runtime error', isCorrect: false },
+    ],
+    hints: ['Since TypeScript 4.4, the compiler gained "control flow analysis of aliased conditions and discriminants" — it can track conditions stored in a `const` variable', 'Since `isSuccess` is a `const` that is never reassigned, TypeScript can follow that `if (isSuccess)` implies `result.success === true`, correctly narrowing `result` inside the block'],
+    explanation: 'This is a case where the most common intuition ("discriminated union narrowing only works by checking the property directly in the `if`") is outdated. Since TypeScript 4.4, the compiler analyzes "aliased" conditions (stored in a `const` variable) and can propagate the narrowing anyway — as long as the variable is never reassigned between the read and its use. So this code compiles perfectly, with `result.data` correctly typed as `string` inside the `if`, and the call logs `\'ok\'` normally.',
+    tags: ['discriminated-union', 'control-flow-analysis', 'type-narrowing', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-030',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when this code runs?
+
+\`\`\`typescript
+interface ApiUser { id: number; name: string; }
+const json = '{"id": 1}'; // missing the "name" field
+const user = JSON.parse(json) as ApiUser;
+console.log(user.name.toUpperCase());
+\`\`\``,
+    options: [
+      { id: 'a', text: "Compile error: the literal JSON doesn't satisfy `ApiUser`", isCorrect: false },
+      { id: 'b', text: 'It compiles, but throws a runtime error: Cannot read properties of undefined', isCorrect: true },
+      { id: 'c', text: "Logs 'UNDEFINED'", isCorrect: false },
+      { id: 'd', text: 'Logs an empty string', isCorrect: false },
+    ],
+    hints: ['`JSON.parse` returns `any`, and `as ApiUser` is just a PROMISE to the compiler — TypeScript never actually validates the real structure of the received object', 'Since the real JSON has no "name" property, `user.name` is genuinely `undefined`, and calling `.toUpperCase()` on that `undefined` fails exactly like it would in plain JavaScript'],
+    explanation: "This is the central danger of using `as` to \"trust\" external data (APIs, JSON, etc.): `JSON.parse` returns `any`, and `as ApiUser` only instructs the compiler to TREAT the result as if it were that type, with no real validation of its structure. Since the input JSON has no `name` property, the resulting object doesn't either — `user.name` is `undefined` at runtime, and calling `.toUpperCase()` on it throws the standard JavaScript error: `TypeError: Cannot read properties of undefined (reading 'toUpperCase')`. The safe approach is to validate the shape (e.g., with Zod) instead of just using `as`.",
+    tags: ['type-assertion', 'as', 'JSON.parse', 'runtime-error', 'output-prediction'],
+  },
 ]
