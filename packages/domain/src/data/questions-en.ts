@@ -3164,4 +3164,304 @@ function App() {
     explanation: 'Every call to `setCount(0)` is trying to set the state to the SAME value it already has (`0`). React detects this equality using `Object.is` and decides to skip the re-render entirely — not even the `App` function body (and therefore `console.log(\'render\')`) runs again. This "bail out" behavior is an internal React optimization, regardless of how many times the click happens.',
     tags: ['useState', 'bail-out', 'Object.is', 'output-prediction'],
   },
+  {
+    id: 'en-react-pred-021',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `With \`count\` starting at 0, the user clicks ONCE. After 1 second, what is logged?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    setCount(count + 1);
+    setTimeout(() => {
+      console.log('count is', count);
+    }, 1000);
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'count is 1'", isCorrect: false },
+      { id: 'b', text: "'count is 0'", isCorrect: true },
+      { id: 'c', text: 'Throws an invalid-closure error', isCorrect: false },
+      { id: 'd', text: "'count is undefined'", isCorrect: false },
+    ],
+    hints: ['The `setTimeout` callback is a closure that captures `count` from the MOMENT `handleClick` was called', 'The re-render triggered by `setCount` creates a NEW instance of `handleClick` with the updated `count` — but the already-scheduled `setTimeout` still uses the old closure'],
+    explanation: 'The callback passed to `setTimeout` is created inside `handleClick`, closing over the `count` that existed at THAT specific click (`0`). Even though `setCount(count + 1)` triggers a re-render (and the UI starts showing `1`), the already-scheduled `setTimeout` callback is unaffected by that re-render — it remains the same function, forever stuck on the `count = 0` from its original closure. So after 1 second, `count is 0` is still what gets logged.',
+    tags: ['stale-closure', 'setTimeout', 'event-handler', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-022',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `On mount, in what order do these three logs appear?
+
+\`\`\`jsx
+function App() {
+  useEffect(() => console.log('useEffect'));
+  useLayoutEffect(() => console.log('useLayoutEffect'));
+  console.log('render');
+  return null;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'render', 'useEffect', 'useLayoutEffect'", isCorrect: false },
+      { id: 'b', text: "'render', 'useLayoutEffect', 'useEffect'", isCorrect: true },
+      { id: 'c', text: "'useLayoutEffect', 'render', 'useEffect'", isCorrect: false },
+      { id: 'd', text: 'The order between the two hooks is undefined', isCorrect: false },
+    ],
+    hints: ['The component body (including `console.log(\'render\')`) always runs first, during rendering', '`useLayoutEffect` is ALWAYS run synchronously before the browser paints; `useEffect` runs asynchronously, after the paint'],
+    explanation: '`render` always happens first, since it\'s the function body running during rendering. Between the two effect hooks, `useLayoutEffect` is guaranteed to run synchronously, IMMEDIATELY after the DOM is updated but BEFORE the browser paints the screen — so it always fires before `useEffect`, which is deferred (as a "passive" effect) until after the paint.',
+    tags: ['useEffect', 'useLayoutEffect', 'execution-order', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-023',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `On mount, in what order do these logs appear?
+
+\`\`\`jsx
+function Child() {
+  useEffect(() => console.log('child effect'));
+  return null;
+}
+function Parent() {
+  useEffect(() => console.log('parent effect'));
+  return <Child />;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'parent effect', 'child effect'", isCorrect: false },
+      { id: 'b', text: "'child effect', 'parent effect'", isCorrect: true },
+      { id: 'c', text: 'The order is random between runs', isCorrect: false },
+      { id: 'd', text: 'Only the outermost component\'s effect runs', isCorrect: false },
+    ],
+    hints: ['React mounts a child component and runs ALL of its own effects completely before running the parent\'s effect'],
+    explanation: 'React mounts the component tree "bottom-up" with respect to effects: a child component fully finishes mounting and running ALL of its own effects first, and only after that does the parent run its own. This guarantees that, by the time the parent\'s effect runs, the entire child tree is already fully mounted and stable. That\'s why `child effect` appears before `parent effect`.',
+    tags: ['useEffect', 'mount-order', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-024',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `The user clicks the FIRST \`Counter\`'s button 3 times and the SECOND one's button once. What does each one display?
+
+\`\`\`jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+function App() {
+  return (
+    <>
+      <Counter />
+      <Counter />
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Both show 4 (the sum of all clicks)', isCorrect: false },
+      { id: 'b', text: 'The first shows 3, the second shows 1', isCorrect: true },
+      { id: 'c', text: 'Both show 3 (the last click syncs both)', isCorrect: false },
+      { id: 'd', text: 'Throws an error: duplicate hooks', isCorrect: false },
+    ],
+    hints: ['Each `<Counter />` element is a completely independent instance, with its own isolated state'],
+    explanation: 'Each rendered `<Counter />` is a separate instance of the component, and React keeps `useState` state completely isolated per instance — even though it\'s the same component code. Clicks on one `Counter` never affect another `Counter`\'s state. That\'s why the first ends at `3` and the second at `1`, fully independently.',
+    tags: ['useState', 'component-instances', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-025',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens when this component mounts?
+
+\`\`\`jsx
+function App() {
+  const [data, setData] = useState({ count: 0 });
+  useEffect(() => {
+    setData({ count: data.count + 1 });
+  }, [data]);
+  console.log('render');
+  return null;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "Renders and logs 'render' once, normally", isCorrect: false },
+      { id: 'b', text: 'An infinite loop of renders and effects', isCorrect: true },
+      { id: 'c', text: 'Throws a syntax error', isCorrect: false },
+      { id: 'd', text: 'Renders twice and then stabilizes', isCorrect: false },
+    ],
+    hints: ['`{ count: 0 }` is a brand-new object on every render — `data` is never `Object.is`-equal to the previous render\'s `data`', 'The effect always sees the `data` dependency as "different", so it always runs, and it itself calls `setData`, causing another render, forever'],
+    explanation: 'This is a classic infinite loop: on every render, `data` is a freshly created object (even if the `count` inside it eventually repeats, the object\'s REFERENCE is always new). `useEffect` depends on `data` by reference, so it ALWAYS considers the dependency "changed" and runs again — and inside it, `setData` creates yet another new object, triggering another render, which triggers another effect, forever.',
+    tags: ['useEffect', 'infinite-loop', 'dependencies', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-026',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `The user clicks "Hide". What is logged to the console?
+
+\`\`\`jsx
+function Message() {
+  useEffect(() => {
+    console.log('mount');
+    return () => console.log('unmount');
+  }, []);
+  return <p>Hi</p>;
+}
+function App() {
+  const [show, setShow] = useState(true);
+  return (
+    <>
+      {show && <Message />}
+      <button onClick={() => setShow(false)}>Hide</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "Nothing — 'unmount' would only log if the page were reloaded", isCorrect: false },
+      { id: 'b', text: "'unmount'", isCorrect: true },
+      { id: 'c', text: "'mount' again", isCorrect: false },
+      { id: 'd', text: 'An error, since `Message` is still referenced in the JSX', isCorrect: false },
+    ],
+    hints: ['When a component stops being rendered (leaves the tree), React runs its `useEffect`\'s cleanup function before discarding it'],
+    explanation: 'Clicking "Hide" sets `show` to `false`, and `{show && <Message />}` stops rendering `<Message />` — the component is unmounted. Before discarding it completely, React runs the cleanup function returned by `useEffect`, logging `unmount`. This holds even with `[]` as the dependency array: cleanup runs when the component unmounts, not only when dependencies change.',
+    tags: ['useEffect', 'cleanup', 'unmount', 'conditional-rendering', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-027',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `With \`count\` starting at 0, the user clicks ONCE. What is logged to the console (by the \`console.log\` inside \`handleClick\`, not what appears on screen)?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    setCount(count + 1);
+    console.log(count);
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1', isCorrect: false },
+      { id: 'b', text: '0', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Depends on how fast React re-renders', isCorrect: false },
+    ],
+    hints: ['Calling `setCount` does NOT immediately update the `count` variable within the same handler call — the update only shows up on a NEXT render'],
+    explanation: 'One of the most common React misconceptions: `setCount` is not a synchronous assignment, so `count` read right after, STILL INSIDE the same `handleClick`, remains the value captured by this render\'s closure (`0`). The state update only takes effect on the component\'s next render, when a new instance of `handleClick` (with a new `count` in its closure) gets created.',
+    tags: ['useState', 'stale-closure', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-028',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `The button is clicked 3 times in a row, quickly. What is logged on each click?
+
+\`\`\`jsx
+function Counter() {
+  let count = 0;
+  function handleClick() {
+    count = count + 1;
+    console.log(count);
+  }
+  return <button onClick={handleClick}>Click</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3', isCorrect: false },
+      { id: 'b', text: '1, 1, 1', isCorrect: true },
+      { id: 'c', text: '0, 1, 2', isCorrect: false },
+      { id: 'd', text: 'Throws an error: `count` is implicitly `const`', isCorrect: false },
+    ],
+    hints: ['Since nothing here triggers a re-render, `Counter`\'s body never runs again', 'But `handleClick` is recreated from scratch EVERY TIME the component renders (and here it only rendered once — on mount)'],
+    explanation: 'This component never uses `useState`, so `count` is just a plain local variable, reset to `0` every time `Counter` runs as a function. Since nothing here calls a state setter, the component NEVER re-renders after the initial mount — `handleClick` remains the SAME closure, closing over the SAME `count` variable (which is not reset between clicks, since the function isn\'t recreated). On each click, `count = count + 1` increments that persistent closure variable: `1`, then `2`, then `3`... Note: since `handleClick` doesn\'t change between clicks (no re-render happens), the variable genuinely accumulates.',
+    tags: ['let-vs-useState', 'closures', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-029',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `\`App\` re-renders (e.g., from clicking the button), but the \`id\` prop stays the SAME value. Does the effect run again?
+
+\`\`\`jsx
+function App({ id }) {
+  useEffect(() => {
+    console.log('fetching for', id);
+  }, [id]);
+  const [, forceRender] = useState(0);
+  return <button onClick={() => forceRender(n => n + 1)}>{id}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, every re-render triggers the effect again', isCorrect: false },
+      { id: 'b', text: 'No, the effect only runs when `id` actually changes value', isCorrect: true },
+      { id: 'c', text: 'Yes, but only starting from the second click', isCorrect: false },
+      { id: 'd', text: 'Throws an inconsistent-dependency error', isCorrect: false },
+    ],
+    hints: ['`useEffect` compares each item in the dependency array against the previous render\'s value, and only re-runs if SOMETHING changed'],
+    explanation: 'The `useEffect` only runs again when at least one dependency in the array actually changes value (compared via `Object.is`) between renders. Here, `forceRender` causes `App` to re-render, but `id` stays exactly the same value — so the effect does not run again. Re-rendering a component does not, by itself, mean re-running all of its effects.',
+    tags: ['useEffect', 'dependencies', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-030',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `Rendering with \`items = ['a', 'b', 'c']\` (no \`key\` prop), what is shown on screen?
+
+\`\`\`jsx
+function List({ items }) {
+  return (
+    <ul>
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Nothing is rendered, since the `key` prop is missing', isCorrect: false },
+      { id: 'b', text: 'All three items render normally, in the correct order', isCorrect: true },
+      { id: 'c', text: 'Throws a fatal rendering error', isCorrect: false },
+      { id: 'd', text: 'Only the first item is rendered', isCorrect: false },
+    ],
+    hints: ['Missing `key` only produces a console WARNING (not an error), and does not prevent the initial render', 'The real problem with skipping `key` shows up in FUTURE reconciliations (reordering, inserting, removing items), not in the first render'],
+    explanation: 'The `key` prop helps React identify which list items changed, were added, or removed between renders — but its absence only produces a console warning, without preventing rendering. On the first render (or in lists that are never reordered/filtered), the visual result is identical with or without `key`. The real problems with skipping `key` show up in future reconciliations: component state can "leak" into the wrong item when the list gets reordered.',
+    tags: ['key-prop', 'lists', 'reconciliation', 'output-prediction'],
+  },
 ]
