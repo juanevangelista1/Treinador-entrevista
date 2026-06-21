@@ -33,8 +33,35 @@ interface QuestionCardProps {
   totalQuestions: number
 }
 
+interface TextSegment {
+  type: 'text' | 'code'
+  content: string
+}
+
+function splitCodeFences(text: string): TextSegment[] {
+  const segments: TextSegment[] = []
+  const fenceRegex = /```[a-zA-Z]*\n?([\s\S]*?)```/g
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = fenceRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'text', content: text.slice(lastIndex, match.index) })
+    }
+    segments.push({ type: 'code', content: (match[1] ?? '').replace(/\n$/, '') })
+    lastIndex = match.index + match[0].length
+  }
+
+  if (lastIndex < text.length) {
+    segments.push({ type: 'text', content: text.slice(lastIndex) })
+  }
+
+  return segments
+}
+
 export function QuestionCard({ question, questionNumber, totalQuestions }: QuestionCardProps) {
   const progress = (questionNumber / totalQuestions) * 100
+  const segments = splitCodeFences(question.text)
 
   return (
     <div className="rounded-xl border border-border bg-card p-6 space-y-5">
@@ -66,9 +93,22 @@ export function QuestionCard({ question, questionNumber, totalQuestions }: Quest
         </div>
       </div>
 
-      <p className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
-        {question.text}
-      </p>
+      <div className="space-y-3">
+        {segments.map((segment, index) =>
+          segment.type === 'code' ? (
+            <pre
+              key={index}
+              className="overflow-x-auto rounded-lg border border-border bg-secondary p-4 text-sm font-mono text-foreground"
+            >
+              <code>{segment.content}</code>
+            </pre>
+          ) : segment.content.trim() ? (
+            <p key={index} className="text-base leading-relaxed text-foreground whitespace-pre-wrap">
+              {segment.content.trim()}
+            </p>
+          ) : null,
+        )}
+      </div>
     </div>
   )
 }
