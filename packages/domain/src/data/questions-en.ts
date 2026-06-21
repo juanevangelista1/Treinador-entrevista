@@ -1734,4 +1734,811 @@ console.log(original.a, original.nested.b);
     explanation: 'The spread operator (`{ ...original }`) creates a shallow copy: it copies the values of top-level properties, but if a property is an object (like `nested`), only the *reference* is copied — `copy.nested` and `original.nested` point to the same object. That is why `copy.a = 99` does not affect `original.a` (which stays `1`, since `a` is an independent primitive), but `copy.nested.b = 99` does affect `original.nested.b` too, since both share the same nested object.',
     tags: ['spread', 'shallow-copy', 'reference', 'output-prediction'],
   },
+  // ─── Output prediction (Async / Promises) ──────────────────────────────────
+  {
+    id: 'en-js-async-001',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log('A');
+setTimeout(() => console.log('B'), 0);
+Promise.resolve().then(() => console.log('C'));
+console.log('D');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'A, B, C, D', isCorrect: false },
+      { id: 'b', text: 'A, D, C, B', isCorrect: true },
+      { id: 'c', text: 'A, D, B, C', isCorrect: false },
+      { id: 'd', text: 'A, C, D, B', isCorrect: false },
+    ],
+    hints: ['Synchronous code always runs to completion before any queue is processed', 'Microtasks (promises) are processed before macrotasks (setTimeout)'],
+    explanation: 'First, all synchronous code runs: `A` and `D`. Then the event loop drains the microtask queue (promises) before the macrotask queue (timers): `C` is printed. Only then, with the microtask queue empty, does the event loop process the next macrotask: `B`. Final order: A, D, C, B.',
+    tags: ['event-loop', 'microtask', 'macrotask', 'setTimeout', 'Promise', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-002',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function getData() {
+  console.log('1');
+  await null;
+  console.log('2');
+}
+console.log('start');
+getData();
+console.log('end');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'start, 1, 2, end', isCorrect: false },
+      { id: 'b', text: 'start, 1, end, 2', isCorrect: true },
+      { id: 'c', text: 'start, end, 1, 2', isCorrect: false },
+      { id: 'd', text: '1, start, end, 2', isCorrect: false },
+    ],
+    hints: ['Everything before the first `await` in an async function runs synchronously, at call time', 'After the `await`, the rest of the function becomes a continuation scheduled as a microtask'],
+    explanation: 'When `getData()` is called, it runs synchronously up to the first `await`: it logs `1`. Hitting `await null` pauses the function and hands control back to the caller — that is why `end` is logged before `2`. The continuation after the `await` (`console.log(\'2\')`) is scheduled as a microtask, which only runs after the remaining synchronous code (`end`) finishes.',
+    tags: ['async-await', 'event-loop', 'microtask', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-003',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+setTimeout(() => console.log('timeout'), 0);
+Promise.resolve().then(() => console.log('promise1'));
+Promise.resolve().then(() => console.log('promise2'));
+console.log('sync');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'sync, timeout, promise1, promise2', isCorrect: false },
+      { id: 'b', text: 'sync, promise1, promise2, timeout', isCorrect: true },
+      { id: 'c', text: 'timeout, sync, promise1, promise2', isCorrect: false },
+      { id: 'd', text: 'sync, promise2, promise1, timeout', isCorrect: false },
+    ],
+    hints: ['The entire microtask queue is drained before the next macrotask runs'],
+    explanation: 'Synchronous code runs first: `sync`. Then the event loop fully drains the microtask queue before processing any macrotask — the two resolved promises are processed in the order they were queued: `promise1`, then `promise2`. Only then does the `setTimeout` macrotask run: `timeout`.',
+    tags: ['event-loop', 'microtask', 'macrotask', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-004',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function f() {
+  return 42;
+}
+console.log(f());
+\`\`\``,
+    options: [
+      { id: 'a', text: '42', isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: false },
+      { id: 'c', text: 'A Promise object (pending/resolved with 42)', isCorrect: true },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['Every `async` function always returns a Promise, never the "raw" value from `return`', 'To get `42`, you would need `await f()` or `f().then(...)`'],
+    explanation: 'Functions declared with `async` always return a `Promise`, regardless of what the `return` statement contains. `f()` returns a Promise that will resolve with `42` — but `console.log(f())` logs the Promise object itself (something like `Promise {42}` or `Promise {<pending>}`, depending on inspection timing), not the value `42` directly. To access the resolved value, you need `await f()` or `f().then(value => ...)`.',
+    tags: ['async-await', 'Promise', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-005',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function run() {
+  const arr = [1, 2, 3];
+  arr.forEach(async (n) => {
+    await Promise.resolve();
+    console.log(n);
+  });
+  console.log('done');
+}
+run();
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3, done', isCorrect: false },
+      { id: 'b', text: 'done, 1, 2, 3', isCorrect: true },
+      { id: 'c', text: 'done', isCorrect: false },
+      { id: 'd', text: '1, done, 2, done, 3, done', isCorrect: false },
+    ],
+    hints: ['`Array.prototype.forEach` never waits (`await`) for its callbacks, even if they are `async`', 'Each async callback runs synchronously up to the first `await`, then schedules the rest as a microtask'],
+    explanation: 'This is a classic bug: `forEach` has no support for `async`/`await` — it calls each callback and completely ignores the Promise it returns, never waiting for anything. Each `async (n) => {...}` callback runs synchronously up to `await Promise.resolve()`, then pauses and schedules its continuation as a microtask. `forEach` finishes its loop without ever waiting for those continuations, so `console.log(\'done\')` runs right after, synchronously. Only then do the three scheduled microtasks run in order: `1`, `2`, `3`. To actually wait, you would need a `for...of` loop with `await` inside, or `Promise.all(arr.map(...))`.',
+    tags: ['async-await', 'forEach', 'microtask', 'gotcha', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-006',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function fail() {
+  throw new Error('oops');
+}
+async function run() {
+  try {
+    await fail();
+  } catch (e) {
+    console.log('caught:', e.message);
+  }
+}
+run();
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Throws an unhandled error, crashing the script', isCorrect: false },
+      { id: 'b', text: "'caught:', 'oops'", isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: "'oops'", isCorrect: false },
+    ],
+    hints: ['A `throw` inside an `async` function rejects the Promise it returns', '`await` on a rejected Promise re-throws the error at the `await` site, catchable by `try/catch`'],
+    explanation: 'When an `async` function throws with `throw`, it does not immediately crash the program — the Promise returned by that function is automatically rejected with that error. Since `fail()` is called with `await` inside a `try` block, the rejection is converted back into a synchronous exception at that point, which `catch` can capture normally. Result: `caught: oops`.',
+    tags: ['async-await', 'try-catch', 'error-handling', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-007',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+Promise.resolve(1)
+  .then((v) => v + 1)
+  .then((v) => {
+    throw new Error('fail');
+  })
+  .catch((e) => 'recovered')
+  .then((v) => console.log(v));
+\`\`\``,
+    options: [
+      { id: 'a', text: "Throws 'fail' unhandled", isCorrect: false },
+      { id: 'b', text: "'recovered'", isCorrect: true },
+      { id: 'c', text: '2', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['A `.catch()` that does not re-throw "recovers" the promise chain, bringing it back to a fulfilled state', "The `.catch()`'s return value becomes the fulfilled value for the next `.then()`"],
+    explanation: 'The chain runs: `1` → `+1` → `2`. The next `.then` throws an error, putting the promise into a rejected state. `.catch` intercepts that rejection and **returns** the string `\'recovered\'` (without re-throwing) — this brings the chain back to a fulfilled state, with `\'recovered\'` as the value. The final `.then` receives that value and logs `recovered`.',
+    tags: ['Promise', 'chaining', 'catch', 'error-recovery', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-008',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+Promise.resolve().then(() => {
+  console.log('1');
+  Promise.resolve().then(() => console.log('2'));
+});
+Promise.resolve().then(() => console.log('3'));
+console.log('4');
+\`\`\``,
+    options: [
+      { id: 'a', text: '4, 1, 2, 3', isCorrect: false },
+      { id: 'b', text: '4, 1, 3, 2', isCorrect: true },
+      { id: 'c', text: '1, 2, 3, 4', isCorrect: false },
+      { id: 'd', text: '4, 3, 1, 2', isCorrect: false },
+    ],
+    hints: ['A microtask scheduled INSIDE another microtask goes to the END of the current queue, it does not jump ahead'],
+    explanation: 'First the synchronous code runs: `4`. The microtask queue already has two callbacks scheduled, in creation order: [callback logging `1`, callback logging `3`]. Processing the first one logs `1` and schedules a NEW callback (logging `2`) — that new callback goes to the end of the queue, after the callback logging `3`. Queue now: [callback `3`, callback `2`]. Processing in order: `3`, then `2`. Final result: 4, 1, 3, 2.',
+    tags: ['event-loop', 'microtask', 'Promise', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-009',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+(async () => {
+  console.log('start');
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  console.log('end');
+})();
+console.log('outside');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'start, end, outside', isCorrect: false },
+      { id: 'b', text: 'start, outside, end', isCorrect: true },
+      { id: 'c', text: 'outside, start, end', isCorrect: false },
+      { id: 'd', text: 'start, outside', isCorrect: false },
+    ],
+    hints: ['The async IIFE runs synchronously up to the `await`', 'The `await` here depends on a `setTimeout`, which is a macrotask — slower than the remaining synchronous code'],
+    explanation: 'The async IIFE runs immediately and synchronously up to the `await`: it logs `start`. The `await` is waiting on a Promise that only resolves when the `setTimeout` (a macrotask) fires — so execution returns to the outside code, which logs `outside` synchronously. Only after that does the event loop process the `setTimeout` macrotask, resolving the Promise and resuming the async function, which logs `end`.',
+    tags: ['async-await', 'IIFE', 'event-loop', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-010',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code eventually log to the console?
+
+\`\`\`javascript
+const slow = new Promise((res) => setTimeout(() => res('slow'), 100));
+const fast = new Promise((res) => setTimeout(() => res('fast'), 10));
+Promise.race([slow, fast]).then(console.log);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'slow'", isCorrect: false },
+      { id: 'b', text: "'fast'", isCorrect: true },
+      { id: 'c', text: "['slow', 'fast']", isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['`Promise.race` settles with the result of the FIRST promise in the array to settle'],
+    explanation: '`Promise.race` returns a Promise that follows the fate of the first promise in the array to resolve or reject, ignoring all the others after that. Since `fast` resolves in 10ms (faster than `slow`, which takes 100ms), `.then` receives `\'fast\'`.',
+    tags: ['Promise.race', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-011',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function run() {
+  const result = await 42;
+  console.log(result);
+}
+run();
+console.log('sync');
+\`\`\``,
+    options: [
+      { id: 'a', text: '42, sync', isCorrect: false },
+      { id: 'b', text: 'sync, 42', isCorrect: true },
+      { id: 'c', text: '42', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError: 42 is not a Promise', isCorrect: false },
+    ],
+    hints: ['`await` works on any value, not just Promises', 'Even on a non-Promise value, `await` still pauses the function and yields control for at least one microtask tick'],
+    explanation: '`await` accepts any value — if it is not a Promise (or thenable), it is automatically wrapped in `Promise.resolve(value)`. This means even `await 42` makes the function pause and hand control back to the caller for one microtask tick, before continuing. That is why `sync` (code outside the async function) is logged before `42` (the function continuation, scheduled as a microtask).',
+    tags: ['async-await', 'microtask', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-012',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function getValue() {
+  return 10;
+}
+getValue().then((v) => console.log(v * 2));
+console.log('called');
+\`\`\``,
+    options: [
+      { id: 'a', text: '20, called', isCorrect: false },
+      { id: 'b', text: 'called, 20', isCorrect: true },
+      { id: 'c', text: '10, called, 20', isCorrect: false },
+      { id: 'd', text: 'called', isCorrect: false },
+    ],
+    hints: ['A `.then()` callback always runs asynchronously, even if the value is already available'],
+    explanation: '`async`/`.then()` always defer the callback to run after the current synchronous code, via the microtask queue — no matter how quickly the value is available. That is why `console.log(\'called\')`, which is synchronous, runs first. Only after that does the `.then` callback run, logging `20`.',
+    tags: ['async-await', 'Promise.then', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-013',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+Promise.resolve(Promise.resolve(5)).then((v) => console.log(v));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Promise { 5 }', isCorrect: false },
+      { id: 'b', text: '5', isCorrect: true },
+      { id: 'c', text: 'Promise { Promise { 5 } }', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`Promise.resolve()` never creates a "promise of a promise" — nested promises are always automatically flattened'],
+    explanation: 'Promises never end up nested in JavaScript: if you resolve a Promise with another Promise (or any thenable), the result is automatically "flattened" — the outer Promise adopts the inner one\'s eventual state and value. `Promise.resolve(Promise.resolve(5))` is equivalent to just `Promise.resolve(5)`, so `.then` receives `5` directly, never a nested Promise object.',
+    tags: ['Promise', 'flattening', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-014',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+Promise.resolve(1)
+  .then((v) => Promise.resolve(v + 1))
+  .then((v) => console.log(v));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Promise { 2 }', isCorrect: false },
+      { id: 'b', text: '2', isCorrect: true },
+      { id: 'c', text: '1', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['When a `.then()` returns a Promise, the chain waits for that Promise to settle before moving to the next `.then()`'],
+    explanation: 'When a `.then()` callback returns a Promise (instead of a plain value), the chain automatically "waits" for that Promise to resolve, and passes the resolved value (not the Promise itself) to the next `.then()`. Here, the first `.then` returns `Promise.resolve(2)`; the chain waits, unwraps the value, and the next `.then` receives `2` directly.',
+    tags: ['Promise', 'chaining', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-015',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+Promise.resolve()
+  .then(() => {
+    throw new Error('boom');
+  })
+  .then(() => console.log('skipped'))
+  .catch((e) => console.log('caught:', e.message));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'skipped'", isCorrect: false },
+      { id: 'b', text: "'caught:', 'boom'", isCorrect: true },
+      { id: 'c', text: "'skipped' then 'caught: boom'", isCorrect: false },
+      { id: 'd', text: 'Throws an unhandled error', isCorrect: false },
+    ],
+    hints: ['When a Promise becomes rejected, every following `.then()` is skipped until a `.catch()` (or an error handler) is found'],
+    explanation: 'When the first `.then` throws an error, the promise becomes rejected. That rejected state "passes through" any `.then()` that only has a success handler (no second argument) — that is why `.then(() => console.log(\'skipped\'))` is completely skipped, never running. The rejection is only handled at the first `.catch()` found in the chain, which logs `caught: boom`.',
+    tags: ['Promise', 'chaining', 'catch', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-016',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function* gen() {
+  yield 1;
+  yield 2;
+}
+(async () => {
+  for await (const val of gen()) {
+    console.log(val);
+  }
+})();
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: true },
+      { id: 'b', text: 'Promise {1}, Promise {2}', isCorrect: false },
+      { id: 'c', text: '[1, 2]', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['`for await...of` automatically unwraps every value produced by an async generator', 'Each `yield` of an async generator is internally treated as a resolved Promise'],
+    explanation: 'An async generator (`async function*`) produces values that `for await...of` consumes automatically, unwrapping any involved Promise — the iterating code never sees the Promise directly, only the final value. That is why the loop logs `1` and then `2`, exactly like a regular synchronous generator would, just with asynchronous pauses between each value.',
+    tags: ['async-generators', 'for-await-of', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-017',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code eventually log to the console?
+
+\`\`\`javascript
+const p1 = Promise.reject('error1');
+const p2 = new Promise((res) => setTimeout(() => res('success'), 10));
+Promise.any([p1, p2])
+  .then(console.log)
+  .catch(console.log);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'error1'", isCorrect: false },
+      { id: 'b', text: "'success'", isCorrect: true },
+      { id: 'c', text: 'AggregateError: All promises were rejected', isCorrect: false },
+      { id: 'd', text: "['error1', 'success']", isCorrect: false },
+    ],
+    hints: ['`Promise.any` ignores individual rejections as long as at least one promise in the array fulfills', 'It only rejects (with an `AggregateError`) if ALL promises reject'],
+    explanation: '`Promise.any` resolves with the value of the first promise to fulfill, ignoring individual rejections along the way — it only rejects if *every* promise in the array rejects (in which case, with an `AggregateError`). Here, `p1` rejects immediately, but `Promise.any` keeps waiting; `p2` eventually resolves with `\'success\'`, which is the final value delivered to `.then`.',
+    tags: ['Promise.any', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-018',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+setTimeout(() => console.log('timeout'), 0);
+queueMicrotask(() => console.log('microtask'));
+console.log('sync');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'sync, timeout, microtask', isCorrect: false },
+      { id: 'b', text: 'sync, microtask, timeout', isCorrect: true },
+      { id: 'c', text: 'timeout, microtask, sync', isCorrect: false },
+      { id: 'd', text: 'microtask, sync, timeout', isCorrect: false },
+    ],
+    hints: ['`queueMicrotask` schedules directly on the microtask queue, same priority as a Promise `.then()`'],
+    explanation: '`queueMicrotask` schedules a callback on the microtask queue, with the same priority as Promise callbacks — and microtasks are always processed before the next macrotask (like `setTimeout`). Order: synchronous code (`sync`), then the microtask (`microtask`), and only then the timer macrotask (`timeout`).',
+    tags: ['queueMicrotask', 'event-loop', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-019',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function f() {
+  return Promise.reject('fail');
+}
+f().catch((e) => console.log('caught:', e));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'caught:', 'fail'", isCorrect: true },
+      { id: 'b', text: 'Throws an unhandled error', isCorrect: false },
+      { id: 'c', text: "Promise { 'fail' }", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['Returning a rejected Promise from inside an `async` function results in the outer Promise also being rejected (automatic flattening)'],
+    explanation: 'When an `async` function returns a Promise, that Promise is "adopted" by the outer Promise the `async` function always returns — including its rejected state. Since `f()` returns `Promise.reject(\'fail\')`, the Promise resulting from `f()` also ends up rejected with `\'fail\'`, caught normally by `.catch`.',
+    tags: ['async-await', 'Promise', 'rejection', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-020',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function run() {
+  const value = await Promise.resolve(Promise.resolve('done'));
+  console.log(value);
+}
+run();
+\`\`\``,
+    options: [
+      { id: 'a', text: "Promise { Promise { 'done' } }", isCorrect: false },
+      { id: 'b', text: "'done'", isCorrect: true },
+      { id: 'c', text: "Promise { 'done' }", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`await` unwraps any level of nested Promises, not just one level'],
+    explanation: '`await` (just like `Promise.resolve`) automatically unwraps nested Promises, no matter how many levels of nesting exist — promises never end up "inside" other promises in the final result. That is why `value` directly receives the string `\'done\'`, not a Promise object.',
+    tags: ['async-await', 'Promise', 'flattening', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-021',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function run() {
+  console.log('1');
+  await null;
+  console.log('2');
+  await null;
+  console.log('3');
+}
+run();
+console.log('4');
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3, 4', isCorrect: false },
+      { id: 'b', text: '1, 4, 2, 3', isCorrect: true },
+      { id: 'c', text: '1, 4, 3, 2', isCorrect: false },
+      { id: 'd', text: '4, 1, 2, 3', isCorrect: false },
+    ],
+    hints: ['Each `await` yields control back to the caller for (at least) one microtask tick', "After the outside synchronous code (`4`) finishes, nothing else competes with the function's continuations in the microtask queue"],
+    explanation: '`run()` executes synchronously up to the first `await`, logging `1`, and then yields control — that is why `4` (outside the function) is logged next. From there, no more synchronous code competes: the microtask resuming after the first `await` runs, logging `2`, hits the second `await`, yields again — but since the microtask queue is empty (no other synchronous code pending), the final continuation runs right after, logging `3`. Final order: 1, 4, 2, 3.',
+    tags: ['async-await', 'event-loop', 'microtask', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-022',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function run() {
+  try {
+    throw new Error('err');
+  } finally {
+    console.log('finally');
+  }
+}
+run().catch((e) => console.log('caught:', e.message));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'caught:', 'err'", isCorrect: false },
+      { id: 'b', text: "'finally', then 'caught:', 'err'", isCorrect: true },
+      { id: 'c', text: "'caught:', 'err', then 'finally'", isCorrect: false },
+      { id: 'd', text: "Just 'finally'", isCorrect: false },
+    ],
+    hints: ['A `finally` block always runs before the error continues propagating out of the function', 'The rejected Promise only "reaches" the outer `.catch()` after the entire async function finishes processing internally'],
+    explanation: '`finally` always runs, regardless of whether the `try` threw or not — and it runs *before* the error continues propagating out of the function. First, `finally` logs `\'finally\'`. Only after that does the `async` function finish executing, and the Promise it returns is rejected with the original error, which the outer `.catch()` catches, logging `caught: err`.',
+    tags: ['async-await', 'try-finally', 'error-handling', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-023',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log('1');
+new Promise((resolve) => {
+  console.log('2');
+  resolve();
+});
+console.log('3');
+\`\`\``,
+    options: [
+      { id: 'a', text: "'1', '3', '2'", isCorrect: false },
+      { id: 'b', text: "'1', '2', '3'", isCorrect: true },
+      { id: 'c', text: "'2', '1', '3'", isCorrect: false },
+      { id: 'd', text: "'1', '3'", isCorrect: false },
+    ],
+    hints: ['The executor function passed to `new Promise(...)` runs IMMEDIATELY and synchronously, it is not deferred'],
+    explanation: 'A common mistake is assuming everything related to Promises is asynchronous — but the executor function (the callback passed to `new Promise(executor)`) runs immediately, fully synchronously, at the moment the Promise is constructed. Only what comes AFTER (like `.then()` callbacks) is deferred to the microtask queue. That is why the order is simply `1`, `2`, `3`.',
+    tags: ['Promise', 'promise-constructor', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-024',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function f() {
+  console.log('inside');
+  return 1;
+}
+console.log('before');
+f();
+console.log('after');
+\`\`\``,
+    options: [
+      { id: 'a', text: 'before, inside, after', isCorrect: true },
+      { id: 'b', text: 'before, after, inside', isCorrect: false },
+      { id: 'c', text: 'inside, before, after', isCorrect: false },
+      { id: 'd', text: 'before, inside, after, 1', isCorrect: false },
+    ],
+    hints: ['With no `await` in the body, an async function runs entirely synchronously up to its return'],
+    explanation: 'Even though it is `async`, with no `await` inside the body, the function runs entirely synchronously, from start to `return` — the only difference is that the returned value gets automatically wrapped in a Promise. That is why `f()` logs `inside` immediately when called, in synchronous sequence with `before` and `after`. Since nothing consumes the return value (no `await`, no `.then`), `1` never appears in the console.',
+    tags: ['async-await', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-025',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const p1 = Promise.resolve('ok');
+const p2 = Promise.reject('fail');
+Promise.all([p1, p2])
+  .then((values) => console.log('success:', values))
+  .catch((err) => console.log('error:', err));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'success:', ['ok', undefined]", isCorrect: false },
+      { id: 'b', text: "'error:', 'fail'", isCorrect: true },
+      { id: 'c', text: "'success:', ['ok']", isCorrect: false },
+      { id: 'd', text: 'Waits for both promises before deciding', isCorrect: false },
+    ],
+    hints: ['`Promise.all` rejects immediately as soon as ANY promise in the array rejects, without waiting for the others'],
+    explanation: '`Promise.all` follows a "fail-fast" strategy: it rejects as soon as the first promise in the array rejects, without waiting for the outcome of the rest (even if they are still pending or would later fulfill). Since `p2` is already rejected with `\'fail\'`, `.catch` fires immediately with that value, and the success `.then` never runs.',
+    tags: ['Promise.all', 'fail-fast', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-026',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const p1 = Promise.resolve('ok');
+const p2 = Promise.reject('fail');
+Promise.allSettled([p1, p2]).then((results) =>
+  console.log(results.map((r) => r.status))
+);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Throws an error, since p2 rejected', isCorrect: false },
+      { id: 'b', text: "['fulfilled', 'rejected']", isCorrect: true },
+      { id: 'c', text: "['ok', 'fail']", isCorrect: false },
+      { id: 'd', text: "['fulfilled']", isCorrect: false },
+    ],
+    hints: ['`Promise.allSettled` NEVER rejects — it always resolves with the outcome of each promise, success or failure'],
+    explanation: 'Unlike `Promise.all`, `Promise.allSettled` waits for every promise to finish (resolved or rejected) and always resolves with an array of objects describing each outcome: `{ status: \'fulfilled\', value }` or `{ status: \'rejected\', reason }`. It never enters a rejected state, even if every promise in the array fails. That is why the mapped result is `[\'fulfilled\', \'rejected\']`.',
+    tags: ['Promise.allSettled', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-027',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code eventually log to the console?
+
+\`\`\`javascript
+function delay(ms, value) {
+  return new Promise((resolve) => setTimeout(() => resolve(value), ms));
+}
+async function run() {
+  const results = [];
+  for (const n of [1, 2, 3]) {
+    results.push(await delay(10, n));
+  }
+  console.log(results);
+}
+run();
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, 3], after about 10ms', isCorrect: false },
+      { id: 'b', text: '[1, 2, 3], after about 30ms', isCorrect: true },
+      { id: 'c', text: '[3, 2, 1]', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError because `for` does not support `await`', isCorrect: false },
+    ],
+    hints: ['`await` inside a regular `for...of` runs each iteration sequentially, waiting for one to finish before starting the next'],
+    explanation: '`await` inside a traditional `for...of` runs iterations sequentially, not in parallel: each `delay(10, n)` only starts after the previous `await` has resolved. With 3 iterations of ~10ms each, the total time is the SUM of the delays (~30ms), not the largest individual delay. The final array is `[1, 2, 3]` (order is preserved because it is sequential), but to run in parallel (and take only ~10ms total) you would need `Promise.all(arr.map(n => delay(10, n)))`.',
+    tags: ['async-await', 'for-of', 'sequential-vs-parallel', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-028',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log('1');
+Promise.resolve().then(() => console.log('2'));
+console.log('3');
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3', isCorrect: false },
+      { id: 'b', text: '1, 3, 2', isCorrect: true },
+      { id: 'c', text: '2, 1, 3', isCorrect: false },
+      { id: 'd', text: '1, 3', isCorrect: false },
+    ],
+    hints: ['A `.then()` callback NEVER runs synchronously, even when the Promise is already resolved at the time of the call'],
+    explanation: 'Even though `Promise.resolve()` is already in a resolved state at the exact moment `.then()` is called, the callback passed to `.then()` is, by spec, always scheduled as a microtask — never run synchronously and immediately. That is why `3` (synchronous) is logged before `2` (scheduled).',
+    tags: ['Promise.then', 'microtask', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-029',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const thenable = {
+  then(resolve) {
+    resolve('from thenable');
+  },
+};
+Promise.resolve(thenable).then((v) => console.log(v));
+\`\`\``,
+    options: [
+      { id: 'a', text: '{ then: [Function] }', isCorrect: false },
+      { id: 'b', text: "'from thenable'", isCorrect: true },
+      { id: 'c', text: 'Promise { thenable }', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['`Promise.resolve()` recognizes any object with a `.then()` method as a "thenable" and adopts its value, even if it is not a real Promise'],
+    explanation: 'Promises in JavaScript follow the "thenable" concept: any object with a valid `.then()` method is treated as something promise-like, even if it was not created with `new Promise()`. `Promise.resolve(thenable)` detects that `.then()` and adopts the value it eventually delivers via `resolve(...)`. That is why the final result is the string `\'from thenable\'`.',
+    tags: ['Promise', 'thenable', 'output-prediction'],
+  },
+  {
+    id: 'en-js-async-030',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+async function risky(shouldThrow) {
+  if (shouldThrow) throw new Error('sync throw');
+  return 'ok';
+}
+risky(true)
+  .then((v) => console.log('resolved:', v))
+  .catch((e) => console.log('rejected:', e.message));
+\`\`\``,
+    options: [
+      { id: 'a', text: "Throws an unhandled error, since `throw` inside an async function is not caught by `.catch()`", isCorrect: false },
+      { id: 'b', text: "'rejected:', 'sync throw'", isCorrect: true },
+      { id: 'c', text: "'resolved:', undefined", isCorrect: false },
+      { id: 'd', text: "'resolved:', 'sync throw'", isCorrect: false },
+    ],
+    hints: ['Inside an `async` function, `throw` and `Promise.reject(...)` have exactly the same observable effect from outside'],
+    explanation: 'A synchronous `throw` inside an `async` function body never propagates as a "raw" exception to the caller — it is automatically converted into a rejection of the Promise the function returns. That is why `.catch()` can catch it normally, exactly as it would catch an explicit rejection via `Promise.reject(...)`. Result: `rejected: sync throw`.',
+    tags: ['async-await', 'throw', 'error-handling', 'output-prediction'],
+  },
 ]
