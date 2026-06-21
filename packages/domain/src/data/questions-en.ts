@@ -4348,4 +4348,280 @@ function area(shape: Shape): number {
     explanation: 'Since the function has an explicit return annotation (`: number`), TypeScript checks whether EVERY possible execution path actually returns a `number`. The `switch` only handles the `"circle"` case — if `shape.kind` is `"square"`, execution simply "falls through" out of the switch with no `return`, implicitly returning `undefined`. That conflicts with the declared return type, producing the error "Function lacks ending return statement and return type does not include \'undefined\'."',
     tags: ['discriminated-union', 'switch', 'return-type', 'compile-error', 'output-prediction'],
   },
+  {
+    id: 'en-ts-pred-011',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What happens when you try to compile this code?
+
+\`\`\`typescript
+interface User { id: number; name: string; }
+type UserKey = keyof User;
+
+function logType() {
+  console.log(UserKey);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'It compiles and logs "id" | "name"', isCorrect: false },
+      { id: 'b', text: "Compile error: 'UserKey' refers to a type, but is being used as a value here", isCorrect: true },
+      { id: 'c', text: 'It compiles and logs undefined', isCorrect: false },
+      { id: 'd', text: 'It compiles and logs an array `["id", "name"]`', isCorrect: false },
+    ],
+    hints: ['`keyof User` is a TYPE (a union of string literals), not an array or object that exists at runtime', "Types and values live in separate \"namespaces\" in TypeScript — `UserKey` only exists in the type world, it was never declared as a variable"],
+    explanation: '`type UserKey = keyof User` declares a TYPE (in this case, the union `"id" | "name"`), which only exists during compilation and is completely erased from the generated JavaScript. Trying to use `UserKey` inside `console.log(...)` is trying to use it as a VALUE at runtime — but it was never declared as a variable, so the compiler rejects it with the error "\'UserKey\' only refers to a type, but is being used as a value here".',
+    tags: ['keyof', 'type-vs-value', 'compile-error', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-012',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+type ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;
+
+function greet() { return "hi"; }
+type GreetReturn = ReturnOf<typeof greet>; // type: string
+
+const result: GreetReturn = greet();
+console.log(result);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'hi'", isCorrect: true },
+      { id: 'b', text: "'string'", isCorrect: false },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Throws an error: conditional types cannot be used at runtime', isCorrect: false },
+    ],
+    hints: ['Conditional types with `infer` are resolved entirely during compilation, generating NO additional JavaScript code', 'After stripping every type annotation, what is left is simply `function greet() { return "hi"; } console.log(greet());`'],
+    explanation: 'All the "magic" of conditional types and `infer` happens exclusively during type checking, leaving no trace in the final JavaScript — every type annotation is erased during compilation. The generated code is essentially just `function greet() { return "hi"; }` followed by `console.log(greet())`. So the result is simply the string `\'hi\'`, exactly what the function always returned, regardless of all the type-level engineering around it.',
+    tags: ['conditional-types', 'infer', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-013',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+function double(nums: readonly number[]) {
+  return nums.map(n => n * 2);
+}
+const arr = [1, 2, 3];
+console.log(double(arr));
+\`\`\``,
+    options: [
+      { id: 'a', text: "Compile error: `.map` isn't available on `readonly` arrays", isCorrect: false },
+      { id: 'b', text: '[2, 4, 6]', isCorrect: true },
+      { id: 'c', text: '[1, 2, 3] (readonly blocks any transformation)', isCorrect: false },
+      { id: 'd', text: 'Throws a runtime error', isCorrect: false },
+    ],
+    hints: ['`readonly number[]` only blocks methods that MUTATE the original array (like `.push`, `.sort`, `.splice`)', 'Methods that return a NEW array without changing the original (like `.map`, `.filter`, `.slice`) remain fully available'],
+    explanation: '`readonly number[]` only restricts, at compile time, methods that mutate the original array (`.push`, `.pop`, `.sort`, `.splice`, etc. would not be available on that type). Methods like `.map()`, which always return a brand-NEW array without modifying the original, remain fully allowed. That\'s why `double(arr)` works normally, returning `[2, 4, 6]`.',
+    tags: ['readonly', 'array', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-014',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+function combine(a: string, b: string): string;
+function combine(a: number, b: number): number;
+function combine(a: any, b: any): any {
+  return a + b;
+}
+console.log(combine(1, 2), combine("a", "b"));
+\`\`\``,
+    options: [
+      { id: 'a', text: "3, 'ab'", isCorrect: true },
+      { id: 'b', text: "'3', 'ab'", isCorrect: false },
+      { id: 'c', text: 'Compile error: function overloads cannot share an implementation', isCorrect: false },
+      { id: 'd', text: "NaN, 'ab'", isCorrect: false },
+    ],
+    hints: ["Overload signatures only exist for the COMPILER to check how the function can be called — there is only ONE real implementation at runtime", 'The actual implementation (`function combine(a: any, b: any): any {...}`) is the only one that truly runs, for ANY valid call'],
+    explanation: 'The overload signatures (the first two `combine` declarations) exist only for TypeScript to check, at compile time, which combinations of argument types are valid — they never generate their own JavaScript code. At runtime, there is only ONE real function (the last declaration, with the implementation), which processes every call the same way. `combine(1, 2)` runs `1 + 2 = 3`; `combine("a", "b")` runs `"a" + "b" = "ab"` — the same `+` operator behaving differently based on the actual runtime types.',
+    tags: ['function-overloads', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-015',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+class Box {
+  value = this.getDefault();
+  getDefault() { return 10; }
+  constructor() {
+    console.log(this.value);
+  }
+}
+new Box();
+\`\`\``,
+    options: [
+      { id: 'a', text: "Throws an error: `getDefault` doesn't exist yet when `value` is initialized", isCorrect: false },
+      { id: 'b', text: '10', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'NaN', isCorrect: false },
+    ],
+    hints: ["Class field initializers run BEFORE the constructor body, but AFTER methods are already available on the prototype", 'Class methods are added to the `prototype` at class definition time, not "during" instance construction — so they\'re already available when fields are initialized'],
+    explanation: 'The initialization order in a class is: first the field initializers (in declaration order), and only then does the explicit constructor body run. Instance methods, like `getDefault`, are already available on the class `prototype` since its definition — they don\'t depend on any instance-initialization step. So when `value = this.getDefault()` runs, `getDefault` is already ready to be called, returning `10`. The constructor then logs that already-initialized value.',
+    tags: ['class-fields', 'initialization-order', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-016',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+class Account {
+  private balance = 100;
+  #secret = "hidden";
+}
+const acc = new Account();
+console.log((acc as any).balance);
+console.log((acc as any).secret);
+\`\`\``,
+    options: [
+      { id: 'a', text: "100, 'hidden'", isCorrect: false },
+      { id: 'b', text: '100, undefined', isCorrect: true },
+      { id: 'c', text: 'undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Throws a private-access error for both', isCorrect: false },
+    ],
+    hints: ['`private` is a restriction that exists PURELY in the TypeScript COMPILER — the property exists normally as a public property on the real JavaScript object, accessible via `as any`', '`#secret` is REAL JavaScript privacy (ES2022 private fields) — the field\'s name isn\'t even "secret", it\'s literally `#secret`, so `acc.secret` matches nothing'],
+    explanation: '`private balance` is a restriction that exists ONLY during compilation — at runtime, `balance` is a regular public property on the object, so using `as any` to bypass the type check lets you access it normally, returning `100`. `#secret`, on the other hand, uses JavaScript\'s native private field syntax (not a TypeScript feature): the `#` is part of the field\'s actual name, so there is NO property called `secret` (without `#`) on the object — `acc.secret` simply accesses a non-existent property, returning `undefined`, even with the `as any` cast (which only affects type checking, it doesn\'t create the property).',
+    tags: ['private', 'private-fields', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-017',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+class Service {
+  name!: string;
+  constructor() {
+    console.log(this.name);
+  }
+}
+new Service();
+\`\`\``,
+    options: [
+      { id: 'a', text: "'' (empty string)", isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: 'Compile error: `name` must be initialized in the constructor', isCorrect: false },
+      { id: 'd', text: 'Throws a runtime error', isCorrect: false },
+    ],
+    hints: ['The `!` in `name!: string` is the "definite assignment assertion" — it only tells the compiler "trust me, this will be assigned before use", without actually initializing ANYTHING', 'Since no value is ever actually assigned to `name` before the `console.log`, the property simply doesn\'t exist yet, and its value is `undefined`'],
+    explanation: "The definite assignment assertion (`!` after the field name) is purely an instruction to stop the compiler from complaining about the property not being initialized — it does NOT generate any code that actually assigns a value. Since the constructor never assigns anything to `this.name` before logging it, the property remains without a value (`undefined`) at that point, even though TypeScript \"believes\" (incorrectly, due to the `!`) that it will always be a `string`.",
+    tags: ['definite-assignment-assertion', 'class-fields', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-018',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+enum StatusCode {
+  OK = 200,
+  Created,
+  Accepted,
+}
+console.log(StatusCode.Created, StatusCode.Accepted);
+\`\`\``,
+    options: [
+      { id: 'a', text: '201, 202', isCorrect: true },
+      { id: 'b', text: '1, 2', isCorrect: false },
+      { id: 'c', text: '200, 200', isCorrect: false },
+      { id: 'd', text: 'Compile error: every member needs an explicit value after the first', isCorrect: false },
+    ],
+    hints: ['When a numeric enum member has no explicit value, it gets the previous member\'s value plus 1', '`OK = 200` sets the starting point; the following members continue counting from there'],
+    explanation: 'In a numeric enum, members without an explicit value automatically get the PREVIOUS member\'s value plus `1` — not necessarily starting from zero. Since `OK` was explicitly set to `200`, the following members continue the sequence from there: `Created` is `201`, and `Accepted` is `202`.',
+    tags: ['enum', 'auto-increment', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-019',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+const colors = ["red", "green", "blue"] as const;
+console.log(Object.isFrozen(colors));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'Compile error: `as const` requires the array to already be frozen', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ["`as const` is a purely type-level instruction — it does NOT call `Object.freeze()` or any other function at runtime", 'At runtime, `colors` is a completely normal, mutable JavaScript array, identical to what it would be without `as const`'],
+    explanation: '`as const` instructs TypeScript to infer the most specific possible type (a `readonly ["red", "green", "blue"]` tuple, instead of the more general `string[]`) — but that is PURELY a type-level instruction, with no runtime effect whatsoever. The generated JavaScript array is a regular, fully mutable array, exactly as it would be without `as const`. To actually prevent mutation at runtime, you would need to explicitly call `Object.freeze(colors)` — something `as const` never does.',
+    tags: ['as-const', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'en-ts-pred-020',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`typescript
+function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+function process(value: unknown) {
+  if (isString(value)) {
+    console.log(value.toUpperCase());
+  } else {
+    console.log("not a string");
+  }
+}
+process(42);
+process("hi");
+\`\`\``,
+    options: [
+      { id: 'a', text: "'not a string', 'HI'", isCorrect: true },
+      { id: 'b', text: "'42', 'hi'", isCorrect: false },
+      { id: 'c', text: "'HI', 'not a string'", isCorrect: false },
+      { id: 'd', text: 'Compile error: type predicates cannot be used with `unknown`', isCorrect: false },
+    ],
+    hints: ['The `value is string` syntax (type predicate) only "narrows" the type for the COMPILER — what actually decides the result is the `typeof value === "string"` check INSIDE the function, at runtime', "The function's actual behavior depends entirely on the real verification JavaScript code, not on type-system \"magic\""],
+    explanation: 'Type predicate functions (`value is string`) help the COMPILER narrow types after calls to them, but the actual result returned at runtime depends entirely on the real logic inside the function — here, `typeof value === "string"`. For `process(42)`, `isString(42)` returns `false` (42 isn\'t a string), falling into the `else`, logging `\'not a string\'`. For `process("hi")`, `isString("hi")` returns `true`, and TypeScript already treats `value` as `string` inside the `if`, allowing `.toUpperCase()` with no compile error: it logs `\'HI\'`.',
+    tags: ['type-predicate', 'type-guards', 'unknown', 'output-prediction'],
+  },
 ]
