@@ -1257,4 +1257,246 @@ type Uncap = Uncapitalize<"Hello">; // "hello"
 \`\`\``,
     tags: ['template-literal', 'Capitalize', 'Uppercase', 'intrinsic', 'string-types'],
   },
+  {
+    id: 'ts-pred-001',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+enum Color { Red, Green, Blue }
+console.log(Color.Red, Color[0], Color[Color.Red]);
+\`\`\``,
+    options: [
+      { id: 'a', text: "0, 'Red', 'Red'", isCorrect: true },
+      { id: 'b', text: "'Red', 0, 'Red'", isCorrect: false },
+      { id: 'c', text: '0, undefined, 0', isCorrect: false },
+      { id: 'd', text: "undefined, 'Red', undefined", isCorrect: false },
+    ],
+    hints: ['Enums numéricos recebem valores `0, 1, 2...` automaticamente, na ordem declarada', 'Enums numéricos geram um "mapeamento reverso" em tempo de execução: também é possível acessar o NOME a partir do número'],
+    explanation: 'Enums numéricos atribuem valores incrementais automaticamente: `Color.Red` é `0`. Diferente de enums de string, enums numéricos geram um objeto JavaScript com mapeamento reverso em tempo de execução — por isso `Color[0]` retorna o nome `\'Red\'`. E `Color[Color.Red]` é só `Color[0]`, então também retorna `\'Red\'`.',
+    tags: ['enum', 'mapeamento-reverso', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-002',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+enum Status { Active = "ACTIVE", Inactive = "INACTIVE" }
+console.log(Status.Active, Status["ACTIVE"]);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'ACTIVE', 'Active'", isCorrect: false },
+      { id: 'b', text: "'ACTIVE', undefined", isCorrect: true },
+      { id: 'c', text: "'ACTIVE', 'ACTIVE'", isCorrect: false },
+      { id: 'd', text: 'Lança um erro de compilação', isCorrect: false },
+    ],
+    hints: ['Diferente de enums numéricos, enums de STRING não geram mapeamento reverso em tempo de execução', '`Status["ACTIVE"]` está tentando acessar uma propriedade chamada "ACTIVE", que não existe no objeto gerado — só existe a propriedade "Active" (o nome do membro)'],
+    explanation: 'Apenas enums NUMÉRICOS geram mapeamento reverso (valor → nome) em tempo de execução. Enums de string não têm essa estrutura, pois permitiriam colisões caso o nome do membro coincidisse acidentalmente com outro valor de string. `Status.Active` corretamente retorna `\'ACTIVE\'` (acessando pelo NOME do membro), mas `Status["ACTIVE"]` tenta acessar uma propriedade chamada `"ACTIVE"`, que simplesmente não existe no objeto — retornando `undefined`.',
+    tags: ['enum', 'string-enum', 'mapeamento-reverso', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-003',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O \`tsconfig.json\` deste projeto tem \`isolatedModules: true\`. O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+const enum Direction { Up, Down }
+console.log(Direction.Up);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compila normalmente e imprime 0', isCorrect: false },
+      { id: 'b', text: 'Erro de compilação: const enums não são permitidos com isolatedModules', isCorrect: true },
+      { id: 'c', text: 'Compila, mas falha em tempo de execução', isCorrect: false },
+      { id: 'd', text: 'Imprime "Up" em vez de 0', isCorrect: false },
+    ],
+    hints: ['`const enum` é "inlined" pelo compilador — os usos são substituídos diretamente pelo valor numérico, sem gerar nenhum objeto em tempo de execução', '`isolatedModules` exige que cada arquivo possa ser compilado isoladamente, sem informação de outros arquivos — e inlining de const enum quebra essa garantia entre arquivos'],
+    explanation: '`const enum` é uma otimização que o compilador "inlina" diretamente nos locais de uso (substituindo `Direction.Up` pelo literal `0`), sem nunca gerar um objeto `Direction` real em tempo de execução. Esse inlining exige que o compilador tenha informação completa do enum durante a compilação — algo incompatível com `isolatedModules: true`, que exige que cada arquivo seja transpilável isoladamente (por ferramentas como Babel ou esbuild, sem checagem de tipos cruzada entre arquivos). Por isso, desde o TypeScript 5.0, `const enum` é um erro de compilação quando `isolatedModules` está ativado — exatamente a configuração usada neste projeto.',
+    tags: ['const-enum', 'isolatedModules', 'erro-de-compilacao', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-004',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+interface Box { width: number; }
+interface Box { height: number; }
+const b: Box = { width: 10, height: 20 };
+console.log(b);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Erro de compilação: identificador "Box" duplicado', isCorrect: false },
+      { id: 'b', text: '{ width: 10, height: 20 }', isCorrect: true },
+      { id: 'c', text: '{ height: 20 } (a segunda declaração sobrescreve a primeira)', isCorrect: false },
+      { id: 'd', text: '{ width: 10 } (apenas a primeira declaração é usada)', isCorrect: false },
+    ],
+    hints: ['`interface` suporta "declaration merging": múltiplas declarações com o mesmo nome são combinadas em uma só', '`type` (alias) NÃO suporta esse comportamento — declará-lo duas vezes seria um erro de identificador duplicado'],
+    explanation: 'Interfaces têm uma característica chamada "declaration merging": declarar a mesma interface múltiplas vezes faz o TypeScript COMBINAR todas as propriedades em uma única definição, em vez de gerar um erro. Aqui, `Box` termina com `width` E `height`. Isso é uma diferença importante entre `interface` e `type`: um alias de tipo (`type Box = {...}`) declarado duas vezes geraria um erro de "Duplicate identifier".',
+    tags: ['interface', 'declaration-merging', 'type-vs-interface', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-005',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que acontece ao tentar compilar (e depois executar) este código?
+
+\`\`\`typescript
+interface Point { x: number; y: number; }
+function printPoint(p: Point) {
+  console.log(p.x, p.y);
+}
+const obj = { x: 1, y: 2, z: 3 };
+printPoint(obj);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Erro de compilação: propriedade excedente "z"', isCorrect: false },
+      { id: 'b', text: 'Compila normalmente e imprime 1 2', isCorrect: true },
+      { id: 'c', text: 'Compila, mas lança um erro em tempo de execução por excesso de propriedades', isCorrect: false },
+      { id: 'd', text: 'Erro de compilação: faltam propriedades em "Point"', isCorrect: false },
+    ],
+    hints: ['A checagem de "propriedades excedentes" (excess property check) do TypeScript só se aplica a OBJETOS LITERAIS passados DIRETAMENTE', 'Passar uma variável que já foi atribuída antes (em vez de um literal `{...}` direto na chamada) contorna essa checagem, já que tipagem estrutural permite "ter mais propriedades do que o necessário"'],
+    explanation: 'TypeScript usa tipagem estrutural: um objeto com PELO MENOS as propriedades exigidas é compatível, mesmo tendo propriedades extras. A checagem de "excess property" é uma proteção adicional, mas ela só se aplica quando um objeto literal (`{...}`) é passado DIRETAMENTE como argumento — passar uma variável (`obj`) que já foi atribuída antes contorna essa checagem extra. Se a chamada fosse `printPoint({ x: 1, y: 2, z: 3 })` diretamente, seria um erro de compilação por propriedade excedente.',
+    tags: ['structural-typing', 'excess-property-check', 'interface', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-006',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+const value = "42" as unknown as number;
+console.log(typeof value);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'number'", isCorrect: false },
+      { id: 'b', text: "'string'", isCorrect: true },
+      { id: 'c', text: "'unknown'", isCorrect: false },
+      { id: 'd', text: 'Lança um erro de conversão em tempo de execução', isCorrect: false },
+    ],
+    hints: ['`as` (type assertion) NUNCA converte ou transforma o valor em tempo de execução — ele só muda como o TypeScript "enxerga" o tipo durante a compilação', 'Em tempo de execução, o valor continua sendo exatamente a mesma string `"42"` que sempre foi'],
+    explanation: 'Type assertions (`as`) são puramente uma instrução para o compilador TypeScript, sem nenhum efeito em tempo de execução — diferente de uma conversão real como `Number("42")`. O valor `value` continua sendo, em tempo de execução, a string `"42"` original. `typeof value` reflete a realidade do JavaScript, não o que o TypeScript "acredita" que o tipo seja — por isso retorna `\'string\'`, mesmo que o código tenha "convencido" o compilador de que `value` é um `number`.',
+    tags: ['type-assertion', 'as', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-007',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+const config = { mode: "dark" } satisfies { mode: string };
+console.log(config.mode);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'dark'", isCorrect: true },
+      { id: 'b', text: 'Lança um erro: "dark" não satisfaz o tipo string genérico', isCorrect: false },
+      { id: 'c', text: "'string' (o satisfies converte o valor para o nome do tipo)", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`satisfies` tem ZERO efeito em tempo de execução — é uma checagem puramente de compilação, sem gerar nenhum código adicional', 'Diferente de uma anotação `: Type`, `satisfies` valida a compatibilidade SEM alargar (widen) o tipo inferido do literal'],
+    explanation: '`satisfies` é um operador puramente de compilação: ele verifica se o valor é compatível com o tipo indicado, sem alterar absolutamente nada em tempo de execução nem "alargar" o tipo inferido (diferente de uma anotação `: { mode: string }`, que faria TypeScript esquecer que `mode` é literalmente `"dark"`). O JavaScript gerado é idêntico a se `satisfies` nem existisse — por isso o código simplesmente imprime `\'dark\'`, normalmente.',
+    tags: ['satisfies', 'runtime-vs-compile-time', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-008',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que acontece ao executar este código?
+
+\`\`\`typescript
+function getLength(s?: string) {
+  return s!.length;
+}
+console.log(getLength(undefined));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Imprime 0, pois `!` converte undefined para uma string vazia', isCorrect: false },
+      { id: 'b', text: 'Lança um erro em tempo de execução: Cannot read properties of undefined', isCorrect: true },
+      { id: 'c', text: 'Erro de compilação: `!` não pode ser usado em parâmetros opcionais', isCorrect: false },
+      { id: 'd', text: 'Imprime undefined, sem lançar erro', isCorrect: false },
+    ],
+    hints: ['O operador de asserção não-nula (`!`) é apenas uma instrução para o COMPILADOR ignorar a possibilidade de `null`/`undefined` — ele não insere NENHUMA verificação real em tempo de execução', 'Como `s` realmente é `undefined` aqui, tentar acessar `.length` nele falha exatamente como falharia em JavaScript puro'],
+    explanation: 'O operador `!` (non-null assertion) é uma promessa feita AO COMPILADOR, dizendo "confie em mim, isso nunca será null/undefined aqui" — mas essa promessa não gera nenhum código de verificação real. Se a promessa for falsa (como aqui, onde `s` é genuinely `undefined`), o erro de runtime do JavaScript puro acontece normalmente: tentar ler `.length` de `undefined` lança `TypeError: Cannot read properties of undefined (reading \'length\')`. O `!` oferece ZERO segurança em tempo de execução — é puramente uma supressão do compilador.',
+    tags: ['non-null-assertion', 'runtime-vs-compile-time', 'erro-de-runtime', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-009',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`typescript
+function process(value: string | number) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
+process(42);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'42.00'", isCorrect: true },
+      { id: 'b', text: "'42'", isCorrect: false },
+      { id: 'c', text: 'Erro de compilação: `toFixed` não existe em `string | number`', isCorrect: false },
+      { id: 'd', text: 'Lança um erro em tempo de execução', isCorrect: false },
+    ],
+    hints: ['O `typeof value === "string"` é uma checagem de tipo que TAMBÉM EXECUTA em tempo de execução — não é só uma dica para o compilador', 'Dentro do `else`, tanto o TypeScript quanto o runtime sabem que `value` só pode ser `number`'],
+    explanation: 'A checagem `typeof value === "string"` faz dupla função: em tempo de execução, ela realmente verifica o tipo do valor; e o compilador TypeScript usa essa mesma checagem para "estreitar" (narrow) o tipo dentro de cada ramo do `if`/`else`. Como `42` é um `number`, a condição é `false`, executando o `else`, onde TypeScript já sabe (corretamente) que `value` é `number`, permitindo `.toFixed(2)` sem erro de compilação. `(42).toFixed(2)` retorna a string `\'42.00\'`.',
+    tags: ['type-narrowing', 'typeof', 'union-types', 'output-prediction'],
+  },
+  {
+    id: 'ts-pred-010',
+    domain: 'typescript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que acontece ao tentar compilar este código?
+
+\`\`\`typescript
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+  }
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Compila normalmente; o caso "square" simplesmente retorna undefined em runtime', isCorrect: false },
+      { id: 'b', text: 'Erro de compilação: nem todos os caminhos de código retornam um valor', isCorrect: true },
+      { id: 'c', text: 'Compila, mas lança um erro em tempo de execução ao receber um "square"', isCorrect: false },
+      { id: 'd', text: 'Erro de compilação: switch precisa ter um caso "default" obrigatoriamente', isCorrect: false },
+    ],
+    hints: ['A função declara explicitamente que retorna `number` (`: number`)', 'O caso "square" não tem nenhum `return` — esse caminho de código "cairia" para fora da função sem retornar nada, o que conflita com o tipo de retorno declarado'],
+    explanation: 'Como a função tem uma anotação de retorno explícita (`: number`), o TypeScript verifica se TODOS os caminhos possíveis de execução realmente retornam um `number`. O `switch` só trata o caso `"circle"` — se `shape.kind` for `"square"`, a execução simplesmente "cai" para fora do switch sem nenhum `return`, retornando implicitamente `undefined`. Isso conflita com o tipo de retorno declarado, gerando o erro "Function lacks ending return statement and return type does not include \'undefined\'."',
+    tags: ['discriminated-union', 'switch', 'tipo-de-retorno', 'erro-de-compilacao', 'output-prediction'],
+  },
 ]
