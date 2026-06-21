@@ -768,4 +768,970 @@ export const questionsEn: Question[] = [
     explanation: 'A news portal needs good SEO (rules out CSR) and frequently changing content (rules out pure SSG with no revalidation). ISR is often the best fit: articles are statically generated for CDN performance and revalidated automatically (e.g., every 60 seconds) or on-demand when an editor publishes. SSR is an alternative when articles must always reflect the latest version on every request, but it increases server costs under heavy traffic. Adding a sitemap.xml does not fix CSR SEO limitations — crawlers may not execute JavaScript at all, or may index a blank page.',
     tags: ['SSR', 'ISR', 'rendering', 'SEO', 'news', 'architecture'],
   },
+  // ─── Output prediction (JavaScript) ────────────────────────────────────────
+  {
+    id: 'en-js-pred-001',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 1, 2', isCorrect: false },
+      { id: 'b', text: '3, 3, 3', isCorrect: true },
+      { id: 'c', text: '0, 0, 0', isCorrect: false },
+      { id: 'd', text: 'undefined, undefined, undefined', isCorrect: false },
+    ],
+    hints: ['`var` does not create a new binding per loop iteration', 'By the time the callback runs, the loop has already finished'],
+    explanation: '`var` is scoped to the function (or global scope), not to the `for` block. There is a single shared `i` across all iterations. Since `setTimeout` schedules its callback for later (even with a 0ms delay, it still goes through the macrotask queue), the synchronous loop fully completes before any callback runs — at that point `i` is already 3. All three callbacks read the same `i`, now equal to 3.',
+    tags: ['closures', 'var', 'event-loop', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-002',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 1, 2', isCorrect: true },
+      { id: 'b', text: '3, 3, 3', isCorrect: false },
+      { id: 'c', text: '2, 2, 2', isCorrect: false },
+      { id: 'd', text: 'The order is undefined', isCorrect: false },
+    ],
+    hints: ['`let` is block-scoped', 'Each iteration of a `for` loop with `let` creates a fresh binding of `i`'],
+    explanation: 'Unlike `var`, `let` creates a brand-new binding of `i` for every loop iteration. Each closure created by `setTimeout` captures its own copy of `i`, holding the value it had during that specific iteration (0, 1, and 2). This is exactly the behavior that made `let` fix one of the most common closure-in-loop bugs from before ES6.',
+    tags: ['closures', 'let', 'block-scope', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-003',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(typeof null);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'null'", isCorrect: false },
+      { id: 'b', text: "'object'", isCorrect: true },
+      { id: 'c', text: "'undefined'", isCorrect: false },
+      { id: 'd', text: 'Throws an error', isCorrect: false },
+    ],
+    hints: ['It is a historical bug in the language, kept for backwards compatibility'],
+    explanation: '`typeof null` returns `"object"` — a well-known bug dating back to JavaScript\'s first version (1995), related to how values were represented internally (null shared the same type tag as objects). It was never fixed because doing so would break existing code across the web. To safely check for null, use `value === null`.',
+    tags: ['typeof', 'null', 'quirks', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-004',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(typeof NaN);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'NaN'", isCorrect: false },
+      { id: 'b', text: "'undefined'", isCorrect: false },
+      { id: 'c', text: "'number'", isCorrect: true },
+      { id: 'd', text: "'object'", isCorrect: false },
+    ],
+    hints: ['NaN stands for "Not a Number", but its type is still numeric'],
+    explanation: 'Despite the name ("Not a Number"), `NaN` is a value of type `number` — it represents an invalid numeric result (like `0/0` or `Number("abc")`), but still belongs to the number type. Bonus fact: `NaN` is the only value in JavaScript that is not equal to itself (`NaN === NaN` is `false`).',
+    tags: ['typeof', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-005',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+let x;
+console.log(typeof x, typeof y);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'undefined', 'undefined'", isCorrect: true },
+      { id: 'b', text: 'Throws a ReferenceError before logging anything', isCorrect: false },
+      { id: 'c', text: "'undefined', throws ReferenceError", isCorrect: false },
+      { id: 'd', text: "'undefined', 'object'", isCorrect: false },
+    ],
+    hints: ['`y` was never declared anywhere', '`typeof` is one of the few operations that is safe on undeclared variables'],
+    explanation: '`typeof` is special: it is the only operator that does not throw when applied to an identifier that was never declared — it simply returns `"undefined"`. `x`, declared with `let` but never assigned, also holds the value `undefined`, so its `typeof` is also `"undefined"`. If you tried `console.log(y)` directly (without `typeof`), that would throw a `ReferenceError`.',
+    tags: ['typeof', 'undefined', 'reference-error', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-006',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log([] == false);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'false', isCorrect: false },
+      { id: 'b', text: 'true', isCorrect: true },
+      { id: 'c', text: 'Throws a TypeError', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`==` performs type coercion before comparing', 'An empty array is coerced to an empty string when converted to a primitive'],
+    explanation: 'With `==`, the array is coerced to a primitive: `[].toString()` is `""`. Then `false` is coerced to a number (`0`) and `""` is also coerced to a number (`0`). `0 == 0` is `true`. This is one of the classic examples used to justify "never use `==`, use `===`" — with `===`, `[] === false` would be `false` directly, with no coercion.',
+    tags: ['coercion', 'loose-equality', 'array', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-007',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log('' == 0, '' === 0);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, true', isCorrect: false },
+      { id: 'b', text: 'false, false', isCorrect: false },
+      { id: 'c', text: 'true, false', isCorrect: true },
+      { id: 'd', text: 'false, true', isCorrect: false },
+    ],
+    hints: ['`==` converts the empty string to a number before comparing', '`===` never performs type coercion'],
+    explanation: 'With `==`, the empty string `\'\'` is converted to a number, resulting in `0`, so `0 == 0` is `true`. With `===` there is no coercion: comparing a `string` directly with a `number` always results in `false`, regardless of the values.',
+    tags: ['coercion', 'loose-equality', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-008',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(null == undefined, null === undefined);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, true', isCorrect: false },
+      { id: 'b', text: 'true, false', isCorrect: true },
+      { id: 'c', text: 'false, false', isCorrect: false },
+      { id: 'd', text: 'false, true', isCorrect: false },
+    ],
+    hints: ['The spec treats `null == undefined` as a special case', '`===` also compares the type, and `null`/`undefined` are distinct primitive types'],
+    explanation: 'The JavaScript spec defines a special rule: `null` is "loosely equal" to `undefined` (and only to `undefined` — neither is `==` to any other falsy value like `0` or `""`). That is why `null == undefined` is `true`. `===` also compares type: `null` and `undefined` are different primitive types, so `null === undefined` is `false`.',
+    tags: ['null', 'undefined', 'loose-equality', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-009',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(NaN === NaN);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['`NaN` is the only value in the language that is not equal to itself', 'Use `Number.isNaN()` or `Object.is()` to check for NaN'],
+    explanation: 'By definition of the IEEE 754 spec (used for numbers in JS), `NaN` is never equal to anything, including itself. To reliably check whether a value is `NaN`, use `Number.isNaN(value)` or `Object.is(value, NaN)` — never `value === NaN`.',
+    tags: ['NaN', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-010',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log([1, 2, 3] + [4, 5, 6]);
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, 3, 4, 5, 6]', isCorrect: false },
+      { id: 'b', text: "'1,2,34,5,6'", isCorrect: true },
+      { id: 'c', text: 'NaN', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['The `+` operator has no special handling for arrays', 'Before adding, both operands are converted to primitives'],
+    explanation: 'The `+` operator does not know how to concatenate arrays. When at least one operand is not a number, JS converts both to primitives via `toString()`. `[1,2,3].toString()` is `"1,2,3"` and `[4,5,6].toString()` is `"4,5,6"`. After that, `+` becomes string concatenation: `"1,2,3" + "4,5,6"` = `"1,2,34,5,6"`.',
+    tags: ['coercion', 'array', 'plus-operator', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-011',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log({} + []);
+\`\`\``,
+    options: [
+      { id: 'a', text: '0', isCorrect: false },
+      { id: 'b', text: "'[object Object]'", isCorrect: true },
+      { id: 'c', text: 'NaN', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['As an argument inside a function call, `{}` is unambiguously an object value, never a block', '`{}.toString()` returns `"[object Object]"`'],
+    explanation: 'Inside `console.log(...)`, `{}` is unambiguously an object literal expression (there is no block-vs-expression ambiguity like there would be in a bare statement). Both operands are converted to strings: `{}.toString()` is `"[object Object]"` and `[].toString()` is `""`. The concatenation result is `"[object Object]"`. (Trivia: `{} + []` as a bare statement at the start of a line behaves differently, since `{}` there is parsed as an empty block.)',
+    tags: ['coercion', 'object', 'plus-operator', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-012',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function greet() {}
+console.log(typeof greet);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'object'", isCorrect: false },
+      { id: 'b', text: "'function'", isCorrect: true },
+      { id: 'c', text: "'undefined'", isCorrect: false },
+      { id: 'd', text: "'method'", isCorrect: false },
+    ],
+    hints: ['Functions are first-class citizens in JavaScript, with their own dedicated `typeof` result'],
+    explanation: 'Although functions are technically objects under the hood (they can have properties, for example), `typeof` has a dedicated return value for them: `"function"`. This holds for function declarations, arrow functions, and functions created with `new Function()`.',
+    tags: ['typeof', 'function', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-013',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const arr = [1, 2, 3];
+console.log(typeof arr, Array.isArray(arr));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'array', true", isCorrect: false },
+      { id: 'b', text: "'object', true", isCorrect: true },
+      { id: 'c', text: "'object', false", isCorrect: false },
+      { id: 'd', text: "'array', false", isCorrect: false },
+    ],
+    hints: ['Arrays do not have their own type in the `typeof` system', 'To check if something is an array, always use `Array.isArray()`, never `typeof`'],
+    explanation: 'JavaScript has no primitive "array" type — arrays are a special kind of object, so `typeof arr` returns `"object"`. To distinguish an array from a plain object, the correct way is `Array.isArray(arr)`, which returns `true` for arrays (including arrays from other realms/iframes, unlike checking `arr.constructor === Array`).',
+    tags: ['typeof', 'Array.isArray', 'array', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-014',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const obj = { a: 1, b: undefined, c: () => {}, d: 2 };
+console.log(JSON.stringify(obj));
+\`\`\``,
+    options: [
+      { id: 'a', text: '\'{"a":1,"b":undefined,"c":undefined,"d":2}\'', isCorrect: false },
+      { id: 'b', text: '\'{"a":1,"d":2}\'', isCorrect: true },
+      { id: 'c', text: '\'{"a":1,"b":null,"c":null,"d":2}\'', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['JSON has no representation for `undefined` or for functions', 'Properties whose value serializes to "nothing" are omitted, not turned into `null`'],
+    explanation: 'JSON has no concept of `undefined` or of a function. When serializing an object, `JSON.stringify` simply omits properties whose value is `undefined` or a function — they do not appear in the result (unlike `null`, which is preserved as `null`). That is why the final result is `\'{"a":1,"d":2}\'`.',
+    tags: ['JSON.stringify', 'undefined', 'function', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-015',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(JSON.stringify(undefined));
+console.log(typeof JSON.stringify(undefined));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'undefined' / 'string'", isCorrect: false },
+      { id: 'b', text: 'undefined / \'undefined\'', isCorrect: true },
+      { id: 'c', text: "'null' / 'string'", isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError / never reaches the second line', isCorrect: false },
+    ],
+    hints: ['`JSON.stringify(undefined)` does not return a string — it returns the value `undefined` itself'],
+    explanation: '`JSON.stringify(undefined)` is a special case: since `undefined` has no JSON representation, the function returns the primitive value `undefined` (not the string `"undefined"`). `console.log(undefined)` prints `undefined` with no quotes, and `typeof undefined` is `\'undefined\'`. This differs from inside an object/array (seen in the previous question), where the property is simply omitted.',
+    tags: ['JSON.stringify', 'undefined', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-016',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const user = Object.freeze({ name: 'Ana', address: { city: 'SP' } });
+user.name = 'Bia';
+user.address.city = 'RJ';
+console.log(user.name, user.address.city);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'Ana', 'SP'", isCorrect: false },
+      { id: 'b', text: "'Bia', 'RJ'", isCorrect: false },
+      { id: 'c', text: "'Ana', 'RJ'", isCorrect: true },
+      { id: 'd', text: 'Throws a TypeError on the first assignment', isCorrect: false },
+    ],
+    hints: ['`Object.freeze` only protects the first level of the object', 'In non-strict mode, assignments to frozen properties fail silently (no error)'],
+    explanation: '`Object.freeze` is shallow: it prevents adding, removing, or reassigning the object\'s direct properties, but does not freeze objects nested inside it. `user.name = \'Bia\'` fails silently (in non-strict mode) because `name` is protected — `user.name` stays `\'Ana\'`. But `user.address` is just a reference to another object, which is not frozen: `user.address.city = \'RJ\'` works normally. To freeze deeply, you would need to recursively freeze every level.',
+    tags: ['Object.freeze', 'immutability', 'shallow', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-017',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const arr = [1, 2, NaN];
+console.log(arr.indexOf(NaN), arr.includes(NaN));
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, true', isCorrect: false },
+      { id: 'b', text: '-1, false', isCorrect: false },
+      { id: 'c', text: '2, false', isCorrect: false },
+      { id: 'd', text: '-1, true', isCorrect: true },
+    ],
+    hints: ['`indexOf` uses `===` internally (and `NaN === NaN` is `false`)', '`includes` uses the "SameValueZero" algorithm, which treats `NaN` as equal to `NaN`'],
+    explanation: '`Array.prototype.indexOf` compares elements using strict equality (`===`), and since `NaN === NaN` is `false`, `indexOf` never finds a `NaN`, returning `-1`. `Array.prototype.includes` uses the SameValueZero algorithm, which treats `NaN` as equal to `NaN` — so `includes(NaN)` returns `true` even when `indexOf(NaN)` returns `-1`. This is one of the reasons `includes` was added: to solve exactly this `indexOf` limitation.',
+    tags: ['Array.includes', 'Array.indexOf', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-018',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const user = { name: 'Ana' };
+console.log(user.getAge?.());
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Throws TypeError: getAge is not a function', isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: 'null', isCorrect: false },
+      { id: 'd', text: 'false', isCorrect: false },
+    ],
+    hints: ['`?.()` checks whether the thing on the left exists before trying to call it as a function'],
+    explanation: 'Optional chaining (`?.`) also works on function calls: `user.getAge?.()` first checks whether `user.getAge` is `null`/`undefined`. Since `getAge` does not exist on `user`, the whole expression short-circuits and returns `undefined` immediately, without trying to invoke anything as a function — avoiding the `TypeError: getAge is not a function` that `user.getAge()` directly would throw.',
+    tags: ['optional-chaining', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-019',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const count = 0;
+console.log(count ?? 10, count || 10);
+\`\`\``,
+    options: [
+      { id: 'a', text: '10, 10', isCorrect: false },
+      { id: 'b', text: '0, 0', isCorrect: false },
+      { id: 'c', text: '0, 10', isCorrect: true },
+      { id: 'd', text: '10, 0', isCorrect: false },
+    ],
+    hints: ['`??` only falls back to the default when the left side is `null` or `undefined`', '`||` falls back to the default for ANY "falsy" value (0, "", false, NaN...)'],
+    explanation: '`??` (nullish coalescing) only uses the right-hand value when the left side is `null` or `undefined`. Since `0` is neither `null` nor `undefined`, `count ?? 10` returns `0`. `||` uses the right-hand value for any "falsy" value — and `0` is falsy — so `count || 10` returns `10`. This is exactly why `??` was added: to avoid this classic bug when dealing with numeric values that can legitimately be `0`.',
+    tags: ['nullish-coalescing', 'logical-or', 'falsy', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-020',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function show({ a = 1, b = 2 } = {}) {
+  console.log(a, b);
+}
+show({ a: null, b: undefined });
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: 'null, 2', isCorrect: true },
+      { id: 'c', text: 'null, undefined', isCorrect: false },
+      { id: 'd', text: '1, undefined', isCorrect: false },
+    ],
+    hints: ['Destructuring default values only kick in for `undefined`, never for `null`'],
+    explanation: 'Default values in destructuring (and in function parameters) only apply when the corresponding value is exactly `undefined` — `null` is treated as a valid value and does not trigger the default. That is why `a` receives `null` (an explicit value, not replaced) and `b` receives `2` (because `undefined` triggers the default).',
+    tags: ['destructuring', 'default-values', 'null', 'undefined', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-021',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const arr = [1, , 3];
+console.log(arr.length, arr[1]);
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, undefined', isCorrect: false },
+      { id: 'b', text: '3, undefined', isCorrect: true },
+      { id: 'c', text: '3, null', isCorrect: false },
+      { id: 'd', text: 'Throws a SyntaxError', isCorrect: false },
+    ],
+    hints: ['A sparse array still counts the empty slot toward `.length`'],
+    explanation: 'The literal `[1, , 3]` creates a sparse array with 3 slots: index 0 = `1`, index 1 = a "hole" (an empty slot, not quite the same as an explicit `undefined`, but it behaves like `undefined` when read), index 2 = `3`. `arr.length` is `3` and `arr[1]` returns `undefined` when accessed directly — though methods like `forEach`/`map` treat empty slots differently from a real `undefined`.',
+    tags: ['sparse-array', 'array', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-022',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const s = 'abc';
+s[0] = 'z';
+console.log(s);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'zbc'", isCorrect: false },
+      { id: 'b', text: "'abc'", isCorrect: true },
+      { id: 'c', text: 'Throws a TypeError', isCorrect: false },
+      { id: 'd', text: "'z'", isCorrect: false },
+    ],
+    hints: ['Strings are immutable primitives in JavaScript'],
+    explanation: 'Strings in JavaScript are immutable: no operation can change the characters of an existing string. The assignment `s[0] = \'z\'` is simply ignored silently (in non-strict mode) because string indices are not writable properties. To "modify" a string, you must create a new one, e.g.: `s = \'z\' + s.slice(1)`.',
+    tags: ['string', 'immutability', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-023',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(0.1 + 0.2 === 0.3);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Throws a RangeError', isCorrect: false },
+    ],
+    hints: ['Floating-point numbers (IEEE 754) cannot represent every decimal fraction exactly'],
+    explanation: 'JavaScript uses double-precision floating-point numbers (IEEE 754), which cannot exactly represent certain decimal fractions. `0.1 + 0.2` results in `0.30000000000000004`, not exactly `0.3`. To compare floats safely, compare the difference against an epsilon: `Math.abs(a - b) < Number.EPSILON`.',
+    tags: ['floating-point', 'numeric-precision', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-024',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(parseInt('08'), parseInt('0x10'));
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 16', isCorrect: false },
+      { id: 'b', text: '8, 16', isCorrect: true },
+      { id: 'c', text: '8, 10', isCorrect: false },
+      { id: 'd', text: 'NaN, 16', isCorrect: false },
+    ],
+    hints: ['Modern engines always default to base 10, except when the string starts with "0x"'],
+    explanation: 'In modern engines (ES5+), `parseInt` without a radix argument defaults to base 10 — `parseInt(\'08\')` is `8`, there is no longer the historical bug of interpreting a leading `0` as octal. The exception is the `0x`/`0X` prefix, which `parseInt` automatically recognizes as hexadecimal: `parseInt(\'0x10\')` is `16`. Best practice: always pass the radix explicitly, e.g. `parseInt(\'08\', 10)`.',
+    tags: ['parseInt', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-025',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(parseInt('abc'), parseInt('12px'));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'NaN, NaN', isCorrect: false },
+      { id: 'b', text: '0, 12', isCorrect: false },
+      { id: 'c', text: 'NaN, 12', isCorrect: true },
+      { id: 'd', text: 'NaN, NaN px', isCorrect: false },
+    ],
+    hints: ['`parseInt` reads digits left to right until it hits an invalid character'],
+    explanation: '`parseInt` parses the string left to right and stops at the first character that does not form a valid number. `\'abc\'` does not start with any digit, so the result is `NaN`. `\'12px\'` starts with valid digits (`12`) and stops at `p`, returning `12`. This differs from `Number(\'12px\')`, which returns `NaN` because `Number()` requires the entire string to be numeric.',
+    tags: ['parseInt', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-026',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const obj = { x: 1 };
+console.log(\`Value: \${obj}\`);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Value: {"x":1}', isCorrect: false },
+      { id: 'b', text: 'Value: [object Object]', isCorrect: true },
+      { id: 'c', text: 'Value: undefined', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['Interpolating a value inside a template literal converts it to a string via `toString()`, not via `JSON.stringify`'],
+    explanation: 'When interpolating a value inside `${...}` in a template literal, JavaScript calls `String(value)`, which in turn calls `toString()`. A plain object\'s default `toString()` returns `"[object Object]"` — it does not serialize the properties the way `JSON.stringify` would. To see the object\'s contents, you would need to call `JSON.stringify(obj)` explicitly.',
+    tags: ['template-literal', 'toString', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-027',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log([10, 1, 2].sort());
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, 10]', isCorrect: false },
+      { id: 'b', text: '[1, 10, 2]', isCorrect: true },
+      { id: 'c', text: '[10, 1, 2]', isCorrect: false },
+      { id: 'd', text: '[2, 1, 10]', isCorrect: false },
+    ],
+    hints: ['Without a comparator, `sort()` converts every element to a string before comparing'],
+    explanation: 'Without a comparator function, `Array.prototype.sort()` converts each element to a string and sorts lexicographically (like in a dictionary). Comparing as text: `"1"`, `"10"`, `"2"` — `"1"` comes before `"10"` (which starts with "1" plus an extra character), and `"10"` comes before `"2"` because `\'1\' < \'2\'` when comparing characters. Result: `[1, 10, 2]`. For correct numeric sorting, use `sort((a, b) => a - b)`.',
+    tags: ['Array.sort', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-028',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function* gen() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+const it = gen();
+console.log(it.next().value, it.next().value, it.next().value, it.next().value);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3, undefined', isCorrect: true },
+      { id: 'b', text: '1, 2, 3, 3', isCorrect: false },
+      { id: 'c', text: '1, 2, undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Throws an error on the fourth call', isCorrect: false },
+    ],
+    hints: ['A generator\'s `return` becomes the `.value` of the call that finishes the iterator (with `done: true`)', 'Calling `.next()` after a generator has already finished always returns `{ value: undefined, done: true }`'],
+    explanation: 'Each `yield` pauses the function and delivers a value: the first `.next()` call returns `{ value: 1, done: false }`, the second `{ value: 2, done: false }`. `return 3` finishes the generator, delivering `{ value: 3, done: true }` on the third call. Any `.next()` call after that (the generator has already finished) returns `{ value: undefined, done: true }` forever.',
+    tags: ['generators', 'yield', 'iterators', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-029',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+console.log(Symbol('id') === Symbol('id'));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: "'id'", isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError', isCorrect: false },
+    ],
+    hints: ['The string passed to `Symbol()` is just a debug description, not an equality identifier'],
+    explanation: 'Every call to `Symbol()` creates a completely unique primitive value, even when the description passed as an argument is identical. The string `\'id\'` is only there to help with debugging (it shows up in `symbol.toString()` or the console), but it does not affect the symbol\'s identity. That is why two distinct `Symbol(\'id\')` values are never equal — this is exactly the point of Symbol: creating guaranteed-unique, collision-free object keys.',
+    tags: ['Symbol', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-030',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const nested = [1, [2, [3, [4, 5]]]];
+console.log(nested.flat(Infinity));
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, [3, [4, 5]]]', isCorrect: false },
+      { id: 'b', text: '[1, 2, 3, 4, 5]', isCorrect: true },
+      { id: 'c', text: '[1, [2, [3, [4, 5]]]]', isCorrect: false },
+      { id: 'd', text: 'Throws a RangeError', isCorrect: false },
+    ],
+    hints: ['The argument to `flat()` defines how many levels of depth to flatten', '`Infinity` flattens every level, no matter how nested'],
+    explanation: '`Array.prototype.flat(depth)` flattens the array up to `depth` levels deep (the default with no argument is `1`). Passing `Infinity` tells the method to flatten every level of nesting, no matter how deep — resulting in a fully flat array: `[1, 2, 3, 4, 5]`.',
+    tags: ['Array.flat', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-031',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function makeCounter() {
+  let count = 0;
+  return function () {
+    return ++count;
+  };
+}
+const counterA = makeCounter();
+const counterB = makeCounter();
+console.log(counterA(), counterA(), counterB());
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3', isCorrect: false },
+      { id: 'b', text: '1, 2, 1', isCorrect: true },
+      { id: 'c', text: '1, 1, 1', isCorrect: false },
+      { id: 'd', text: '0, 1, 0', isCorrect: false },
+    ],
+    hints: ['Each call to `makeCounter()` creates a fresh lexical scope, with its own `count` variable'],
+    explanation: 'Each call to `makeCounter()` creates a completely fresh scope, with its own independent `count` variable. `counterA` and `counterB` are separate closures, each closing over its own copy of `count`. That is why `counterA()` called twice returns `1` and then `2`, while `counterB()`, called from a different closure, starts from scratch and returns `1`.',
+    tags: ['closures', 'factory-function', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-032',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const key = 'role';
+const user = { name: 'Ana', [key]: 'admin' };
+console.log(user.role);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'key'", isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: false },
+      { id: 'c', text: "'admin'", isCorrect: true },
+      { id: 'd', text: 'Throws a SyntaxError', isCorrect: false },
+    ],
+    hints: ['`[key]` inside an object literal uses the value of the `key` variable as the property name'],
+    explanation: 'The `[key]: value` syntax inside an object literal (computed property name) uses the **value** of the `key` variable (the string `\'role\'`) as the property name, not the literal name "key". Since `key` holds `\'role\'`, the resulting object has the property `role: \'admin\'`, so `user.role` is `\'admin\'`.',
+    tags: ['computed-property', 'object-literal', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-033',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+let a = 1;
+let b = 2;
+[a, b] = [b, a];
+console.log(a, b);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: '2, 1', isCorrect: true },
+      { id: 'c', text: '2, 2', isCorrect: false },
+      { id: 'd', text: 'Throws a SyntaxError', isCorrect: false },
+    ],
+    hints: ['The right side `[b, a]` is fully evaluated (creating a new array) before any assignment happens'],
+    explanation: 'Destructuring assignment enables the classic "swap without a temp variable". The right-hand side `[b, a]` is evaluated first, creating a temporary array `[2, 1]` from the current values. Only then is that array destructured into the left-hand variables: `a` gets `2` and `b` gets `1`.',
+    tags: ['destructuring', 'swap', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-034',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function add(a, b = a + 1) {
+  return b;
+}
+console.log(add(1), add(5));
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, 6', isCorrect: true },
+      { id: 'b', text: '1, 1', isCorrect: false },
+      { id: 'c', text: 'undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Throws a ReferenceError', isCorrect: false },
+    ],
+    hints: ['Default parameter values are re-evaluated on every call, not memoized', 'A default parameter can reference earlier parameters in the list'],
+    explanation: 'Default parameter values are expressions evaluated on each function call, at the moment the call happens — and they can reference parameters declared earlier in the list. In `add(1)`, `b` was not passed, so `b = a + 1 = 1 + 1 = 2`. In `add(5)`, again `b` was not passed, so `b = 5 + 1 = 6`. The default value is never "frozen" at function-definition time.',
+    tags: ['default-parameters', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-035',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function test(x) {
+  switch (x) {
+    case 1:
+    case 2:
+      console.log('low');
+      break;
+    case 3:
+      console.log('high');
+      break;
+    default:
+      console.log('other');
+  }
+}
+test(2);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'other'", isCorrect: false },
+      { id: 'b', text: "'low'", isCorrect: true },
+      { id: 'c', text: "'high'", isCorrect: false },
+      { id: 'd', text: "'low' then 'high'", isCorrect: false },
+    ],
+    hints: ['A `case` without `break` falls through to the next `case`, running its code', '`case 1` is empty and falls straight into `case 2`, where the `console.log` is'],
+    explanation: 'In a `switch`, when a `case` has no `break`, execution falls through to the next `case`. Here, `case 1` is empty and simply falls through to `case 2`. With `x = 2`, the `switch` matches `case 2` directly, runs `console.log(\'low\')`, and hits the `break`, stopping there — never reaching `case 3` or `default`.',
+    tags: ['switch', 'fallthrough', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-036',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+function createFib() {
+  const cache = {};
+  return function fib(n) {
+    if (n in cache) return cache[n];
+    if (n <= 1) return n;
+    return (cache[n] = fib(n - 1) + fib(n - 2));
+  };
+}
+const fib = createFib();
+console.log(fib(5));
+\`\`\``,
+    options: [
+      { id: 'a', text: '5', isCorrect: true },
+      { id: 'b', text: '8', isCorrect: false },
+      { id: 'c', text: '3', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['The Fibonacci sequence starts 0, 1, 1, 2, 3, 5...', 'The `cache` in the closure memoizes already-computed results, but does not change the final value'],
+    explanation: 'The function uses closure-based memoization: `cache` persists across recursive calls to `fib`, avoiding recomputation of already-solved subproblems — but that is a performance optimization, it does not change the mathematical result. The (0-indexed) Fibonacci sequence is 0, 1, 1, 2, 3, 5, 8... So `fib(5)` (the 6th term, index 5) is `5`: `fib(5) = fib(4) + fib(3) = 3 + 2 = 5`.',
+    tags: ['closures', 'memoization', 'recursion', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-037',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const account = {
+  _balance: 100,
+  get balance() {
+    return \`$\${this._balance}\`;
+  },
+  set balance(value) {
+    this._balance = value;
+  },
+};
+console.log(account.balance);
+account.balance = 250;
+console.log(account.balance);
+\`\`\``,
+    options: [
+      { id: 'a', text: '$100 / $250', isCorrect: true },
+      { id: 'b', text: 'function / function', isCorrect: false },
+      { id: 'c', text: '$100 / 250', isCorrect: false },
+      { id: 'd', text: 'Throws a TypeError on assignment', isCorrect: false },
+    ],
+    hints: ['`get`/`set` make `account.balance` behave like a regular property, not a method', 'Reading or assigning `account.balance` (no parentheses) is what triggers the getter/setter'],
+    explanation: 'Getters and setters make a property behave specially when read or assigned, without needing function-call syntax. `console.log(account.balance)` invokes the getter, which formats `_balance` as a string: `\'$100\'`. The assignment `account.balance = 250` invokes the setter, which updates `_balance` to `250`. The next getter access reflects that change: `\'$250\'`.',
+    tags: ['getters', 'setters', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-038',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+let x = (1, 2, 3);
+console.log(x);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1', isCorrect: false },
+      { id: 'b', text: '[1, 2, 3]', isCorrect: false },
+      { id: 'c', text: '3', isCorrect: true },
+      { id: 'd', text: 'Throws a SyntaxError', isCorrect: false },
+    ],
+    hints: ['The comma here is the comma operator, not a list separator', 'The comma operator evaluates each expression and returns the value of the last one'],
+    explanation: 'Inside parentheses used as an expression, the comma is the comma operator: it evaluates each expression left to right and discards every result except the last one. `(1, 2, 3)` evaluates `1`, then `2`, then `3`, and the whole expression returns `3` — which is what gets assigned to `x`. It is rarely used intentionally, but shows up in minified code and in some `for` loop patterns.',
+    tags: ['comma-operator', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-039',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const arr = [3, 1, 2];
+const sorted = arr.sort();
+console.log(arr === sorted, arr);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'false, [1, 2, 3]', isCorrect: false },
+      { id: 'b', text: 'true, [1, 2, 3]', isCorrect: true },
+      { id: 'c', text: 'true, [3, 1, 2]', isCorrect: false },
+      { id: 'd', text: 'false, [3, 1, 2]', isCorrect: false },
+    ],
+    hints: ['`sort()` reorders the original array in place', 'Besides mutating the original array, `sort()` also returns the same reference'],
+    explanation: '`Array.prototype.sort()` is a mutating method: it reorders the original array\'s elements in place and returns the same reference to that array, not a copy. That is why `arr === sorted` is `true` (same reference) and the original `arr` already shows up sorted: `[1, 2, 3]`. To avoid mutating the original, you would need to copy first: `[...arr].sort()`.',
+    tags: ['Array.sort', 'mutability', 'reference', 'output-prediction'],
+  },
+  {
+    id: 'en-js-pred-040',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code log to the console?
+
+\`\`\`javascript
+const original = { a: 1, nested: { b: 2 } };
+const copy = { ...original };
+copy.a = 99;
+copy.nested.b = 99;
+console.log(original.a, original.nested.b);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: '99, 99', isCorrect: false },
+      { id: 'c', text: '1, 99', isCorrect: true },
+      { id: 'd', text: '99, 2', isCorrect: false },
+    ],
+    hints: ['Spread (`...`) makes a shallow copy, only one level deep', 'Properties that are objects remain the SAME reference in the copy'],
+    explanation: 'The spread operator (`{ ...original }`) creates a shallow copy: it copies the values of top-level properties, but if a property is an object (like `nested`), only the *reference* is copied — `copy.nested` and `original.nested` point to the same object. That is why `copy.a = 99` does not affect `original.a` (which stays `1`, since `a` is an independent primitive), but `copy.nested.b = 99` does affect `original.nested.b` too, since both share the same nested object.',
+    tags: ['spread', 'shallow-copy', 'reference', 'output-prediction'],
+  },
 ]

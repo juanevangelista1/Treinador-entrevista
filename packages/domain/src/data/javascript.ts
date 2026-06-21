@@ -1666,4 +1666,929 @@ console.log(t\`Hello, \${name}!\`); // "Olá, João!" em pt-BR
     explanation: 'reduceRight(fn, initial): igual ao reduce mas processa do último elemento para o primeiro (direita para esquerda). Caso de uso principal: implementar compose (ao contrário de pipe). const compose = (...fns) => (x) => fns.reduceRight((acc, fn) => fn(acc), x). compose(f, g, h)(x) = f(g(h(x))). Também útil para: inverter ordem de operações sem reverter o array primeiro, parsear estruturas aninhadas de dentro para fora. Na maioria dos casos, reduce é suficiente.',
     tags: ['reduceRight', 'compose', 'direita-para-esquerda', 'funcional', 'array'],
   },
+  {
+    id: 'js-pred-001',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 1, 2', isCorrect: false },
+      { id: 'b', text: '3, 3, 3', isCorrect: true },
+      { id: 'c', text: '0, 0, 0', isCorrect: false },
+      { id: 'd', text: 'undefined, undefined, undefined', isCorrect: false },
+    ],
+    hints: ['`var` não cria um novo binding por iteração do loop', 'Quando o callback executa, o loop já terminou'],
+    explanation: '`var` é escopado à função (ou ao escopo global), não ao bloco do `for`. Existe uma única variável `i` compartilhada por todas as iterações. Como `setTimeout` agenda o callback para depois (mesmo com delay 0, ele entra na fila de macrotasks), o loop síncrono termina completamente antes de qualquer callback executar — nesse ponto `i` já vale 3. Os três callbacks leem a mesma variável `i`, agora igual a 3.',
+    tags: ['closures', 'var', 'event-loop', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-002',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 1, 2', isCorrect: true },
+      { id: 'b', text: '3, 3, 3', isCorrect: false },
+      { id: 'c', text: '2, 2, 2', isCorrect: false },
+      { id: 'd', text: 'A ordem é indefinida', isCorrect: false },
+    ],
+    hints: ['`let` é escopado ao bloco', 'Cada iteração do `for` com `let` cria um novo binding de `i`'],
+    explanation: 'Diferente de `var`, `let` cria um novo binding de `i` para cada iteração do laço. Cada closure criada por `setTimeout` captura sua própria cópia de `i`, com o valor que tinha naquela iteração específica (0, 1 e 2). Esse comportamento é justamente o motivo pelo qual `let` resolveu um dos bugs mais comuns de closures em loops antes do ES6.',
+    tags: ['closures', 'let', 'block-scope', 'setTimeout', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-003',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(typeof null);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'null'", isCorrect: false },
+      { id: 'b', text: "'object'", isCorrect: true },
+      { id: 'c', text: "'undefined'", isCorrect: false },
+      { id: 'd', text: 'Lança um erro', isCorrect: false },
+    ],
+    hints: ['É um bug histórico da linguagem, mantido por compatibilidade'],
+    explanation: '`typeof null` retorna `"object"` — um bug conhecido desde a primeira versão do JavaScript (1995), relacionado à forma como valores eram representados internamente (null era representado com a mesma tag de tipo que objetos). Nunca foi corrigido porque corrigi-lo quebraria código existente na web. Para checar null de forma segura, use `valor === null`.',
+    tags: ['typeof', 'null', 'quirks', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-004',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(typeof NaN);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'NaN'", isCorrect: false },
+      { id: 'b', text: "'undefined'", isCorrect: false },
+      { id: 'c', text: "'number'", isCorrect: true },
+      { id: 'd', text: "'object'", isCorrect: false },
+    ],
+    hints: ['NaN significa "Not a Number", mas seu tipo continua sendo numérico'],
+    explanation: 'Apesar do nome ("Not a Number"), `NaN` é um valor do tipo `number` — ele representa um resultado numérico inválido (como `0/0` ou `Number("abc")`), mas continua pertencendo ao tipo number. Curiosidade extra: `NaN` é o único valor em JavaScript que não é igual a si mesmo (`NaN === NaN` é `false`).',
+    tags: ['typeof', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-005',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+let x;
+console.log(typeof x, typeof y);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'undefined', 'undefined'", isCorrect: true },
+      { id: 'b', text: 'Lança ReferenceError antes de imprimir qualquer coisa', isCorrect: false },
+      { id: 'c', text: "'undefined', lança ReferenceError", isCorrect: false },
+      { id: 'd', text: "'undefined', 'object'", isCorrect: false },
+    ],
+    hints: ['`y` nunca foi declarada em lugar nenhum', '`typeof` é uma das poucas operações seguras em variáveis não declaradas'],
+    explanation: '`typeof` é especial: é o único operador que não lança erro ao ser aplicado a um identificador nunca declarado — ele simplesmente retorna `"undefined"`. Já `x`, declarada com `let` mas sem valor atribuído, também tem o valor `undefined`, então seu `typeof` também é `"undefined"`. Se você tentasse `console.log(y)` diretamente (sem `typeof`), aí sim teria um `ReferenceError`.',
+    tags: ['typeof', 'undefined', 'reference-error', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-006',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log([] == false);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'false', isCorrect: false },
+      { id: 'b', text: 'true', isCorrect: true },
+      { id: 'c', text: 'Lança TypeError', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`==` faz coerção de tipos antes de comparar', 'Um array vazio é convertido para a string vazia ao ser coagido para primitivo'],
+    explanation: 'Com `==`, o array é coagido para primitivo: `[].toString()` é `""`. Depois `false` é coagido para número (`0`) e `""` também é coagida para número (`0`). `0 == 0` é `true`. Esse é um dos exemplos clássicos usados para justificar "nunca use `==`, use `===`" — com `===`, `[] === false` seria `false` direto, sem coerção.',
+    tags: ['coercao', 'loose-equality', 'array', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-007',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log('' == 0, '' === 0);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, true', isCorrect: false },
+      { id: 'b', text: 'false, false', isCorrect: false },
+      { id: 'c', text: 'true, false', isCorrect: true },
+      { id: 'd', text: 'false, true', isCorrect: false },
+    ],
+    hints: ['`==` converte a string vazia para número antes de comparar', '`===` nunca faz coerção de tipo'],
+    explanation: 'Com `==`, a string vazia `\'\'` é convertida para número, resultando em `0`, então `0 == 0` é `true`. Com `===` não há coerção: comparar um `string` com um `number` diretamente sempre resulta em `false`, independentemente dos valores.',
+    tags: ['coercao', 'loose-equality', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-008',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(null == undefined, null === undefined);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true, true', isCorrect: false },
+      { id: 'b', text: 'true, false', isCorrect: true },
+      { id: 'c', text: 'false, false', isCorrect: false },
+      { id: 'd', text: 'false, true', isCorrect: false },
+    ],
+    hints: ['A especificação trata `null == undefined` como um caso especial', '`===` também compara o tipo, e `null`/`undefined` são tipos primitivos distintos'],
+    explanation: 'A especificação do JavaScript define uma regra especial: `null` é "loosely equal" a `undefined` (e somente a `undefined` — nenhum dos dois é `==` a qualquer outro valor falsy como `0` ou `""`). Por isso `null == undefined` é `true`. Já `===` compara também o tipo: `null` e `undefined` são tipos primitivos diferentes, então `null === undefined` é `false`.',
+    tags: ['null', 'undefined', 'loose-equality', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-009',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(NaN === NaN);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['`NaN` é o único valor da linguagem que não é igual a si mesmo', 'Use `Number.isNaN()` ou `Object.is()` para checar NaN'],
+    explanation: 'Por definição da especificação IEEE 754 (usada para números em JS), `NaN` nunca é igual a nada, nem a si mesmo. Para checar se um valor é `NaN` de forma confiável, use `Number.isNaN(valor)` ou `Object.is(valor, NaN)` — nunca `valor === NaN`.',
+    tags: ['NaN', 'strict-equality', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-010',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log([1, 2, 3] + [4, 5, 6]);
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, 3, 4, 5, 6]', isCorrect: false },
+      { id: 'b', text: "'1,2,34,5,6'", isCorrect: true },
+      { id: 'c', text: 'NaN', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['O operador `+` não tem uma versão especial para arrays', 'Antes de somar, ambos os operandos são convertidos para primitivo'],
+    explanation: 'O operador `+` não sabe concatenar arrays. Quando pelo menos um operando não é número, o JS converte ambos para primitivo via `toString()`. `[1,2,3].toString()` é `"1,2,3"` e `[4,5,6].toString()` é `"4,5,6"`. Depois disso, `+` vira concatenação de strings: `"1,2,3" + "4,5,6"` = `"1,2,34,5,6"`.',
+    tags: ['coercao', 'array', 'operador-plus', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-011',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log({} + []);
+\`\`\``,
+    options: [
+      { id: 'a', text: '0', isCorrect: false },
+      { id: 'b', text: "'[object Object]'", isCorrect: true },
+      { id: 'c', text: 'NaN', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['Como argumento de uma chamada de função, `{}` é sempre um valor de objeto, nunca um bloco', '`{}.toString()` retorna `"[object Object]"`'],
+    explanation: 'Dentro de `console.log(...)`, `{}` é inequivocamente uma expressão de objeto literal (não há ambiguidade de bloco de código como haveria em uma instrução solta). Ambos operandos são convertidos para string: `{}.toString()` é `"[object Object]"` e `[].toString()` é `""`. O resultado da concatenação é `"[object Object]"`. (Curiosidade: `{} + []` como uma instrução solta no início de uma linha de script se comporta diferente, pois `{}` ali é interpretado como um bloco vazio.)',
+    tags: ['coercao', 'object', 'operador-plus', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-012',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function greet() {}
+console.log(typeof greet);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'object'", isCorrect: false },
+      { id: 'b', text: "'function'", isCorrect: true },
+      { id: 'c', text: "'undefined'", isCorrect: false },
+      { id: 'd', text: "'method'", isCorrect: false },
+    ],
+    hints: ['Funções são um tipo de primeira classe em JavaScript, com seu próprio retorno de `typeof`'],
+    explanation: 'Embora funções sejam tecnicamente objetos por baixo dos panos (podem ter propriedades, por exemplo), `typeof` tem um valor de retorno dedicado para elas: `"function"`. Isso vale tanto para declarações de função quanto para arrow functions e funções criadas com `new Function()`.',
+    tags: ['typeof', 'function', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-013',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const arr = [1, 2, 3];
+console.log(typeof arr, Array.isArray(arr));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'array', true", isCorrect: false },
+      { id: 'b', text: "'object', true", isCorrect: true },
+      { id: 'c', text: "'object', false", isCorrect: false },
+      { id: 'd', text: "'array', false", isCorrect: false },
+    ],
+    hints: ['Arrays não têm um tipo próprio no sistema de `typeof`', 'Para checar se algo é array, sempre use `Array.isArray()`, nunca `typeof`'],
+    explanation: 'JavaScript não tem um tipo primitivo "array" — arrays são um tipo especial de objeto, então `typeof arr` retorna `"object"`. Para distinguir um array de um objeto comum, a forma correta é `Array.isArray(arr)`, que retorna `true` para arrays (incluindo arrays de outros realms/iframes, diferente de checar `arr.constructor === Array`).',
+    tags: ['typeof', 'Array.isArray', 'array', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-014',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const obj = { a: 1, b: undefined, c: () => {}, d: 2 };
+console.log(JSON.stringify(obj));
+\`\`\``,
+    options: [
+      { id: 'a', text: '\'{"a":1,"b":undefined,"c":undefined,"d":2}\'', isCorrect: false },
+      { id: 'b', text: '\'{"a":1,"d":2}\'', isCorrect: true },
+      { id: 'c', text: '\'{"a":1,"b":null,"c":null,"d":2}\'', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['JSON não tem representação para `undefined` nem para funções', 'Propriedades cujo valor serializa para "nada" são omitidas, não viram `null`'],
+    explanation: 'JSON não tem conceito de `undefined` ou de função. Ao serializar um objeto, `JSON.stringify` simplesmente omite propriedades cujo valor é `undefined` ou uma função — elas não aparecem no resultado (diferente de `null`, que é preservado como `null`). Por isso o resultado final é `\'{"a":1,"d":2}\'`.',
+    tags: ['JSON.stringify', 'undefined', 'function', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-015',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(JSON.stringify(undefined));
+console.log(typeof JSON.stringify(undefined));
+\`\`\``,
+    options: [
+      { id: 'a', text: "'undefined' / 'string'", isCorrect: false },
+      { id: 'b', text: 'undefined / \'undefined\'', isCorrect: true },
+      { id: 'c', text: "'null' / 'string'", isCorrect: false },
+      { id: 'd', text: 'Lança TypeError / nunca chega na segunda linha', isCorrect: false },
+    ],
+    hints: ['`JSON.stringify(undefined)` não retorna uma string — ele retorna o próprio valor `undefined`'],
+    explanation: '`JSON.stringify(undefined)` é um caso especial: como `undefined` não tem representação em JSON, a função retorna o valor primitivo `undefined` (não a string `"undefined"`). `console.log(undefined)` imprime `undefined` sem aspas, e `typeof undefined` é `\'undefined\'`. Isso é diferente de dentro de um objeto/array (visto na questão anterior), onde a propriedade é simplesmente omitida.',
+    tags: ['JSON.stringify', 'undefined', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-016',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const user = Object.freeze({ name: 'Ana', address: { city: 'SP' } });
+user.name = 'Bia';
+user.address.city = 'RJ';
+console.log(user.name, user.address.city);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'Ana', 'SP'", isCorrect: false },
+      { id: 'b', text: "'Bia', 'RJ'", isCorrect: false },
+      { id: 'c', text: "'Ana', 'RJ'", isCorrect: true },
+      { id: 'd', text: 'Lança TypeError na primeira atribuição', isCorrect: false },
+    ],
+    hints: ['`Object.freeze` só protege o primeiro nível do objeto', 'Em modo não-estrito, atribuições a propriedades congeladas falham silenciosamente (sem erro)'],
+    explanation: '`Object.freeze` é **shallow** (superficial): impede adicionar, remover ou reatribuir propriedades diretas do objeto, mas não congela objetos aninhados dentro dele. `user.name = \'Bia\'` falha silenciosamente (em modo não-estrito) porque `name` está protegido — `user.name` continua `\'Ana\'`. Já `user.address` é apenas uma referência a outro objeto, que não está congelado: `user.address.city = \'RJ\'` funciona normalmente. Para congelar profundamente, seria necessário congelar recursivamente cada nível.',
+    tags: ['Object.freeze', 'imutabilidade', 'shallow', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-017',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const arr = [1, 2, NaN];
+console.log(arr.indexOf(NaN), arr.includes(NaN));
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, true', isCorrect: false },
+      { id: 'b', text: '-1, false', isCorrect: false },
+      { id: 'c', text: '2, false', isCorrect: false },
+      { id: 'd', text: '-1, true', isCorrect: true },
+    ],
+    hints: ['`indexOf` usa `===` internamente (e `NaN === NaN` é `false`)', '`includes` usa o algoritmo "SameValueZero", que trata `NaN` como igual a `NaN`'],
+    explanation: '`Array.prototype.indexOf` compara elementos usando igualdade estrita (`===`), e como `NaN === NaN` é `false`, `indexOf` nunca encontra um `NaN`, retornando `-1`. Já `Array.prototype.includes` usa o algoritmo SameValueZero, que trata `NaN` como igual a `NaN` — por isso `includes(NaN)` retorna `true` mesmo quando `indexOf(NaN)` retorna `-1`. Essa é uma das razões pelas quais `includes` foi adicionado: para resolver justamente essa limitação do `indexOf`.',
+    tags: ['Array.includes', 'Array.indexOf', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-018',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const user = { name: 'Ana' };
+console.log(user.getAge?.());
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Lança TypeError: getAge is not a function', isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: true },
+      { id: 'c', text: 'null', isCorrect: false },
+      { id: 'd', text: 'false', isCorrect: false },
+    ],
+    hints: ['`?.()` checa se a coisa à esquerda existe antes de tentar chamá-la como função'],
+    explanation: 'Optional chaining (`?.`) também funciona em chamadas de função: `user.getAge?.()` primeiro verifica se `user.getAge` é `null`/`undefined`. Como `getAge` não existe em `user`, a expressão inteira "curto-circuita" e retorna `undefined` imediatamente, sem tentar invocar nada como função — evitando o `TypeError: getAge is not a function` que aconteceria com `user.getAge()` direto.',
+    tags: ['optional-chaining', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-019',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const count = 0;
+console.log(count ?? 10, count || 10);
+\`\`\``,
+    options: [
+      { id: 'a', text: '10, 10', isCorrect: false },
+      { id: 'b', text: '0, 0', isCorrect: false },
+      { id: 'c', text: '0, 10', isCorrect: true },
+      { id: 'd', text: '10, 0', isCorrect: false },
+    ],
+    hints: ['`??` só cai no valor padrão se o lado esquerdo for `null` ou `undefined`', '`||` cai no valor padrão para QUALQUER valor "falsy" (0, "", false, NaN...)'],
+    explanation: '`??` (nullish coalescing) só usa o valor da direita quando o da esquerda é `null` ou `undefined`. Como `0` não é nem `null` nem `undefined`, `count ?? 10` retorna `0`. Já `||` usa o valor da direita para qualquer valor "falsy" — e `0` é falsy — então `count || 10` retorna `10`. Esse é exatamente o motivo pelo qual `??` foi adicionado: para evitar esse bug clássico ao lidar com valores numéricos que podem legitimamente ser `0`.',
+    tags: ['nullish-coalescing', 'logical-or', 'falsy', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-020',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function show({ a = 1, b = 2 } = {}) {
+  console.log(a, b);
+}
+show({ a: null, b: undefined });
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: 'null, 2', isCorrect: true },
+      { id: 'c', text: 'null, undefined', isCorrect: false },
+      { id: 'd', text: '1, undefined', isCorrect: false },
+    ],
+    hints: ['Valores padrão de destructuring só entram em ação para `undefined`, nunca para `null`'],
+    explanation: 'Valores padrão em destructuring (e em parâmetros de função) só são aplicados quando o valor correspondente é exatamente `undefined` — `null` é considerado um valor válido e não aciona o padrão. Por isso `a` recebe `null` (valor explícito, não substituído) e `b` recebe `2` (porque `undefined` aciona o padrão).',
+    tags: ['destructuring', 'default-values', 'null', 'undefined', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-021',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const arr = [1, , 3];
+console.log(arr.length, arr[1]);
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, undefined', isCorrect: false },
+      { id: 'b', text: '3, undefined', isCorrect: true },
+      { id: 'c', text: '3, null', isCorrect: false },
+      { id: 'd', text: 'Lança SyntaxError', isCorrect: false },
+    ],
+    hints: ['Um array com "buracos" (sparse array) ainda conta a posição vazia no `.length`'],
+    explanation: 'O literal `[1, , 3]` cria um array esparso (sparse array) com 3 posições: índice 0 = `1`, índice 1 = um "buraco" (slot vazio, não a mesma coisa que `undefined` explícito, mas que se comporta como `undefined` ao ser lido), índice 2 = `3`. `arr.length` é `3` e `arr[1]` retorna `undefined` ao ser acessado diretamente — embora métodos como `forEach`/`map` pulem posições vazias de forma diferente de um `undefined` real.',
+    tags: ['sparse-array', 'array', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-022',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const s = 'abc';
+s[0] = 'z';
+console.log(s);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'zbc'", isCorrect: false },
+      { id: 'b', text: "'abc'", isCorrect: true },
+      { id: 'c', text: 'Lança TypeError', isCorrect: false },
+      { id: 'd', text: "'z'", isCorrect: false },
+    ],
+    hints: ['Strings são primitivos imutáveis em JavaScript'],
+    explanation: 'Strings em JavaScript são imutáveis: nenhuma operação consegue alterar os caracteres de uma string existente. A atribuição `s[0] = \'z\'` é simplesmente ignorada silenciosamente (em modo não-estrito) porque índices de string não são propriedades graváveis. Para "modificar" uma string, é preciso criar uma nova, por exemplo: `s = \'z\' + s.slice(1)`.',
+    tags: ['string', 'imutabilidade', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-023',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(0.1 + 0.2 === 0.3);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: 'undefined', isCorrect: false },
+      { id: 'd', text: 'Lança RangeError', isCorrect: false },
+    ],
+    hints: ['Números de ponto flutuante (IEEE 754) não representam todas as frações decimais com exatidão'],
+    explanation: 'JavaScript usa números de ponto flutuante de precisão dupla (IEEE 754), que não conseguem representar exatamente certas frações decimais. `0.1 + 0.2` resulta em `0.30000000000000004`, não exatamente `0.3`. Para comparar floats com segurança, compare a diferença contra um epsilon: `Math.abs(a - b) < Number.EPSILON`.',
+    tags: ['floating-point', 'precisao-numerica', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-024',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(parseInt('08'), parseInt('0x10'));
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 16', isCorrect: false },
+      { id: 'b', text: '8, 16', isCorrect: true },
+      { id: 'c', text: '8, 10', isCorrect: false },
+      { id: 'd', text: 'NaN, 16', isCorrect: false },
+    ],
+    hints: ['Motores modernos sempre assumem base 10 por padrão, exceto quando a string começa com "0x"'],
+    explanation: 'Em engines modernas (ES5+), `parseInt` sem o segundo argumento de base assume base 10 por padrão — `parseInt(\'08\')` é `8`, não há mais o bug histórico de interpretar prefixo `0` como octal. A exceção é o prefixo `0x`/`0X`, que `parseInt` reconhece automaticamente como hexadecimal: `parseInt(\'0x10\')` é `16`. Boa prática: sempre passe a base explicitamente, ex: `parseInt(\'08\', 10)`.',
+    tags: ['parseInt', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-025',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(parseInt('abc'), parseInt('12px'));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'NaN, NaN', isCorrect: false },
+      { id: 'b', text: '0, 12', isCorrect: false },
+      { id: 'c', text: 'NaN, 12', isCorrect: true },
+      { id: 'd', text: 'NaN, NaN px', isCorrect: false },
+    ],
+    hints: ['`parseInt` lê dígitos da esquerda para a direita até encontrar um caractere inválido'],
+    explanation: '`parseInt` analisa a string da esquerda para a direita e para no primeiro caractere que não forma um número válido. `\'abc\'` não começa com nenhum dígito, então o resultado é `NaN`. `\'12px\'` começa com dígitos válidos (`12`) e para ao encontrar `p`, retornando `12`. Isso é diferente de `Number(\'12px\')`, que retorna `NaN` porque `Number()` exige que a string inteira seja numérica.',
+    tags: ['parseInt', 'NaN', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-026',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const obj = { x: 1 };
+console.log(\`Valor: \${obj}\`);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Valor: {"x":1}', isCorrect: false },
+      { id: 'b', text: 'Valor: [object Object]', isCorrect: true },
+      { id: 'c', text: 'Valor: undefined', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['Interpolação em template literal converte o valor para string com `toString()`, não com `JSON.stringify`'],
+    explanation: 'Ao interpolar um valor dentro de `${...}` em um template literal, o JavaScript chama `String(valor)`, que por sua vez chama `toString()`. O `toString()` padrão de um objeto comum retorna `"[object Object]"` — ele não serializa as propriedades como `JSON.stringify` faria. Para ver o conteúdo do objeto, seria necessário usar `JSON.stringify(obj)` explicitamente.',
+    tags: ['template-literal', 'toString', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-027',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log([10, 1, 2].sort());
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, 10]', isCorrect: false },
+      { id: 'b', text: '[1, 10, 2]', isCorrect: true },
+      { id: 'c', text: '[10, 1, 2]', isCorrect: false },
+      { id: 'd', text: '[2, 1, 10]', isCorrect: false },
+    ],
+    hints: ['Sem uma função de comparação, `sort()` converte cada elemento para string antes de comparar'],
+    explanation: 'Sem uma função comparadora, `Array.prototype.sort()` converte cada elemento para string e ordena lexicograficamente (como em um dicionário). Comparando como texto: `"1"`, `"10"`, `"2"` — `"1"` vem antes de `"10"` (que começa com "1" e tem um caractere extra), e `"10"` vem antes de `"2"` porque `\'1\' < \'2\'` na comparação de caracteres. Resultado: `[1, 10, 2]`. Para ordenação numérica correta, use `sort((a, b) => a - b)`.',
+    tags: ['Array.sort', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-028',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function* gen() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+const it = gen();
+console.log(it.next().value, it.next().value, it.next().value, it.next().value);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3, undefined', isCorrect: true },
+      { id: 'b', text: '1, 2, 3, 3', isCorrect: false },
+      { id: 'c', text: '1, 2, undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Lança erro na quarta chamada', isCorrect: false },
+    ],
+    hints: ['O `return` de um generator vira o `.value` da chamada que finaliza o iterador (com `done: true`)', 'Chamar `.next()` depois que o generator já terminou sempre retorna `{ value: undefined, done: true }`'],
+    explanation: 'Cada `yield` pausa a função e entrega um valor: a primeira chamada de `.next()` retorna `{ value: 1, done: false }`, a segunda `{ value: 2, done: false }`. O `return 3` finaliza o generator entregando `{ value: 3, done: true }` na terceira chamada. Qualquer chamada de `.next()` depois disso (o generator já terminou) retorna `{ value: undefined, done: true }` para sempre.',
+    tags: ['generators', 'yield', 'iterators', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-029',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+console.log(Symbol('id') === Symbol('id'));
+\`\`\``,
+    options: [
+      { id: 'a', text: 'true', isCorrect: false },
+      { id: 'b', text: 'false', isCorrect: true },
+      { id: 'c', text: "'id'", isCorrect: false },
+      { id: 'd', text: 'Lança TypeError', isCorrect: false },
+    ],
+    hints: ['A string passada para `Symbol()` é só uma descrição para debug, não um identificador de igualdade'],
+    explanation: 'Cada chamada de `Symbol()` cria um valor primitivo completamente único, mesmo que a descrição passada como argumento seja idêntica. A string `\'id\'` serve apenas para facilitar debug (aparece em `symbol.toString()` ou no console), mas não afeta a identidade do símbolo. Por isso dois `Symbol(\'id\')` distintos nunca são iguais — essa é justamente a utilidade de Symbol: criar chaves de objeto garantidamente únicas e sem colisão.',
+    tags: ['Symbol', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-030',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const nested = [1, [2, [3, [4, 5]]]];
+console.log(nested.flat(Infinity));
+\`\`\``,
+    options: [
+      { id: 'a', text: '[1, 2, [3, [4, 5]]]', isCorrect: false },
+      { id: 'b', text: '[1, 2, 3, 4, 5]', isCorrect: true },
+      { id: 'c', text: '[1, [2, [3, [4, 5]]]]', isCorrect: false },
+      { id: 'd', text: 'Lança RangeError', isCorrect: false },
+    ],
+    hints: ['O argumento de `flat()` define quantos níveis de profundidade achatar', '`Infinity` achata todos os níveis, não importa quão aninhado'],
+    explanation: '`Array.prototype.flat(depth)` achata o array até `depth` níveis de profundidade (o padrão sem argumento é `1`). Passar `Infinity` instrui o método a achatar todos os níveis de aninhamento, não importa quão profundo — resultando em um array completamente plano: `[1, 2, 3, 4, 5]`.',
+    tags: ['Array.flat', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-031',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function makeCounter() {
+  let count = 0;
+  return function () {
+    return ++count;
+  };
+}
+const counterA = makeCounter();
+const counterB = makeCounter();
+console.log(counterA(), counterA(), counterB());
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2, 3', isCorrect: false },
+      { id: 'b', text: '1, 2, 1', isCorrect: true },
+      { id: 'c', text: '1, 1, 1', isCorrect: false },
+      { id: 'd', text: '0, 1, 0', isCorrect: false },
+    ],
+    hints: ['Cada chamada de `makeCounter()` cria um novo escopo léxico, com sua própria variável `count`'],
+    explanation: 'Cada chamada a `makeCounter()` cria um escopo completamente novo, com sua própria variável `count` independente. `counterA` e `counterB` são closures separadas, cada uma fechando sobre sua própria cópia de `count`. Por isso `counterA()` chamado duas vezes retorna `1` e depois `2`, enquanto `counterB()`, chamado por uma closure diferente, começa do zero e retorna `1`.',
+    tags: ['closures', 'factory-function', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-032',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const key = 'role';
+const user = { name: 'Ana', [key]: 'admin' };
+console.log(user.role);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'key'", isCorrect: false },
+      { id: 'b', text: 'undefined', isCorrect: false },
+      { id: 'c', text: "'admin'", isCorrect: true },
+      { id: 'd', text: 'Lança SyntaxError', isCorrect: false },
+    ],
+    hints: ['`[key]` dentro de um objeto literal usa o valor da variável `key` como nome da propriedade'],
+    explanation: 'A sintaxe `[key]: valor` dentro de um objeto literal (computed property name) usa o **valor** da variável `key` (a string `\'role\'`) como nome da propriedade, não o nome literal "key". Como `key` vale `\'role\'`, o objeto resultante tem a propriedade `role: \'admin\'`, então `user.role` é `\'admin\'`.',
+    tags: ['computed-property', 'object-literal', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-033',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+let a = 1;
+let b = 2;
+[a, b] = [b, a];
+console.log(a, b);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: '2, 1', isCorrect: true },
+      { id: 'c', text: '2, 2', isCorrect: false },
+      { id: 'd', text: 'Lança SyntaxError', isCorrect: false },
+    ],
+    hints: ['O lado direito `[b, a]` é avaliado completamente (criando um novo array) antes de qualquer atribuição acontecer'],
+    explanation: 'Destructuring assignment permite o clássico "swap sem variável temporária". O lado direito `[b, a]` é avaliado primeiro, criando um array temporário `[2, 1]` com os valores atuais. Só depois esse array é desestruturado nas variáveis do lado esquerdo: `a` recebe `2` e `b` recebe `1`.',
+    tags: ['destructuring', 'swap', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-034',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function add(a, b = a + 1) {
+  return b;
+}
+console.log(add(1), add(5));
+\`\`\``,
+    options: [
+      { id: 'a', text: '2, 6', isCorrect: true },
+      { id: 'b', text: '1, 1', isCorrect: false },
+      { id: 'c', text: 'undefined, undefined', isCorrect: false },
+      { id: 'd', text: 'Lança ReferenceError', isCorrect: false },
+    ],
+    hints: ['Valores padrão de parâmetros são reavaliados em toda chamada da função, não memoizados', 'Um parâmetro padrão pode referenciar parâmetros anteriores na lista'],
+    explanation: 'Valores padrão de parâmetros são expressões avaliadas a cada chamada da função, no momento em que a chamada acontece — e podem referenciar parâmetros declarados antes deles na lista. Em `add(1)`, `b` não foi passado, então `b = a + 1 = 1 + 1 = 2`. Em `add(5)`, novamente `b` não foi passado, então `b = 5 + 1 = 6`. O valor padrão nunca é "fixado" em tempo de definição da função.',
+    tags: ['default-parameters', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-035',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function test(x) {
+  switch (x) {
+    case 1:
+    case 2:
+      console.log('baixo');
+      break;
+    case 3:
+      console.log('alto');
+      break;
+    default:
+      console.log('outro');
+  }
+}
+test(2);
+\`\`\``,
+    options: [
+      { id: 'a', text: "'outro'", isCorrect: false },
+      { id: 'b', text: "'baixo'", isCorrect: true },
+      { id: 'c', text: "'alto'", isCorrect: false },
+      { id: 'd', text: "'baixo' e depois 'alto'", isCorrect: false },
+    ],
+    hints: ['Um `case` sem `break` "cai" (fallthrough) para o próximo `case`, executando seu código', 'O `case 1` está vazio e cai direto no `case 2`, que é onde o `console.log` acontece'],
+    explanation: 'Em um `switch`, quando um `case` não tem `break`, a execução "cai" (fallthrough) para o próximo `case`. Aqui, `case 1` está vazio e simplesmente cai para `case 2`. Com `x = 2`, o `switch` casa diretamente com `case 2`, executa `console.log(\'baixo\')` e encontra o `break`, parando ali — sem chegar em `case 3` ou no `default`.',
+    tags: ['switch', 'fallthrough', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-036',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+function createFib() {
+  const cache = {};
+  return function fib(n) {
+    if (n in cache) return cache[n];
+    if (n <= 1) return n;
+    return (cache[n] = fib(n - 1) + fib(n - 2));
+  };
+}
+const fib = createFib();
+console.log(fib(5));
+\`\`\``,
+    options: [
+      { id: 'a', text: '5', isCorrect: true },
+      { id: 'b', text: '8', isCorrect: false },
+      { id: 'c', text: '3', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['A sequência de Fibonacci começa 0, 1, 1, 2, 3, 5...', 'O `cache` no closure memoiza resultados já calculados, mas não muda o valor final'],
+    explanation: 'A função usa memoização via closure: `cache` persiste entre chamadas recursivas de `fib`, evitando recálculo de subproblemas já resolvidos — mas isso é uma otimização de performance, não altera o resultado matemático. A sequência de Fibonacci (0-indexada) é 0, 1, 1, 2, 3, 5, 8... Então `fib(5)` (o 6º termo, índice 5) é `5`: `fib(5) = fib(4) + fib(3) = 3 + 2 = 5`.',
+    tags: ['closures', 'memoizacao', 'recursao', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-037',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const account = {
+  _balance: 100,
+  get balance() {
+    return \`R$ \${this._balance}\`;
+  },
+  set balance(value) {
+    this._balance = value;
+  },
+};
+console.log(account.balance);
+account.balance = 250;
+console.log(account.balance);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'R$ 100 / R$ 250', isCorrect: true },
+      { id: 'b', text: 'function / function', isCorrect: false },
+      { id: 'c', text: 'R$ 100 / 250', isCorrect: false },
+      { id: 'd', text: 'Lança TypeError ao atribuir', isCorrect: false },
+    ],
+    hints: ['`get`/`set` fazem `account.balance` se comportar como uma propriedade comum, não como um método', 'Acessar ou atribuir `account.balance` (sem parênteses) é o que dispara o getter/setter'],
+    explanation: 'Getters e setters fazem uma propriedade se comportar de forma especial ao ser lida ou atribuída, sem precisar de sintaxe de chamada de função. `console.log(account.balance)` invoca o getter, que formata `_balance` como string: `\'R$ 100\'`. A atribuição `account.balance = 250` invoca o setter, que atualiza `_balance` para `250`. O próximo acesso ao getter reflete essa mudança: `\'R$ 250\'`.',
+    tags: ['getters', 'setters', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-038',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+let x = (1, 2, 3);
+console.log(x);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1', isCorrect: false },
+      { id: 'b', text: '[1, 2, 3]', isCorrect: false },
+      { id: 'c', text: '3', isCorrect: true },
+      { id: 'd', text: 'Lança SyntaxError', isCorrect: false },
+    ],
+    hints: ['A vírgula aqui é o operador vírgula, não um separador de lista', 'O operador vírgula avalia cada expressão e retorna o valor da última'],
+    explanation: 'Dentro de parênteses como expressão, a vírgula é o operador vírgula (comma operator): ele avalia cada uma das expressões da esquerda para a direita e descarta todos os resultados, exceto o último. `(1, 2, 3)` avalia `1`, depois `2`, depois `3`, e a expressão inteira retorna `3` — que é o valor atribuído a `x`. É um operador raramente usado intencionalmente, mas aparece em código minificado e em alguns padrões de loop `for`.',
+    tags: ['comma-operator', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-039',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const arr = [3, 1, 2];
+const sorted = arr.sort();
+console.log(arr === sorted, arr);
+\`\`\``,
+    options: [
+      { id: 'a', text: 'false, [1, 2, 3]', isCorrect: false },
+      { id: 'b', text: 'true, [1, 2, 3]', isCorrect: true },
+      { id: 'c', text: 'true, [3, 1, 2]', isCorrect: false },
+      { id: 'd', text: 'false, [3, 1, 2]', isCorrect: false },
+    ],
+    hints: ['`sort()` ordena o array original *no lugar* (in-place)', 'Além de mutar o array original, `sort()` também retorna a mesma referência'],
+    explanation: '`Array.prototype.sort()` é um método mutável: ele reordena os elementos do array original "no lugar" (in-place) e retorna a própria referência ao mesmo array, não uma cópia. Por isso `arr === sorted` é `true` (mesma referência) e o array `arr` original já aparece ordenado: `[1, 2, 3]`. Para não mutar o original, seria necessário copiar antes: `[...arr].sort()`.',
+    tags: ['Array.sort', 'mutabilidade', 'referencia', 'output-prediction'],
+  },
+  {
+    id: 'js-pred-040',
+    domain: 'javascript',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    text: `O que este código imprime no console?
+
+\`\`\`javascript
+const original = { a: 1, nested: { b: 2 } };
+const copy = { ...original };
+copy.a = 99;
+copy.nested.b = 99;
+console.log(original.a, original.nested.b);
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 2', isCorrect: false },
+      { id: 'b', text: '99, 99', isCorrect: false },
+      { id: 'c', text: '1, 99', isCorrect: true },
+      { id: 'd', text: '99, 2', isCorrect: false },
+    ],
+    hints: ['Spread (`...`) faz uma cópia rasa (shallow copy), só do primeiro nível', 'Propriedades que são objetos continuam sendo a MESMA referência na cópia'],
+    explanation: 'O spread operator (`{ ...original }`) cria uma cópia rasa: ele copia os valores das propriedades de primeiro nível, mas se uma propriedade é um objeto (como `nested`), apenas a *referência* é copiada — `copy.nested` e `original.nested` apontam para o mesmo objeto. Por isso `copy.a = 99` não afeta `original.a` (que continua `1`, pois `a` é um primitivo independente), mas `copy.nested.b = 99` afeta `original.nested.b` também, já que ambos compartilham o mesmo objeto aninhado.',
+    tags: ['spread', 'shallow-copy', 'referencia', 'output-prediction'],
+  },
 ]
