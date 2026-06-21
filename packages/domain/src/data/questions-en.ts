@@ -2541,4 +2541,627 @@ risky(true)
     explanation: 'A synchronous `throw` inside an `async` function body never propagates as a "raw" exception to the caller — it is automatically converted into a rejection of the Promise the function returns. That is why `.catch()` can catch it normally, exactly as it would catch an explicit rejection via `Promise.reject(...)`. Result: `rejected: sync throw`.',
     tags: ['async-await', 'throw', 'error-handling', 'output-prediction'],
   },
+  // ─── Output prediction (React) ─────────────────────────────────────────────
+  {
+    id: 'en-react-pred-001',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What does this code repeatedly log to the console, after clicking the button 5 times?
+
+\`\`\`jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      console.log(count);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 0, 0, 0, 0...', isCorrect: true },
+      { id: 'b', text: '1, 2, 3, 4, 5...', isCorrect: false },
+      { id: 'c', text: 'It crashes', isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`useEffect` with `[]` runs only once, on mount — its closure captures the variables from THAT render', 'The button correctly shows the current `count` on screen, but the `setInterval` console.log is a different story'],
+    explanation: 'Since `useEffect` has `[]` as its dependency array, it runs only once, on mount, creating the `setInterval` closure that captures the `count` that existed at that moment: `0`. Subsequent clicks update the state (and the UI shows `1`, `2`, `3`...), but the `console.log` inside `setInterval` is still the SAME function, created only once, forever stuck reading the original `count = 0` — this is the classic "stale closure".',
+    tags: ['useEffect', 'stale-closure', 'setInterval', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-002',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `This is a fix for the previous question's bug. What does this code repeatedly log to the console, after clicking the button 3 times?
+
+\`\`\`jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(count);
+  countRef.current = count;
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      console.log(countRef.current);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '0, 0, 0... (still stuck)', isCorrect: false },
+      { id: 'b', text: 'The current `count` value at each tick, reflecting the clicks', isCorrect: true },
+      { id: 'c', text: 'Throws a TypeError', isCorrect: false },
+      { id: 'd', text: '3, 3, 3... (only the final value)', isCorrect: false },
+    ],
+    hints: ['`countRef.current = count` runs on EVERY render, so the ref always reflects the latest value', 'Reading `countRef.current` inside `setInterval` always fetches the up-to-date value, not the one captured at mount'],
+    explanation: 'Unlike the previous question, here `countRef.current = count` runs on every render, keeping the ref always in sync with the latest state. Since `setInterval` reads `countRef.current` (instead of the `count` variable directly), it always sees the updated value at the moment the tick fires, even though the `setInterval` function itself was only created once. This is an idiomatic way to work around stale closures without recreating the effect.',
+    tags: ['useEffect', 'useRef', 'stale-closure-fix', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-003',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `What happens with this code if the user clicks the button repeatedly, in quick succession?
+
+\`\`\`jsx
+function Counter() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => console.log(count), 1000);
+    return () => clearInterval(id);
+  }, [count]);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'The console always shows the correct value, and the timer never restarts', isCorrect: false },
+      { id: 'b', text: 'The console always shows the correct value, but the 1s timer is canceled and recreated on every click', isCorrect: true },
+      { id: 'c', text: 'The console always shows `0`, just like the earlier versions', isCorrect: false },
+      { id: 'd', text: 'Throws a "Maximum update depth exceeded" error', isCorrect: false },
+    ],
+    hints: ['Adding `count` to the dependencies fixes the stale value, but has a side effect', 'Every time a `useEffect` dependency changes, the previous cleanup runs and a new effect is created — recreating the `setInterval` from scratch'],
+    explanation: 'Adding `count` to the dependencies fixes the stale closure (the value read will always be correct), but introduces a side effect: every time `count` changes, the `useEffect` tears down the previous `setInterval` (via cleanup) and creates a NEW one, restarting the 1-second countdown from zero. If the user clicks repeatedly within less than 1 second, the timer never actually fires, since it keeps getting canceled and recreated before each tick can happen.',
+    tags: ['useEffect', 'dependencies', 'setInterval', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-004',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After ONE click, how many times does 'render' get logged (not counting the initial mount)?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  const [flag, setFlag] = useState(false);
+  console.log('render');
+
+  function handleClick() {
+    setCount(count + 1);
+    setFlag(true);
+  }
+
+  return <button onClick={handleClick}>Click</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '2 times (one per setState call)', isCorrect: false },
+      { id: 'b', text: '1 time', isCorrect: true },
+      { id: 'c', text: '0 times', isCorrect: false },
+      { id: 'd', text: 'Depends on the browser', isCorrect: false },
+    ],
+    hints: ['React groups (batches) multiple `setState` calls made inside the same event handler into a single re-render'],
+    explanation: 'React automatically batches every state update triggered within the same event handler into a single re-render — no matter how many different `setState` calls are made. So even though both `setCount` and `setFlag` are called, the component re-renders just ONE time, with both new values already applied.',
+    tags: ['batching', 'setState', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-005',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `After ONE click, what is the displayed value of \`count\`?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    setCount(count + 1);
+    setCount(count + 1);
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '2', isCorrect: false },
+      { id: 'b', text: '1', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: 'Increments indefinitely', isCorrect: false },
+    ],
+    hints: ['Both `setCount` calls read the SAME `count` variable, captured by this specific render\'s closure'],
+    explanation: 'Both calls to `setCount(count + 1)` read the same `count` (the value captured by the current render\'s closure, say `0`). Both compute `0 + 1 = 1` and schedule that same update. React applies the final result, which is `1`, not `2` — this is the classic "lost update" bug from not using the functional form of the setter.',
+    tags: ['useState', 'stale-closure', 'batching', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-006',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the fix for the previous bug. After ONE click, what is the displayed value of \`count\`?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  function handleClick() {
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+  }
+  return <button onClick={handleClick}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1', isCorrect: false },
+      { id: 'b', text: '2', isCorrect: true },
+      { id: 'c', text: '0', isCorrect: false },
+      { id: 'd', text: 'Undefined behavior', isCorrect: false },
+    ],
+    hints: ['Each functional update receives the most recent PENDING value, not the value captured by the render\'s closure'],
+    explanation: 'Using the functional form (`c => c + 1`), each call receives the most up-to-date state value available at the moment React processes the update queue — including pending updates from the SAME batch. The first call receives `0` and produces `1`; the second call receives that pending `1` and produces `2`. Final result: `2`.',
+    tags: ['useState', 'functional-update', 'batching', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-007',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `\`App\` re-renders multiple times (e.g., by clicking a button that changes an unrelated piece of state). What happens to the 'computed' log on every re-render of \`App\`?
+
+\`\`\`jsx
+function List({ items }) {
+  const sorted = useMemo(() => [...items].sort(), [items]);
+  console.log('computed');
+  return null;
+}
+function App() {
+  const [n, setN] = useState(0);
+  return (
+    <>
+      <List items={[3, 1, 2]} />
+      <button onClick={() => setN(n + 1)}>{n}</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'computed' is never logged again after the first render, since the items array never changes value", isCorrect: false },
+      { id: 'b', text: "'computed' is logged on every re-render, even with the same values", isCorrect: true },
+      { id: 'c', text: 'Throws a missing-dependency error', isCorrect: false },
+      { id: 'd', text: "'computed' is logged only once, even without `useMemo`", isCorrect: false },
+    ],
+    hints: ['`[3, 1, 2]` is an array LITERAL, recreated as a brand-new reference on every render of `App`', '`useMemo` compares dependencies by reference (`Object.is`), not by deep value'],
+    explanation: 'The array `[3, 1, 2]` is recreated as a new object in memory on every render of `App` — even though the VALUES are identical, the REFERENCE is different. `useMemo` compares dependencies using `Object.is` (referential equality), so it always sees `items` as "different" from the previous one and recomputes `sorted`, logging `computed` on every re-render. The `useMemo` here is not delivering its intended optimization.',
+    tags: ['useMemo', 'dependencies', 'reference', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-008',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `Clicking the "Parent" button — does the 'Child render' log appear again, even though \`Child\` is wrapped in \`React.memo\`?
+
+\`\`\`jsx
+const Child = React.memo(function Child({ onClick }) {
+  console.log('Child render');
+  return <button onClick={onClick}>Click</button>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => setCount(c => c + 1);
+  return (
+    <>
+      <Child onClick={handleClick} />
+      <button onClick={() => setCount(c => c + 1)}>Parent</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'No, `React.memo` prevents any re-render of `Child`', isCorrect: false },
+      { id: 'b', text: 'Yes, because `handleClick` is a brand-new function on every render of `Parent`', isCorrect: true },
+      { id: 'c', text: 'No, because `onClick`\'s behavior never changes', isCorrect: false },
+      { id: 'd', text: 'Yes, but only the first time', isCorrect: false },
+    ],
+    hints: ['`React.memo` does a SHALLOW comparison of props', '`const handleClick = () => ...` creates a brand-new function on every `Parent` call, with a different reference than before'],
+    explanation: '`React.memo` only skips a re-render when ALL props are referentially equal to the previous render\'s (shallow comparison). `handleClick` is declared inside `Parent`\'s body, so a new function (with a new reference) is created on EVERY render of `Parent` — even though it does exactly the same thing. Since `Child`\'s `onClick` prop changes reference every time, `React.memo`\'s comparison fails and `Child` re-renders anyway.',
+    tags: ['React.memo', 'useCallback', 'reference', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-009',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the fix for the previous bug, using \`useCallback\`. Clicking the "Parent" button — does 'Child render' log again?
+
+\`\`\`jsx
+const Child = React.memo(function Child({ onClick }) {
+  console.log('Child render');
+  return <button onClick={onClick}>Click</button>;
+});
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const handleClick = useCallback(() => setCount(c => c + 1), []);
+  return (
+    <>
+      <Child onClick={handleClick} />
+      <button onClick={() => setCount(c => c + 1)}>Parent</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Yes, same as the previous version', isCorrect: false },
+      { id: 'b', text: 'No, `Child` no longer re-renders', isCorrect: true },
+      { id: 'c', text: 'Throws a circular reference error', isCorrect: false },
+      { id: 'd', text: 'Depends on whether React DevTools is open', isCorrect: false },
+    ],
+    hints: ['`useCallback` with an empty dependency array memoizes the function, returning the SAME reference on every render'],
+    explanation: '`useCallback(fn, [])` guarantees the same function reference is returned on every subsequent render (since there are no dependencies to invalidate the cache). Since `Child`\'s `onClick` prop now stays referentially stable, `React.memo`\'s shallow comparison passes, and `Child` no longer re-renders when only `Parent`\'s state changes.',
+    tags: ['useCallback', 'React.memo', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-010',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `After clicking the "Render" button twice, what values were logged to the console (including the mount)?
+
+\`\`\`jsx
+function Timer() {
+  const renders = useRef(0);
+  renders.current += 1;
+  console.log(renders.current);
+  const [, forceUpdate] = useState(0);
+  return <button onClick={() => forceUpdate(n => n + 1)}>Render</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1, 1, 1', isCorrect: false },
+      { id: 'b', text: '1, 2, 3', isCorrect: true },
+      { id: 'c', text: '0, 1, 2', isCorrect: false },
+      { id: 'd', text: 'Just 1 (refs don\'t change)', isCorrect: false },
+    ],
+    hints: ['Mutating a ref does not, by itself, cause a re-render — but the component DOES need to re-render for another reason (here, `forceUpdate`)', 'Every time the component renders, the line `renders.current += 1` runs again'],
+    explanation: 'Mutating `renders.current` directly does NOT trigger a re-render on its own — but here `forceUpdate` (a dummy state) is what causes a re-render on every click. On each render (mount + 2 clicks = 3 renders total), the line `renders.current += 1` executes, incrementing the ref\'s persistent counter and logging its new value: `1`, then `2`, then `3`.',
+    tags: ['useRef', 'forceUpdate', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-011',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `After clicking the button 3 times (4 renders total), how many times is 'computing initial state' logged?
+
+\`\`\`jsx
+function expensiveInit() {
+  console.log('computing initial state');
+  return 0;
+}
+function App() {
+  const [count, setCount] = useState(expensiveInit());
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1 time (only on mount)', isCorrect: false },
+      { id: 'b', text: '4 times (every render)', isCorrect: true },
+      { id: 'c', text: '0 times', isCorrect: false },
+      { id: 'd', text: '3 times (not counting the mount)', isCorrect: false },
+    ],
+    hints: ['`useState(expensiveInit())` CALLS the function immediately, on every render — React only uses the result on the first render, but the call itself always happens', 'The "lazy initial state" optimization only kicks in when you pass the function reference itself, without parentheses: `useState(expensiveInit)`'],
+    explanation: 'Here `expensiveInit()` is invoked directly, with parentheses — meaning the function runs on EVERY render, even though React only uses the returned value to initialize state the first time. This is a common mistake: `useState`\'s "lazy initial state" optimization only exists when you pass the FUNCTION itself (without calling it), letting React decide to invoke it only once.',
+    tags: ['useState', 'lazy-initial-state', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-012',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This is the fix for the previous bug. After clicking the button 3 times, how many times is 'computing initial state' logged?
+
+\`\`\`jsx
+function expensiveInit() {
+  console.log('computing initial state');
+  return 0;
+}
+function App() {
+  const [count, setCount] = useState(expensiveInit);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '4 times', isCorrect: false },
+      { id: 'b', text: '1 time', isCorrect: true },
+      { id: 'c', text: '3 times', isCorrect: false },
+      { id: 'd', text: '0 times', isCorrect: false },
+    ],
+    hints: ['Passing the function reference (without parentheses) activates React\'s lazy initialization optimization'],
+    explanation: 'When you pass the FUNCTION itself to `useState` (without calling it), React only invokes it once, during the initial render, to compute the starting state — on subsequent renders, the state already exists and the initializer is completely skipped. That\'s why `computing initial state` only appears once, regardless of how many clicks happen afterward.',
+    tags: ['useState', 'lazy-initial-state', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-013',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `This component first renders with \`label="A"\`, then with \`label="B"\`. What is the exact log order?
+
+\`\`\`jsx
+function Timer({ label }) {
+  useEffect(() => {
+    console.log('effect:', label);
+    return () => console.log('cleanup:', label);
+  }, [label]);
+  return null;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'effect: A', 'effect: B', 'cleanup: A'", isCorrect: false },
+      { id: 'b', text: "'effect: A', 'cleanup: A', 'effect: B'", isCorrect: true },
+      { id: 'c', text: "'cleanup: A', 'effect: A', 'effect: B'", isCorrect: false },
+      { id: 'd', text: "'effect: A', 'effect: B'", isCorrect: false },
+    ],
+    hints: ['Before running a new effect (triggered by a dependency change), React always runs the PREVIOUS effect\'s cleanup first'],
+    explanation: 'When a `useEffect` dependency changes (`label` from `\'A\'` to `\'B\'`), React always runs the PREVIOUS effect\'s cleanup function before running the new effect. Sequence: `effect: A` (on mount) → `cleanup: A` (before reacting to the change) → `effect: B` (the new effect, with the updated label).',
+    tags: ['useEffect', 'cleanup', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-014',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After clicking the button 3 times, how many times does 'mounted, count is' appear in the console, and with what value?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    console.log('mounted, count is', count);
+  }, []);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '4 times, with values 0, 1, 2, 3', isCorrect: false },
+      { id: 'b', text: '1 time, always with value 0', isCorrect: true },
+      { id: 'c', text: '1 time, with value 3 (the latest)', isCorrect: false },
+      { id: 'd', text: '3 times, with values 1, 2, 3', isCorrect: false },
+    ],
+    hints: ['`[]` as the dependency array makes the effect run only once, on mount, forever', 'The effect\'s closure is stuck on the `count` that existed at mount time'],
+    explanation: 'With `[]` as the dependency array, the effect runs exactly once, on mount, and never again — no matter how many times the state changes afterward. That single execution\'s closure captured `count = 0` (the value at mount time), so the log stays frozen at `mounted, count is 0` forever, even though the UI shows different values after clicks.',
+    tags: ['useEffect', 'stale-closure', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-015',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `With \`items = []\`, what shows up on screen?
+
+\`\`\`jsx
+function Cart({ items }) {
+  return (
+    <div>
+      {items.length && <p>{items.length} items</p>}
+    </div>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'Nothing is rendered inside the div', isCorrect: false },
+      { id: 'b', text: 'The number "0" appears by itself on screen', isCorrect: true },
+      { id: 'c', text: 'A rendering error', isCorrect: false },
+      { id: 'd', text: 'The string "false"', isCorrect: false },
+    ],
+    hints: ['`items.length` when empty is the number `0`, and `0 && <p>...</p>` short-circuits and evaluates to `0` (not `false`)', 'React does not render `false`, `null`, `undefined`, or `true` — but it DOES render the number `0` normally'],
+    explanation: 'This is a very common bug. With `items.length === 0`, the expression `items.length && <p>...</p>` short-circuits on the `&&` operator and returns `0` itself (not `false`). React has a specific short list of values it renders as "nothing" (`false`, `null`, `undefined`, `true`), but `0` is NOT on that list — React renders it as regular text. Result: a stray "0" shows up on screen whenever the cart is empty. The common fix is `items.length > 0 && ...` or `Boolean(items.length) && ...`.',
+    tags: ['conditional-rendering', 'falsy-values', 'jsx', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-016',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `After ONE click, how many times is 'reducer called' logged, and what is the final value of \`state.count\`?
+
+\`\`\`jsx
+function reducer(state, action) {
+  console.log('reducer called, action:', action.type);
+  if (action.type === 'inc') return { count: state.count + 1 };
+  return state;
+}
+function App() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+  function handleClick() {
+    dispatch({ type: 'inc' });
+    dispatch({ type: 'inc' });
+  }
+  return <button onClick={handleClick}>{state.count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: '1 time, count becomes 1 (same bug as useState)', isCorrect: false },
+      { id: 'b', text: '2 times, count becomes 2', isCorrect: true },
+      { id: 'c', text: '2 times, count becomes 1', isCorrect: false },
+      { id: 'd', text: '0 times, since dispatch is asynchronous', isCorrect: false },
+    ],
+    hints: ['Every `dispatch` call ALWAYS calls the reducer, even when multiple dispatches happen in the same handler', 'Unlike `setCount(count + 1)`, the reducer receives the most current `state` on every call, not a closure stuck on the render'],
+    explanation: 'Each `dispatch` call invokes the `reducer` (which is why the log appears twice). Unlike the classic bug of calling `setCount(count + 1)` twice (which loses an update by using a closure stuck on the render\'s value), the `reducer` always receives the most recent `state` as its first argument, processing updates in sequence: the first call receives `{ count: 0 }` and returns `{ count: 1 }`; the second call receives that already-updated `{ count: 1 }` and returns `{ count: 2 }`.',
+    tags: ['useReducer', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-017',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 2,
+    targetLevel: ['junior', 'pleno'],
+    language: 'en',
+    text: `What is logged to the console?
+
+\`\`\`jsx
+const ThemeContext = createContext('light');
+
+function Display() {
+  const theme = useContext(ThemeContext);
+  console.log(theme);
+  return null;
+}
+
+function App() {
+  return <Display />;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'undefined', isCorrect: false },
+      { id: 'b', text: "'light'", isCorrect: true },
+      { id: 'c', text: 'Throws an error: no Provider found', isCorrect: false },
+      { id: 'd', text: 'null', isCorrect: false },
+    ],
+    hints: ['The value passed to `createContext(defaultValue)` is used whenever there is no matching `Provider` above in the tree'],
+    explanation: '`Display` calls `useContext(ThemeContext)` without any `<ThemeContext.Provider>` existing between it and the root of the tree. In that case, React uses the default value provided when creating the context — `createContext(\'light\')` — without throwing any error. That\'s why the log shows `\'light\'`.',
+    tags: ['Context', 'useContext', 'default-value', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-018',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 5,
+    targetLevel: ['senior', 'staff'],
+    language: 'en',
+    text: `\`App\` first renders with \`value="A"\`, then re-renders with \`value="B"\` (no click yet). AFTER that, the user clicks the button. What is logged?
+
+\`\`\`jsx
+function useLogger(value) {
+  const log = useCallback(() => {
+    console.log(value);
+  }, []); // missing dependency: value
+  return log;
+}
+
+function App({ value }) {
+  const log = useLogger(value);
+  return <button onClick={log}>Log</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'B' (the latest value)", isCorrect: false },
+      { id: 'b', text: "'A' (the value from the first render)", isCorrect: true },
+      { id: 'c', text: "'A' then 'B'", isCorrect: false },
+      { id: 'd', text: 'undefined', isCorrect: false },
+    ],
+    hints: ['`useCallback` with `[]` memoizes the function on the FIRST render and never recreates it, even if `value` changes later', 'The returned `log` function remains forever the original closure, stuck on the `value` from the first render'],
+    explanation: 'Since `useCallback` has an empty dependency array (`[]`), it memoizes the `log` function the first time the hook is called and NEVER recreates it on subsequent renders — even though `value` changes from `\'A\'` to `\'B\'`. The returned function remains exactly the same original closure, forever stuck on the `value` that existed at the first render. So clicking the button after the prop change still logs `\'A\'`.',
+    tags: ['useCallback', 'stale-closure', 'custom-hook', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-019',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 4,
+    targetLevel: ['pleno-senior', 'senior'],
+    language: 'en',
+    text: `Clicking the button — does the 'Box render' log appear again, even though \`Box\` is wrapped in \`React.memo\`?
+
+\`\`\`jsx
+const Box = React.memo(function Box({ children }) {
+  console.log('Box render');
+  return <div>{children}</div>;
+});
+
+function App() {
+  const [n, setN] = useState(0);
+  return (
+    <>
+      <Box><span>Static</span></Box>
+      <button onClick={() => setN(n + 1)}>{n}</button>
+    </>
+  );
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: 'No, the `children` content never changes', isCorrect: false },
+      { id: 'b', text: 'Yes, because `<span>Static</span>` is a brand-new element (object) on every render of `App`', isCorrect: true },
+      { id: 'c', text: 'No, static JSX is automatically memoized by React', isCorrect: false },
+      { id: 'd', text: 'Yes, but only if `Box` were not wrapped in `React.memo`', isCorrect: false },
+    ],
+    hints: ['JSX always creates a NEW React element object every time the surrounding code runs, even if the markup looks identical', '`children` is just another prop — and `React.memo` compares props by reference'],
+    explanation: 'Every bit of JSX (`<span>Static</span>`) compiles to a function call (`React.createElement` or equivalent) that returns a brand-new object every time `App` renders — even if the markup is visually identical. This new object is passed as the `children` prop to `Box`. Since `React.memo` compares props with referential (shallow) equality, it detects that `children` "changed" (it\'s a different object) and lets `Box` re-render.',
+    tags: ['React.memo', 'children', 'reference', 'output-prediction'],
+  },
+  {
+    id: 'en-react-pred-020',
+    domain: 'react',
+    type: 'multiple_choice',
+    difficulty: 3,
+    targetLevel: ['pleno', 'pleno-senior'],
+    language: 'en',
+    text: `The user clicks the button several times (it always calls \`setCount(0)\`, the same as the initial value). What happens to the 'render' log after the FIRST click?
+
+\`\`\`jsx
+function App() {
+  const [count, setCount] = useState(0);
+  console.log('render');
+  return <button onClick={() => setCount(0)}>{count}</button>;
+}
+\`\`\``,
+    options: [
+      { id: 'a', text: "'render' is logged again on every click, even with no visual change", isCorrect: false },
+      { id: 'b', text: "'render' is NOT logged again on any subsequent click", isCorrect: true },
+      { id: 'c', text: 'Throws an invalid-state error', isCorrect: false },
+      { id: 'd', text: "'render' appears only the first time you click, then never reacts to clicks again", isCorrect: false },
+    ],
+    hints: ['React compares the new state value with the current one using `Object.is`', 'If the new value equals the current one, React bails out of the re-render entirely, without even running the component body again'],
+    explanation: 'Every call to `setCount(0)` is trying to set the state to the SAME value it already has (`0`). React detects this equality using `Object.is` and decides to skip the re-render entirely — not even the `App` function body (and therefore `console.log(\'render\')`) runs again. This "bail out" behavior is an internal React optimization, regardless of how many times the click happens.',
+    tags: ['useState', 'bail-out', 'Object.is', 'output-prediction'],
+  },
 ]
