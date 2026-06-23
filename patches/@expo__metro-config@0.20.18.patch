@@ -1,7 +1,7 @@
-diff --git a/build/file-store.js "b/C:/Users/juane/OneDrive/\303\201rea de Trabalho/Estudos/Projetos/Treinador-entrevista/node_modules/.pnpm_patches/@expo/metro-config@0.20.18_tmp/build/file-store.js"
+diff --git a/build/file-store.js b/build/file-store.js
 index 6beb69851f2157cb9ea545e460e7bf1134e58bbb..fbb50f30173494b9b8b5a4c5ec5dfa44e8321243 100644
 --- a/build/file-store.js
-+++ "b/C:/Users/juane/OneDrive/\303\201rea de Trabalho/Estudos/Projetos/Treinador-entrevista/node_modules/.pnpm_patches/@expo/metro-config@0.20.18_tmp/build/file-store.js"	
++++ b/build/file-store.js
 @@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
  };
  Object.defineProperty(exports, "__esModule", { value: true });
