@@ -48,6 +48,9 @@ const translations = {
       algorithms: 'Algoritmos',
       data_structures: 'Estruturas de Dados',
       software_engineering: 'Engenharia de Software',
+      html: 'HTML',
+      css: 'CSS',
+      internet_fundamentals: 'Fundamentos da Internet',
     } satisfies Record<KnowledgeDomain, string>,
     session: {
       back: 'Voltar',
@@ -168,6 +171,9 @@ const translations = {
       algorithms: 'Algorithms',
       data_structures: 'Data Structures',
       software_engineering: 'Software Engineering',
+      html: 'HTML',
+      css: 'CSS',
+      internet_fundamentals: 'Internet Fundamentals',
     } satisfies Record<KnowledgeDomain, string>,
     session: {
       back: 'Back',

@@ -69,6 +69,7 @@ export default function SessionPage({ params }: PageProps) {
 
   useEffect(() => {
     if (isLoadingFeedback) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowFeedback(true)
     }
   }, [isLoadingFeedback])

@@ -12,7 +12,7 @@ import { DOMAIN_ICONS } from '@/lib/domainIcons'
 import type { SeniorityLevel, KnowledgeDomain, QuestionPreference } from '@interview-trainer/domain'
 import { SENIORITY_LEVELS, QUESTION_PREFERENCES } from '@interview-trainer/domain'
 
-const DOMAIN_VALUES: KnowledgeDomain[] = ['javascript', 'typescript', 'react', 'nextjs', 'algorithms']
+const DOMAIN_VALUES: KnowledgeDomain[] = ['javascript', 'typescript', 'react', 'nextjs', 'algorithms', 'html', 'css', 'internet_fundamentals']
 
 export default function DashboardPage() {
   const currentLevel = useUserProgressStore((s) => s.currentLevel)

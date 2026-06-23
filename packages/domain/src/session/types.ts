@@ -14,6 +14,9 @@ export const KNOWLEDGE_DOMAINS = [
   'algorithms',
   'data_structures',
   'software_engineering',
+  'html',
+  'css',
+  'internet_fundamentals',
 ] as const
 
 export type KnowledgeDomain = (typeof KNOWLEDGE_DOMAINS)[number]
