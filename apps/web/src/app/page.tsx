@@ -47,11 +47,8 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen p-4 md:p-8">
       <div className="mx-auto max-w-2xl space-y-8">
-        <header className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold text-foreground">Interview Trainer</h1>
-          </div>
+        <header className="space-y-1">
+          <h1 className="text-xl font-bold text-foreground">Bem-vindo de volta</h1>
           <p className="text-sm text-muted-foreground">
             Treine para entrevistas técnicas com mentoria por IA
           </p>
