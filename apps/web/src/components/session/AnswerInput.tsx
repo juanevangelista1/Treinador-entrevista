@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/lib/i18n'
 import type { Question, MultipleChoiceOption } from '@interview-trainer/domain'
 
 interface AnswerInputProps {
@@ -25,6 +26,7 @@ function MultipleChoiceInput({
   isLastQuestion?: boolean
   onAnswered: (id: string, isCorrect: boolean) => void
 }) {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<string | null>(null)
   const revealed = selected !== null
   const isCorrect = options.find((o) => o.id === selected)?.isCorrect ?? false
@@ -36,7 +38,7 @@ function MultipleChoiceInput({
 
   function getOptionClassName(option: MultipleChoiceOption): string {
     if (!revealed) {
-      return 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5 cursor-pointer'
+      return 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-primary/5 hover:scale-[1.01] active:scale-[0.99] cursor-pointer'
     }
     if (option.isCorrect) {
       return 'border-emerald-500 bg-emerald-500/10 text-foreground cursor-default'
@@ -56,7 +58,7 @@ function MultipleChoiceInput({
 
   return (
     <div className="space-y-2">
-      <div role="radiogroup" aria-label="Opções de resposta" className="space-y-2">
+      <div role="radiogroup" aria-label={t.answerInput.optionsLabel} className="space-y-2">
         {options.map((option) => (
           <button
             key={option.id}
@@ -66,7 +68,7 @@ function MultipleChoiceInput({
             onClick={() => handleSelect(option.id)}
             disabled={revealed}
             className={cn(
-              'w-full text-left rounded-xl border px-4 py-3.5 text-sm transition-all',
+              'w-full text-left rounded-xl border px-4 py-3.5 text-sm transition-all duration-300 ease-out',
               getOptionClassName(option),
             )}
           >
@@ -114,7 +116,7 @@ function MultipleChoiceInput({
                   isCorrect ? 'text-emerald-400' : 'text-red-400',
                 )}
               >
-                {isCorrect ? 'Correto!' : 'Incorreto'}
+                {isCorrect ? t.answerInput.correct : t.answerInput.incorrect}
               </span>
             </div>
             <p className="text-sm leading-relaxed text-foreground">{explanation}</p>
@@ -123,9 +125,9 @@ function MultipleChoiceInput({
           <button
             type="button"
             onClick={() => onAnswered(selected!, isCorrect)}
-            className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            className="w-full cursor-pointer rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
           >
-            {isLastQuestion ? 'Ver resultado da sessão' : 'Próxima pergunta →'}
+            {isLastQuestion ? t.answerInput.seeSessionResult : t.answerInput.nextQuestion}
           </button>
         </motion.div>
       )}
@@ -140,17 +142,18 @@ function OpenTextInput({
   onSubmit: (answer: string) => void
   disabled: boolean
 }) {
+  const { t } = useTranslation()
   const [value, setValue] = useState('')
   const isValid = value.trim().length >= 20
 
   return (
     <div className="space-y-3">
       <textarea
-        aria-label="Sua resposta"
+        aria-label={t.answerInput.yourAnswerLabel}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         disabled={disabled}
-        placeholder="Digite sua resposta aqui... (mínimo 20 caracteres)"
+        placeholder={t.answerInput.placeholder}
         rows={6}
         className={cn(
           'w-full resize-none rounded-xl border border-border bg-secondary px-4 py-3 text-sm text-foreground',
@@ -159,14 +162,14 @@ function OpenTextInput({
         )}
       />
       <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{value.length} caracteres</span>
+        <span className="text-xs text-muted-foreground">{t.answerInput.charactersLabel(value.length)}</span>
         <button
           type="button"
           onClick={() => onSubmit(value.trim())}
           disabled={!isValid || disabled}
-          className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
+          className="cursor-pointer rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.03] hover:opacity-90 active:scale-[0.97] disabled:cursor-not-allowed disabled:hover:scale-100 disabled:opacity-40"
         >
-          Enviar resposta
+          {t.answerInput.submit}
         </button>
       </div>
     </div>

@@ -1,4 +1,7 @@
+'use client'
+
 import { Mail } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n'
 
 function LinkedinIcon() {
   return (
@@ -14,25 +17,27 @@ function LinkedinIcon() {
 }
 
 export function SiteFooter() {
+  const { t } = useTranslation()
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-2xl flex-col items-center gap-2 px-4 py-6 text-center md:px-8">
         <p className="text-sm text-muted-foreground">
-          Desenvolvido por <span className="font-semibold text-foreground">Juan Evangelista</span>
+          {t.footer.developedBy} <span className="font-semibold text-foreground">Juan Evangelista</span>
         </p>
         <div className="flex items-center gap-4">
           <a
             href="https://www.linkedin.com/in/juan-evangelista-developer/?locale=pt"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-all duration-300 ease-out hover:scale-[1.05] hover:text-primary"
           >
             <LinkedinIcon />
-            LinkedIn
+            {t.footer.linkedin}
           </a>
           <a
             href="mailto:juan.evangelista.nascimentoo@gmail.com"
-            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-primary"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-all duration-300 ease-out hover:scale-[1.05] hover:text-primary"
           >
             <Mail className="h-4 w-4" />
             juan.evangelista.nascimentoo@gmail.com

@@ -15,6 +15,7 @@ import { AchievementToast } from '@/components/gamification/AchievementToast'
 import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
 import { LevelBadge } from '@/components/gamification/LevelBadge'
+import { useTranslation } from '@/lib/i18n'
 import type { SeniorityLevel, KnowledgeDomain, QuestionLanguage, Achievement } from '@interview-trainer/domain'
 
 interface PageProps {
@@ -27,6 +28,7 @@ export default function SessionPage({ params }: PageProps) {
   const domainsParam = searchParams.get('domains') ?? 'javascript'
   const domains = domainsParam.split(',') as KnowledgeDomain[]
   const language = (searchParams.get('lang') ?? 'pt') as QuestionLanguage
+  const { t } = useTranslation()
 
   const {
     session,
@@ -75,7 +77,7 @@ export default function SessionPage({ params }: PageProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Brain className="h-5 w-5 animate-pulse text-primary" />
-          <span className="text-sm">Preparando sessão...</span>
+          <span className="text-sm">{t.session.preparing}</span>
         </div>
       </div>
     )
@@ -109,10 +111,10 @@ export default function SessionPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground transition-all duration-300 ease-out hover:scale-[1.03] hover:text-foreground hover:border-primary/50 active:scale-[0.97]"
             >
               <ArrowLeft className="h-4 w-4" />
-              Voltar
+              {t.session.back}
             </Link>
             <LevelBadge level={levelId as SeniorityLevel} size="sm" />
           </div>
@@ -158,17 +160,15 @@ export default function SessionPage({ params }: PageProps) {
             >
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-red-400" />
-                <span className="font-semibold text-foreground">Não foi possível avaliar sua resposta</span>
+                <span className="font-semibold text-foreground">{t.session.errorTitle}</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Houve um erro ao conversar com o mentor de IA. Verifique sua conexão e tente novamente.
-              </p>
+              <p className="text-sm text-muted-foreground">{t.session.errorBody}</p>
               <button
                 type="button"
                 onClick={retryFeedback}
-                className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+                className="w-full cursor-pointer rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
               >
-                Tentar novamente
+                {t.session.retry}
               </button>
             </motion.div>
           )}

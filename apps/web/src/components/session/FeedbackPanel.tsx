@@ -3,26 +3,24 @@
 import { motion } from 'framer-motion'
 import { CheckCircle, XCircle, AlertCircle, Lightbulb, Code2, TrendingUp, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/lib/i18n'
 import type { AiFeedbackResponse } from '@interview-trainer/domain'
 
 const VERDICT_CONFIG = {
   correct: {
     icon: CheckCircle,
-    label: 'Correto!',
     className: 'border-emerald-500/30 bg-emerald-500/10',
     iconClassName: 'text-emerald-400',
     scoreClassName: 'text-emerald-400',
   },
   partial: {
     icon: AlertCircle,
-    label: 'Parcialmente correto',
     className: 'border-yellow-500/30 bg-yellow-500/10',
     iconClassName: 'text-yellow-400',
     scoreClassName: 'text-yellow-400',
   },
   incorrect: {
     icon: XCircle,
-    label: 'Incorreto',
     className: 'border-red-500/30 bg-red-500/10',
     iconClassName: 'text-red-400',
     scoreClassName: 'text-red-400',
@@ -44,9 +42,11 @@ export function FeedbackPanel({
   onNext,
   isLastQuestion,
 }: FeedbackPanelProps) {
+  const { t } = useTranslation()
   const verdict = feedback.verdict ?? 'partial'
   const config = VERDICT_CONFIG[verdict]
   const Icon = config.icon
+  const verdictLabel = t.feedbackPanel[verdict]
 
   return (
     <motion.div
@@ -59,7 +59,7 @@ export function FeedbackPanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icon className={cn('h-5 w-5', config.iconClassName)} />
-            <span className="font-semibold text-foreground">{config.label}</span>
+            <span className="font-semibold text-foreground">{verdictLabel}</span>
           </div>
           <div className="flex items-center gap-3">
             {feedback.score !== undefined && (
@@ -85,7 +85,7 @@ export function FeedbackPanel({
         <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 flex gap-3">
           <Lightbulb className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-semibold text-blue-400 mb-1">Dica para aprofundar</p>
+            <p className="text-xs font-semibold text-blue-400 mb-1">{t.feedbackPanel.hintTitle}</p>
             <p className="text-sm text-foreground">{feedback.hint}</p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export function FeedbackPanel({
         <div className="rounded-lg border border-border bg-secondary p-4 flex gap-3">
           <Code2 className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-semibold text-muted-foreground mb-1">Exemplo</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-1">{t.feedbackPanel.exampleTitle}</p>
             <p className="text-sm font-mono text-foreground whitespace-pre-wrap">{feedback.example}</p>
           </div>
         </div>
@@ -105,7 +105,7 @@ export function FeedbackPanel({
         <div className="rounded-lg border border-border bg-card p-4 flex gap-3">
           <TrendingUp className="h-4 w-4 text-primary mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-semibold text-primary mb-1">Próximo passo sugerido</p>
+            <p className="text-xs font-semibold text-primary mb-1">{t.feedbackPanel.nextTopicTitle}</p>
             <p className="text-sm text-foreground">{feedback.suggestedNextTopic}</p>
           </div>
         </div>
@@ -115,9 +115,9 @@ export function FeedbackPanel({
         <button
           type="button"
           onClick={onNext}
-          className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+          className="w-full cursor-pointer rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all duration-300 ease-out hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
         >
-          {isLastQuestion ? 'Ver resumo da sessão' : 'Próxima pergunta →'}
+          {isLastQuestion ? t.feedbackPanel.seeSummary : t.feedbackPanel.nextQuestion}
         </button>
       )}
     </motion.div>
