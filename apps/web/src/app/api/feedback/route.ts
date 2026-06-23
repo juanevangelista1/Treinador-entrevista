@@ -1,8 +1,7 @@
 import { streamObject } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
-import { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS, SENIORITY_LEVELS } from '@interview-trainer/domain'
-import type { AiFeedbackRequest } from '@interview-trainer/domain'
+import { SENIORITY_LEVELS, ALL_QUESTIONS, type Question } from '@interview-trainer/domain'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
 const RATE_LIMIT = { limit: 10, windowMs: 60_000 }
@@ -18,17 +17,9 @@ const feedbackSchema = z.object({
 })
 
 const requestSchema = z.object({
-  question: z.object({
-    id: z.string(),
-    text: z.string().max(2000),
-    domain: z.enum(KNOWLEDGE_DOMAINS),
-    difficulty: z.union(DIFFICULTY_LEVELS.map((level) => z.literal(level))),
-    explanation: z.string().max(2000),
-    hints: z.array(z.string().max(500)).max(20),
-  }),
+  questionId: z.string(),
   userAnswer: z.string().min(1).max(5000),
   seniorityLevel: z.enum(SENIORITY_LEVELS),
-  domain: z.enum(KNOWLEDGE_DOMAINS),
 })
 
 function buildSystemPrompt(seniorityLevel: string): string {
@@ -48,14 +39,14 @@ REGRAS DE AVALIAÇÃO (siga rigorosamente, não seja leniente):
 9. Seja encorajador no tom, mas rigoroso e honesto na nota.`
 }
 
-function buildUserPrompt(request: AiFeedbackRequest): string {
-  return `Pergunta: ${request.question.text}
+function buildUserPrompt(userAnswer: string, seniorityLevel: string, question: Question): string {
+  return `Pergunta: ${question.text}
 
-Resposta do candidato: ${request.userAnswer}
+Resposta do candidato: ${userAnswer}
 
-Nível esperado: ${request.seniorityLevel}
-Domínio: ${request.domain}
-Dificuldade da pergunta: ${request.question.difficulty}/5
+Nível esperado: ${seniorityLevel}
+Domínio: ${question.domain}
+Dificuldade da pergunta: ${question.difficulty}/5
 
 Avalie esta resposta e retorne o JSON estruturado solicitado.`
 }
@@ -87,13 +78,18 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const feedbackRequest = parsed.data as AiFeedbackRequest
+  const { questionId, userAnswer, seniorityLevel } = parsed.data
+
+  const question = ALL_QUESTIONS.find((q) => q.id === questionId)
+  if (!question) {
+    return Response.json({ error: 'Question not found' }, { status: 404 })
+  }
 
   const result = streamObject({
     model: anthropic('claude-sonnet-4-6'),
     schema: feedbackSchema,
-    system: buildSystemPrompt(feedbackRequest.seniorityLevel),
-    prompt: buildUserPrompt(feedbackRequest),
+    system: buildSystemPrompt(seniorityLevel),
+    prompt: buildUserPrompt(userAnswer, seniorityLevel, question),
     onError: ({ error }) => {
       console.error('streamObject failed for /api/feedback', error)
     },

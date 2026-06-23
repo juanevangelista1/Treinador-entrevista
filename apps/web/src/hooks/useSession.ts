@@ -108,10 +108,9 @@ export function useSession() {
       setPendingAnswer(answer)
 
       submitFeedbackRequest({
-        question: currentQuestion,
+        questionId: currentQuestion.id,
         userAnswer: answerValue,
         seniorityLevel: session.config.seniorityLevel,
-        domain: currentQuestion.domain,
       })
     },
     [session, setFeedback, setPendingAnswer, submitFeedbackRequest],
@@ -124,10 +123,9 @@ export function useSession() {
     if (!currentQuestion) return
 
     submitFeedbackRequest({
-      question: currentQuestion,
+      questionId: currentQuestion.id,
       userAnswer: pendingAnswer.value,
       seniorityLevel: session.config.seniorityLevel,
-      domain: currentQuestion.domain,
     })
   }, [session, pendingAnswer, submitFeedbackRequest])
 

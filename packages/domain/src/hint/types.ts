@@ -1,11 +1,5 @@
-import type { KnowledgeDomain, DifficultyLevel, QuestionLanguage } from '../session/types'
-
 export interface HintRequest {
-  readonly questionText: string
-  readonly explanation: string
-  readonly domain: KnowledgeDomain
-  readonly difficulty: DifficultyLevel
-  readonly language: QuestionLanguage
+  readonly questionId: string
 }
 
 export interface HintResponse {

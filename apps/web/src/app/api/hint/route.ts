@@ -1,8 +1,7 @@
 import { streamObject } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { z } from 'zod'
-import { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS } from '@interview-trainer/domain'
-import type { HintRequest } from '@interview-trainer/domain'
+import { ALL_QUESTIONS, type Question } from '@interview-trainer/domain'
 import { checkRateLimit, getClientKey } from '@/lib/rateLimit'
 
 const RATE_LIMIT = { limit: 10, windowMs: 60_000 }
@@ -14,11 +13,7 @@ const hintSchema = z.object({
 })
 
 const requestSchema = z.object({
-  questionText: z.string().max(2000),
-  explanation: z.string().max(2000),
-  domain: z.enum(KNOWLEDGE_DOMAINS),
-  difficulty: z.union(DIFFICULTY_LEVELS.map((level) => z.literal(level))),
-  language: z.enum(['pt', 'en']),
+  questionId: z.string(),
 })
 
 function buildSystemPrompt(language: 'pt' | 'en'): string {
@@ -43,13 +38,13 @@ Dada uma pergunta e sua explicação, produza:
 Seja concreto e conciso. Responda em português brasileiro.`
 }
 
-function buildUserPrompt(request: HintRequest): string {
-  return `Pergunta: ${request.questionText}
+function buildUserPrompt(question: Question): string {
+  return `Pergunta: ${question.text}
 
-Explicação existente: ${request.explanation}
+Explicação existente: ${question.explanation}
 
-Domínio: ${request.domain}
-Dificuldade: ${request.difficulty}/5`
+Domínio: ${question.domain}
+Dificuldade: ${question.difficulty}/5`
 }
 
 export async function POST(req: Request) {
@@ -79,13 +74,18 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const hintRequest = parsed.data as HintRequest
+  const { questionId } = parsed.data
+
+  const question = ALL_QUESTIONS.find((q) => q.id === questionId)
+  if (!question) {
+    return Response.json({ error: 'Question not found' }, { status: 404 })
+  }
 
   const result = streamObject({
     model: anthropic('claude-sonnet-4-6'),
     schema: hintSchema,
-    system: buildSystemPrompt(hintRequest.language),
-    prompt: buildUserPrompt(hintRequest),
+    system: buildSystemPrompt(question.language ?? 'pt'),
+    prompt: buildUserPrompt(question),
     onError: ({ error }) => {
       console.error('streamObject failed for /api/hint', error)
     },

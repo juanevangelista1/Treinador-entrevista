@@ -1,11 +1,9 @@
 import type { SeniorityLevel } from '../gamification/types'
-import type { KnowledgeDomain, Question } from '../session/types'
 
 export interface AiFeedbackRequest {
-  readonly question: Question
+  readonly questionId: string
   readonly userAnswer: string
   readonly seniorityLevel: SeniorityLevel
-  readonly domain: KnowledgeDomain
 }
 
 export interface AiFeedbackResponse {

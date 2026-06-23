@@ -33,11 +33,7 @@ export function HintModal({ question, open, onOpenChange }: HintModalProps) {
 
   function handleGenerate() {
     generate({
-      questionText: question.text,
-      explanation: question.explanation,
-      domain: question.domain,
-      difficulty: question.difficulty,
-      language: question.language ?? 'pt',
+      questionId: question.id,
     })
   }
 
