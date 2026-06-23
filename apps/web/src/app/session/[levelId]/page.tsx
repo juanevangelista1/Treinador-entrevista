@@ -16,7 +16,13 @@ import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
 import { LevelBadge } from '@/components/gamification/LevelBadge'
 import { useTranslation } from '@/lib/i18n'
-import type { SeniorityLevel, KnowledgeDomain, QuestionLanguage, Achievement } from '@interview-trainer/domain'
+import type {
+  SeniorityLevel,
+  KnowledgeDomain,
+  QuestionLanguage,
+  QuestionPreference,
+  Achievement,
+} from '@interview-trainer/domain'
 
 interface PageProps {
   params: Promise<{ levelId: string }>
@@ -28,6 +34,7 @@ export default function SessionPage({ params }: PageProps) {
   const domainsParam = searchParams.get('domains') ?? 'javascript'
   const domains = domainsParam.split(',') as KnowledgeDomain[]
   const language = (searchParams.get('lang') ?? 'pt') as QuestionLanguage
+  const questionPreference = (searchParams.get('pref') ?? 'mixed') as QuestionPreference
   const { t } = useTranslation()
 
   const {
@@ -53,8 +60,9 @@ export default function SessionPage({ params }: PageProps) {
     startSession({
       seniorityLevel: levelId as SeniorityLevel,
       domains,
-      totalQuestions: 5,
+      totalQuestions: 10,
       language,
+      questionPreference,
     })
     return () => clearSession()
   }, [])
@@ -94,7 +102,13 @@ export default function SessionPage({ params }: PageProps) {
             totalXpEarned={totalXpEarned}
             onRestart={() => {
               clearSession()
-              startSession({ seniorityLevel: levelId as SeniorityLevel, domains, totalQuestions: 5, language })
+              startSession({
+                seniorityLevel: levelId as SeniorityLevel,
+                domains,
+                totalQuestions: 10,
+                language,
+                questionPreference,
+              })
             }}
           />
         </div>
@@ -103,6 +117,7 @@ export default function SessionPage({ params }: PageProps) {
   }
 
   const isLastQuestion = session.currentQuestionIndex >= session.questions.length - 1
+  const hasFinalFeedback = Boolean(feedback)
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -183,7 +198,7 @@ export default function SessionPage({ params }: PageProps) {
             >
               <FeedbackPanel
                 feedback={(streamingFeedback ?? feedback ?? {}) as Partial<import('@interview-trainer/domain').AiFeedbackResponse>}
-                isStreaming={isLoadingFeedback}
+                isStreaming={isLoadingFeedback && !hasFinalFeedback}
                 onNext={handleNext}
                 isLastQuestion={isLastQuestion}
               />

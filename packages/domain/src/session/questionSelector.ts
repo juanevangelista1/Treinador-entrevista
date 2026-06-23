@@ -1,4 +1,4 @@
-import type { Question, KnowledgeDomain, SessionConfig } from './types'
+import type { Question, KnowledgeDomain, QuestionPreference, SessionConfig } from './types'
 import type { UserProgress } from '../gamification/types'
 import { ALL_QUESTIONS } from '../data'
 
@@ -41,6 +41,19 @@ function pickWeighted<T>(
   return result
 }
 
+function matchesPreference(question: Question, preference: QuestionPreference): boolean {
+  switch (preference) {
+    case 'open_text':
+      return question.type === 'open_text'
+    case 'code':
+      return question.tags.includes('output-prediction')
+    case 'multiple_choice':
+      return question.type === 'multiple_choice' && !question.tags.includes('output-prediction')
+    case 'mixed':
+      return true
+  }
+}
+
 export function selectQuestions(options: SelectQuestionsOptions): Question[] {
   const { config, progress, recentQuestionIds } = options
 
@@ -52,10 +65,27 @@ export function selectQuestions(options: SelectQuestionsOptions): Question[] {
       (q.language ?? 'pt') === config.language,
   )
 
-  const weighted = eligible.map((question) => ({
-    value: question,
-    weight: weightByDomainWeakness(question.domain, progress),
-  }))
+  const preference = config.questionPreference ?? 'mixed'
+  const preferred = preference === 'mixed' ? eligible : eligible.filter((q) => matchesPreference(q, preference))
 
-  return pickWeighted(weighted, config.totalQuestions)
+  const toWeighted = (questions: Question[]) =>
+    questions.map((question) => ({
+      value: question,
+      weight: weightByDomainWeakness(question.domain, progress),
+    }))
+
+  const picked = pickWeighted(toWeighted(preferred), config.totalQuestions)
+
+  if (picked.length >= config.totalQuestions || preferred.length === eligible.length) {
+    return picked
+  }
+
+  // Not enough questions matching the preference: fill the rest from the
+  // remaining eligible pool so a narrow preference + domain combo never
+  // produces an incomplete session.
+  const pickedIds = new Set(picked.map((q) => q.id))
+  const fallbackPool = eligible.filter((q) => !pickedIds.has(q.id))
+  const fallback = pickWeighted(toWeighted(fallbackPool), config.totalQuestions - picked.length)
+
+  return [...picked, ...fallback]
 }

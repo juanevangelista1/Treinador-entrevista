@@ -10,9 +10,9 @@ const RATE_LIMIT = { limit: 10, windowMs: 60_000 }
 const feedbackSchema = z.object({
   score: z.number().min(0).max(100),
   verdict: z.enum(['correct', 'partial', 'incorrect']),
-  feedback: z.string(),
-  hint: z.string(),
-  example: z.string(),
+  feedback: z.string().min(20),
+  hint: z.string().min(10),
+  example: z.string().min(10),
   keyConceptsMissed: z.array(z.string()),
   suggestedNextTopic: z.string(),
 })
@@ -36,14 +36,16 @@ function buildSystemPrompt(seniorityLevel: string): string {
 
 Seu objetivo é avaliar respostas de candidatos ao nível "${seniorityLevel}" de senioridade.
 
-REGRAS IMPORTANTES:
-1. NÃO entregue a resposta completa diretamente — guie o candidato
-2. Seja específico sobre o que estava certo e o que pode melhorar
-3. Dê uma dica progressiva que ajude o aprendizado
-4. O exemplo deve ilustrar o conceito, não ser a solução exata
-5. O score deve refletir honestamente a qualidade da resposta para o nível "${seniorityLevel}"
-6. Responda sempre em português brasileiro
-7. Seja encorajador mas honesto`
+REGRAS DE AVALIAÇÃO (siga rigorosamente, não seja leniente):
+1. Se a resposta for vaga, genérica, não relacionada ao conceito perguntado, ou claramente não demonstrar entendimento real — mesmo que tenha tamanho razoável — dê "verdict": "incorrect" e "score" abaixo de 30. NÃO escolha "partial" por padrão.
+2. Use "partial" apenas quando o candidato demonstrar entendimento de PARTE do conceito, mas errar ou omitir outra parte específica e identificável.
+3. Use "correct" apenas quando a resposta cobrir os pontos centrais do conceito esperado para o nível "${seniorityLevel}".
+4. "feedback" deve ter no mínimo 2 frases, citando especificamente o que a resposta acertou ou errou — nunca uma frase genérica como "boa tentativa" ou "continue estudando" sem conteúdo concreto.
+5. Se "verdict" não for "correct", "keyConceptsMissed" deve conter pelo menos 1 item nomeando o conceito específico que faltou ou foi usado incorretamente.
+6. Dê uma dica progressiva ("hint") que ajude o aprendizado sem entregar a resposta completa.
+7. O "example" deve ilustrar o conceito com um trecho de código ou cenário concreto, não ser a solução exata da pergunta.
+8. Responda sempre em português brasileiro.
+9. Seja encorajador no tom, mas rigoroso e honesto na nota.`
 }
 
 function buildUserPrompt(request: AiFeedbackRequest): string {
@@ -59,6 +61,11 @@ Avalie esta resposta e retorne o JSON estruturado solicitado.`
 }
 
 export async function POST(req: Request) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error('/api/feedback called without ANTHROPIC_API_KEY configured')
+    return Response.json({ error: 'AI service is not configured' }, { status: 500 })
+  }
+
   const rateLimit = checkRateLimit(getClientKey(req), RATE_LIMIT)
   if (!rateLimit.allowed) {
     return Response.json(
@@ -83,7 +90,7 @@ export async function POST(req: Request) {
   const feedbackRequest = parsed.data as AiFeedbackRequest
 
   const result = streamObject({
-    model: anthropic('claude-haiku-4-5-20251001'),
+    model: anthropic('claude-sonnet-4-6'),
     schema: feedbackSchema,
     system: buildSystemPrompt(feedbackRequest.seniorityLevel),
     prompt: buildUserPrompt(feedbackRequest),

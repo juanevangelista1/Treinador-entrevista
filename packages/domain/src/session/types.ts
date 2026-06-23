@@ -2,6 +2,10 @@ import type { SeniorityLevel } from '../gamification/types'
 
 export type QuestionType = 'multiple_choice' | 'open_text' | 'true_false'
 
+export const QUESTION_PREFERENCES = ['mixed', 'open_text', 'code', 'multiple_choice'] as const
+
+export type QuestionPreference = (typeof QUESTION_PREFERENCES)[number]
+
 export const KNOWLEDGE_DOMAINS = [
   'javascript',
   'typescript',
@@ -54,6 +58,7 @@ export interface SessionConfig {
   readonly domains: KnowledgeDomain[]
   readonly totalQuestions: number
   readonly language: QuestionLanguage
+  readonly questionPreference?: QuestionPreference
 }
 
 export interface QuestionResult {

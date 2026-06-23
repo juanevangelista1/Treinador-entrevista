@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import { Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/lib/i18n'
+import { HintModal } from './HintModal'
 import type { Question, KnowledgeDomain } from '@interview-trainer/domain'
 
 const DIFFICULTY_COLORS: Record<number, string> = {
@@ -46,6 +49,7 @@ function splitCodeFences(text: string): TextSegment[] {
 
 export function QuestionCard({ question, questionNumber, totalQuestions }: QuestionCardProps) {
   const { t } = useTranslation()
+  const [hintOpen, setHintOpen] = useState(false)
   const progress = (questionNumber / totalQuestions) * 100
   const segments = splitCodeFences(question.text)
   const domainLabel = t.domains[question.domain as KnowledgeDomain] ?? question.domain
@@ -69,6 +73,14 @@ export function QuestionCard({ question, questionNumber, totalQuestions }: Quest
             >
               {t.questionCard.difficulty[question.difficulty]}
             </span>
+            <button
+              type="button"
+              onClick={() => setHintOpen(true)}
+              aria-label={t.hintModal.openLabel}
+              className="flex items-center justify-center rounded-full bg-secondary p-1.5 text-muted-foreground cursor-pointer transition-all duration-300 ease-out hover:scale-110 hover:text-primary active:scale-95"
+            >
+              <Lightbulb className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
 
@@ -96,6 +108,8 @@ export function QuestionCard({ question, questionNumber, totalQuestions }: Quest
           ) : null,
         )}
       </div>
+
+      <HintModal question={question} open={hintOpen} onOpenChange={setHintOpen} />
     </div>
   )
 }

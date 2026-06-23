@@ -1,7 +1,7 @@
 'use client'
 
 import { useUiLanguageStore } from '@/store/uiLanguageStore'
-import type { KnowledgeDomain, SeniorityLevel } from '@interview-trainer/domain'
+import type { KnowledgeDomain, QuestionPreference, SeniorityLevel } from '@interview-trainer/domain'
 
 const translations = {
   pt: {
@@ -25,7 +25,14 @@ const translations = {
       portuguese: 'Português',
       english: 'English',
       startSession: 'Começar sessão',
+      questionPreferenceLabel: 'Tipo de pergunta preferido',
     },
+    questionPreference: {
+      mixed: 'Misto',
+      open_text: 'Texto aberto',
+      code: 'Código',
+      multiple_choice: 'Múltipla escolha',
+    } satisfies Record<QuestionPreference, string>,
     seniority: {
       junior: { label: 'Junior', description: '0-2 anos de experiência' },
       pleno: { label: 'Pleno', description: '2-4 anos de experiência' },
@@ -103,6 +110,19 @@ const translations = {
       unlocked: 'Conquista desbloqueada!',
       dismissLabel: 'Dispensar notificação de conquista',
     },
+    hintModal: {
+      openLabel: 'Ver dica',
+      title: 'Dica e aprendizado',
+      hintsTitle: 'Dicas',
+      explanationTitle: 'Explicação',
+      generateButton: 'Gerar exemplo e analogia com IA',
+      generating: 'Gerando...',
+      codeExampleTitle: 'Exemplo de código',
+      analogyTitle: 'Analogia',
+      errorBody: 'Não foi possível gerar o exemplo. Tente novamente.',
+      retry: 'Tentar novamente',
+      close: 'Fechar',
+    },
   },
   en: {
     header: {
@@ -125,7 +145,14 @@ const translations = {
       portuguese: 'Português',
       english: 'English',
       startSession: 'Start session',
+      questionPreferenceLabel: 'Preferred question type',
     },
+    questionPreference: {
+      mixed: 'Mixed',
+      open_text: 'Open text',
+      code: 'Code',
+      multiple_choice: 'Multiple choice',
+    } satisfies Record<QuestionPreference, string>,
     seniority: {
       junior: { label: 'Junior', description: '0-2 years of experience' },
       pleno: { label: 'Mid-level', description: '2-4 years of experience' },
@@ -202,6 +229,19 @@ const translations = {
     achievementToast: {
       unlocked: 'Achievement unlocked!',
       dismissLabel: 'Dismiss achievement notification',
+    },
+    hintModal: {
+      openLabel: 'View hint',
+      title: 'Hint & learning',
+      hintsTitle: 'Hints',
+      explanationTitle: 'Explanation',
+      generateButton: 'Generate example and analogy with AI',
+      generating: 'Generating...',
+      codeExampleTitle: 'Code example',
+      analogyTitle: 'Analogy',
+      errorBody: "Couldn't generate the example. Please try again.",
+      retry: 'Try again',
+      close: 'Close',
     },
   },
 } as const

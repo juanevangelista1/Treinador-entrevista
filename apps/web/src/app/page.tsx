@@ -9,8 +9,8 @@ import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
 import { useTranslation } from '@/lib/i18n'
 import { DOMAIN_ICONS } from '@/lib/domainIcons'
-import type { SeniorityLevel, KnowledgeDomain } from '@interview-trainer/domain'
-import { SENIORITY_LEVELS } from '@interview-trainer/domain'
+import type { SeniorityLevel, KnowledgeDomain, QuestionPreference } from '@interview-trainer/domain'
+import { SENIORITY_LEVELS, QUESTION_PREFERENCES } from '@interview-trainer/domain'
 
 const DOMAIN_VALUES: KnowledgeDomain[] = ['javascript', 'typescript', 'react', 'nextjs', 'algorithms']
 
@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const { language, setLanguage, t } = useTranslation()
   const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(currentLevel)
   const [selectedDomains, setSelectedDomains] = useState<KnowledgeDomain[]>(['javascript', 'react'])
+  const [questionPreference, setQuestionPreference] = useState<QuestionPreference>('mixed')
 
   function toggleDomain(domain: KnowledgeDomain) {
     setSelectedDomains((prev) =>
@@ -31,7 +32,7 @@ export default function DashboardPage() {
     )
   }
 
-  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}&lang=${language}`
+  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}&lang=${language}&pref=${questionPreference}`
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -157,6 +158,29 @@ export default function DashboardPage() {
                 <span className="text-base leading-none">🇺🇸</span>
                 {t.dashboard.english}
               </button>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p id="preference-label" className="text-sm font-medium text-muted-foreground">
+              {t.dashboard.questionPreferenceLabel}
+            </p>
+            <div role="group" aria-labelledby="preference-label" className="flex flex-wrap gap-2">
+              {QUESTION_PREFERENCES.map((preference) => (
+                <button
+                  key={preference}
+                  type="button"
+                  aria-pressed={questionPreference === preference}
+                  onClick={() => setQuestionPreference(preference)}
+                  className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium cursor-pointer transition-all duration-300 ease-out hover:scale-[1.03] active:scale-[0.97] ${
+                    questionPreference === preference
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : 'border-border text-muted-foreground hover:border-primary/50'
+                  }`}
+                >
+                  {t.questionPreference[preference]}
+                </button>
+              ))}
             </div>
           </div>
 

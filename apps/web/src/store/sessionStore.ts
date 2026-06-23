@@ -13,7 +13,7 @@ interface SessionState {
 interface SessionActions {
   setSession: (session: Session) => void
   updateSession: (session: Session) => void
-  setFeedback: (feedback: AiFeedbackResponse) => void
+  setFeedback: (feedback: AiFeedbackResponse | null) => void
   setLoadingFeedback: (loading: boolean) => void
   setPendingAnswer: (answer: Answer | null) => void
   clearSession: () => void

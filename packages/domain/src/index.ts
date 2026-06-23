@@ -10,6 +10,7 @@ export { SENIORITY_LEVELS } from './gamification/types'
 
 export type {
   QuestionType,
+  QuestionPreference,
   QuestionLanguage,
   KnowledgeDomain,
   DifficultyLevel,
@@ -21,9 +22,10 @@ export type {
   QuestionResult,
   Session,
 } from './session/types'
-export { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS } from './session/types'
+export { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS, QUESTION_PREFERENCES } from './session/types'
 
 export type { AiFeedbackRequest, AiFeedbackResponse } from './feedback/types'
+export type { HintRequest, HintResponse } from './hint/types'
 
 export { XP_THRESHOLDS, LEVEL_ORDER, calculateLevel, getXpToNextLevel, getLevelProgress } from './gamification/levelResolver'
 export { calculateXp, DIFFICULTY_XP_BASE, STREAK_MULTIPLIERS } from './gamification/xpCalculator'

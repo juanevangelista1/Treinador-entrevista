@@ -17,9 +17,9 @@ import {
 const feedbackSchema = z.object({
   score: z.number().min(0).max(100),
   verdict: z.enum(['correct', 'partial', 'incorrect']),
-  feedback: z.string(),
-  hint: z.string(),
-  example: z.string(),
+  feedback: z.string().min(20),
+  hint: z.string().min(10),
+  example: z.string().min(10),
   keyConceptsMissed: z.array(z.string()),
   suggestedNextTopic: z.string(),
 })
@@ -104,6 +104,7 @@ export function useSession() {
         submittedAt: Date.now(),
       }
 
+      setFeedback(null)
       setPendingAnswer(answer)
 
       submitFeedbackRequest({
@@ -113,7 +114,7 @@ export function useSession() {
         domain: currentQuestion.domain,
       })
     },
-    [session, setPendingAnswer, submitFeedbackRequest],
+    [session, setFeedback, setPendingAnswer, submitFeedbackRequest],
   )
 
   const retryFeedback = useCallback(() => {
