@@ -9,8 +9,8 @@ import { XpBar } from '@/components/gamification/XpBar'
 import { StreakCounter } from '@/components/gamification/StreakCounter'
 import { useTranslation } from '@/lib/i18n'
 import { DOMAIN_ICONS } from '@/lib/domainIcons'
-import type { SeniorityLevel, KnowledgeDomain, QuestionPreference } from '@interview-trainer/domain'
-import { SENIORITY_LEVELS, QUESTION_PREFERENCES } from '@interview-trainer/domain'
+import type { SeniorityLevel, KnowledgeDomain, QuestionPreference, MdnTopicId } from '@interview-trainer/domain'
+import { SENIORITY_LEVELS, QUESTION_PREFERENCES, MDN_TOPICS } from '@interview-trainer/domain'
 
 const DOMAIN_VALUES: KnowledgeDomain[] = ['javascript', 'typescript', 'react', 'nextjs', 'algorithms', 'html', 'css', 'internet_fundamentals']
 
@@ -24,15 +24,31 @@ export default function DashboardPage() {
   const { language, setLanguage, t } = useTranslation()
   const [selectedLevel, setSelectedLevel] = useState<SeniorityLevel>(currentLevel)
   const [selectedDomains, setSelectedDomains] = useState<KnowledgeDomain[]>(['javascript', 'react'])
+  const [selectedTopics, setSelectedTopics] = useState<MdnTopicId[]>([])
   const [questionPreference, setQuestionPreference] = useState<QuestionPreference>('mixed')
 
   function toggleDomain(domain: KnowledgeDomain) {
     setSelectedDomains((prev) =>
       prev.includes(domain) ? prev.filter((d) => d !== domain) : [...prev, domain],
     )
+    // Clear topics that belong to the domain being removed
+    setSelectedTopics((prev) =>
+      prev.filter((t) => {
+        const topic = MDN_TOPICS.find((m) => m.id === t)
+        return topic ? selectedDomains.includes(topic.domain) || topic.domain === domain : false
+      }),
+    )
   }
 
-  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}&lang=${language}&pref=${questionPreference}`
+  function toggleTopic(topicId: MdnTopicId) {
+    setSelectedTopics((prev) =>
+      prev.includes(topicId) ? prev.filter((t) => t !== topicId) : [...prev, topicId],
+    )
+  }
+
+  const visibleTopics = MDN_TOPICS.filter((t) => selectedDomains.includes(t.domain))
+
+  const sessionUrl = `/session/${selectedLevel}?domains=${selectedDomains.join(',')}&lang=${language}&pref=${questionPreference}${selectedTopics.length > 0 ? `&topics=${selectedTopics.join(',')}` : ''}`
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -126,6 +142,31 @@ export default function DashboardPage() {
               })}
             </div>
           </div>
+
+          {visibleTopics.length > 0 && (
+            <div className="space-y-3">
+              <p id="topics-label" className="text-sm font-medium text-muted-foreground">
+                {t.dashboard.topicsLabel}
+              </p>
+              <div role="group" aria-labelledby="topics-label" className="flex flex-wrap gap-2">
+                {visibleTopics.map((topic) => (
+                  <button
+                    key={topic.id}
+                    type="button"
+                    aria-pressed={selectedTopics.includes(topic.id as MdnTopicId)}
+                    onClick={() => toggleTopic(topic.id as MdnTopicId)}
+                    className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-300 ease-out hover:scale-[1.05] active:scale-[0.95] ${
+                      selectedTopics.includes(topic.id as MdnTopicId)
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:border-primary/50'
+                    }`}
+                  >
+                    {language === 'pt' ? t.mdnTopics[topic.id as MdnTopicId] : t.mdnTopics[topic.id as MdnTopicId]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="space-y-3">
             <p id="language-label" className="text-sm font-medium text-muted-foreground">

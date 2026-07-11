@@ -23,6 +23,8 @@ export type {
   Session,
 } from './session/types'
 export { KNOWLEDGE_DOMAINS, DIFFICULTY_LEVELS, QUESTION_PREFERENCES } from './session/types'
+export type { MdnTopic, MdnTopicId } from './session/mdnTopics'
+export { MDN_TOPICS, MDN_TOPIC_IDS } from './session/mdnTopics'
 
 export type { AiFeedbackRequest, AiFeedbackResponse } from './feedback/types'
 export type { HintRequest, HintResponse } from './hint/types'

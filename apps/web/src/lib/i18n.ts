@@ -1,7 +1,7 @@
 'use client'
 
 import { useUiLanguageStore } from '@/store/uiLanguageStore'
-import type { KnowledgeDomain, QuestionPreference, SeniorityLevel } from '@interview-trainer/domain'
+import type { KnowledgeDomain, QuestionPreference, SeniorityLevel, MdnTopicId } from '@interview-trainer/domain'
 
 const translations = {
   pt: {
@@ -21,6 +21,7 @@ const translations = {
       startNewSessionTitle: 'Iniciar nova sessão',
       seniorityLabel: 'Nível de senioridade',
       domainsLabel: 'Domínios (selecione um ou mais)',
+      topicsLabel: 'Tópicos específicos (opcional)',
       languageLabel: 'Idioma das perguntas',
       portuguese: 'Português',
       english: 'English',
@@ -52,6 +53,19 @@ const translations = {
       css: 'CSS',
       internet_fundamentals: 'Fundamentos da Internet',
     } satisfies Record<KnowledgeDomain, string>,
+    mdnTopics: {
+      'web-rendering-patterns': 'Padrões de Renderização Web',
+      'browser-rendering-pipeline': 'Pipeline de Renderização',
+      'http-cache-cdn': 'HTTP, Cache & CDN',
+      'html-basic-syntax': 'Sintaxe básica',
+      'html-page-metadata': 'Metadados da página',
+      'html-headings-paragraphs': 'Títulos e parágrafos',
+      'html-emphasis-importance': 'Ênfase e importância',
+      'html-lists': 'Listas',
+      'html-advanced-text': 'Texto avançado',
+      'html-structuring-documents': 'Estrutura de documentos',
+      'html-creating-links': 'Links',
+    } satisfies Record<MdnTopicId, string>,
     session: {
       back: 'Voltar',
       preparing: 'Preparando sessão...',
@@ -144,6 +158,7 @@ const translations = {
       startNewSessionTitle: 'Start new session',
       seniorityLabel: 'Seniority level',
       domainsLabel: 'Domains (select one or more)',
+      topicsLabel: 'Specific topics (optional)',
       languageLabel: 'Question language',
       portuguese: 'Português',
       english: 'English',
@@ -175,6 +190,19 @@ const translations = {
       css: 'CSS',
       internet_fundamentals: 'Internet Fundamentals',
     } satisfies Record<KnowledgeDomain, string>,
+    mdnTopics: {
+      'web-rendering-patterns': 'Web Rendering Patterns',
+      'browser-rendering-pipeline': 'Browser Rendering Pipeline',
+      'http-cache-cdn': 'HTTP, Cache & CDN',
+      'html-basic-syntax': 'Basic Syntax',
+      'html-page-metadata': 'Page Metadata',
+      'html-headings-paragraphs': 'Headings & Paragraphs',
+      'html-emphasis-importance': 'Emphasis & Importance',
+      'html-lists': 'Lists',
+      'html-advanced-text': 'Advanced Text',
+      'html-structuring-documents': 'Document Structure',
+      'html-creating-links': 'Links',
+    } satisfies Record<MdnTopicId, string>,
     session: {
       back: 'Back',
       preparing: 'Preparing session...',

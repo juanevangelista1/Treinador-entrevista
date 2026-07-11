@@ -62,7 +62,8 @@ export function selectQuestions(options: SelectQuestionsOptions): Question[] {
       config.domains.includes(q.domain) &&
       q.targetLevel.includes(config.seniorityLevel) &&
       !recentQuestionIds.includes(q.id) &&
-      (q.language ?? 'pt') === config.language,
+      (q.language ?? 'pt') === config.language &&
+      (config.topics == null || config.topics.length === 0 || (q.topicId != null && config.topics.includes(q.topicId))),
   )
 
   const preference = config.questionPreference ?? 'mixed'

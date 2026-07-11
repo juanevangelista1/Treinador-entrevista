@@ -33,6 +33,8 @@ export default function SessionPage({ params }: PageProps) {
   const searchParams = useSearchParams()
   const domainsParam = searchParams.get('domains') ?? 'javascript'
   const domains = domainsParam.split(',') as KnowledgeDomain[]
+  const topicsParam = searchParams.get('topics')
+  const topics = topicsParam ? topicsParam.split(',') : undefined
   const language = (searchParams.get('lang') ?? 'pt') as QuestionLanguage
   const questionPreference = (searchParams.get('pref') ?? 'mixed') as QuestionPreference
   const { t } = useTranslation()
@@ -60,6 +62,7 @@ export default function SessionPage({ params }: PageProps) {
     startSession({
       seniorityLevel: levelId as SeniorityLevel,
       domains,
+      topics,
       totalQuestions: 10,
       language,
       questionPreference,

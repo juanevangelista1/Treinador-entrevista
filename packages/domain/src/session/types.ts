@@ -36,6 +36,7 @@ export type QuestionLanguage = 'pt' | 'en'
 export interface Question {
   readonly id: string
   readonly domain: KnowledgeDomain
+  readonly topicId?: string
   readonly type: QuestionType
   readonly difficulty: DifficultyLevel
   readonly targetLevel: SeniorityLevel[]
@@ -59,6 +60,7 @@ export type SessionStatus = 'idle' | 'active' | 'reviewing' | 'completed'
 export interface SessionConfig {
   readonly seniorityLevel: SeniorityLevel
   readonly domains: KnowledgeDomain[]
+  readonly topics?: readonly string[]
   readonly totalQuestions: number
   readonly language: QuestionLanguage
   readonly questionPreference?: QuestionPreference

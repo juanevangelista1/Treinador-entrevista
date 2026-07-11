@@ -6,8 +6,8 @@
         ],
         "questions_per_topic": 20,
         "options_per_question": 5,
-        "total_topics": 11,
-        "total_questions": 100,
+        "total_topics": 15,
+        "total_questions": 120,
         "version": "1.5"
     },
     "topics": [
@@ -6740,6 +6740,1403 @@
                     ]
                 }
             ]
+        },
+        {
+            "topic_id": "html-images",
+            "name_pt": "Imagens em HTML",
+            "name_en": "Images in HTML",
+            "questions": [
+                {
+                    "question_id": "html-images-01",
+                    "difficulty": "easy",
+                    "question_pt": "Qual atributo é obrigatório no elemento `<img>` para garantir acessibilidade?",
+                    "question_en": "Which attribute is mandatory on the `<img>` element to ensure accessibility?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`src` — define a URL da imagem."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`alt` — fornece um texto alternativo descritivo para leitores de tela e quando a imagem não carrega."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`width` — define a largura da imagem em pixels."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`title` — exibe uma dica de ferramenta ao passar o mouse."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`loading` — controla o carregamento lazy da imagem."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`src` — defines the image URL."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`alt` — provides descriptive alternative text for screen readers and when the image fails to load."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`width` — defines the image width in pixels."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`title` — displays a tooltip on hover."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`loading` — controls lazy loading of the image."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "O atributo `alt` é essencial por dois motivos: acessibilidade (leitores de tela o leem para usuários com deficiência visual) e degradação graciosa (exibido quando a imagem falha ao carregar). `src` também é obrigatório tecnicamente, mas `alt` é o que garante acessibilidade.",
+                    "explanation_en": "The `alt` attribute is essential for two reasons: accessibility (screen readers announce it to visually impaired users) and graceful degradation (displayed when the image fails to load). `src` is also technically required, but `alt` is what ensures accessibility.",
+                    "hint_pt": "Pense em quem não consegue ver a imagem — seja um usuário com deficiência visual ou alguém com conexão lenta.",
+                    "hint_en": "Think about who cannot see the image — whether a visually impaired user or someone with a slow connection.",
+                    "example_pt": "`<img src=\"foto.jpg\" alt=\"Cachorro brincando no parque\">`",
+                    "example_en": "`<img src=\"photo.jpg\" alt=\"Dog playing in the park\">`",
+                    "analogy_pt": "O `alt` é como a legenda de uma foto num jornal impresso: mesmo quem não vê a imagem entende o contexto.",
+                    "analogy_en": "The `alt` is like a photo caption in a printed newspaper: even those who cannot see the image understand the context.",
+                    "topic_explanation_pt": "O elemento `<img>` incorpora imagens no HTML. Por ser um void element, não tem tag de fechamento. Os atributos `src` (URL) e `alt` (texto alternativo) são os mais importantes, sendo `alt` crítico para acessibilidade e SEO.",
+                    "topic_explanation_en": "The `<img>` element embeds images in HTML. Being a void element, it has no closing tag. The `src` (URL) and `alt` (alternative text) attributes are the most important, with `alt` being critical for accessibility and SEO.",
+                    "tags": [
+                        "html",
+                        "images",
+                        "accessibility",
+                        "alt"
+                    ]
+                },
+                {
+                    "question_id": "html-images-02",
+                    "difficulty": "easy",
+                    "question_pt": "Qual é a diferença entre usar `<img>` e definir uma imagem via CSS `background-image`?",
+                    "question_en": "What is the difference between using `<img>` and setting an image via CSS `background-image`?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`<img>` é apenas para fotos; `background-image` é para ícones."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<img>` faz parte do conteúdo semântico do documento (indexável, acessível via `alt`); `background-image` é decorativo e ignorado por leitores de tela e motores de busca."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<img>` sempre carrega mais rápido que `background-image`."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Não há diferença funcional entre os dois."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`background-image` suporta mais formatos de arquivo que `<img>`."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`<img>` is only for photos; `background-image` is for icons."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<img>` is part of the document's semantic content (indexable, accessible via `alt`); `background-image` is decorative and ignored by screen readers and search engines."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<img>` always loads faster than `background-image`."
+                        },
+                        {
+                            "label": "D",
+                            "text": "There is no functional difference between the two."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`background-image` supports more file formats than `<img>`."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "A distinção semântica é fundamental: `<img>` insere conteúdo significativo no documento — pode ter `alt`, aparece no fluxo de texto, é indexado por buscadores. `background-image` via CSS é puramente decorativo, não tem equivalente de `alt`, e leitores de tela o ignoram.",
+                    "explanation_en": "The semantic distinction is fundamental: `<img>` inserts meaningful content into the document — it can have `alt`, appears in the text flow, and is indexed by search engines. CSS `background-image` is purely decorative, has no `alt` equivalent, and screen readers ignore it.",
+                    "hint_pt": "Pergunte-se: a imagem transmite informação? Use `<img>`. É apenas decorativa? Use CSS.",
+                    "hint_en": "Ask yourself: does the image convey information? Use `<img>`. Is it purely decorative? Use CSS.",
+                    "example_pt": "Conteúdo: `<img src=\"logo.png\" alt=\"Logo da empresa\">` | Decoração: `div { background-image: url('pattern.png'); }`",
+                    "example_en": "Content: `<img src=\"logo.png\" alt=\"Company logo\">` | Decoration: `div { background-image: url('pattern.png'); }`",
+                    "analogy_pt": "É a diferença entre uma ilustração num artigo (parte do conteúdo) e o papel de parede de uma sala (decoração).",
+                    "analogy_en": "It's the difference between an illustration in an article (part of the content) and wallpaper in a room (decoration).",
+                    "topic_explanation_pt": "Escolher entre `<img>` e CSS `background-image` depende do papel semântico da imagem. Use `<img>` para conteúdo informativo e `background-image` para decoração visual que não agrega significado ao documento.",
+                    "topic_explanation_en": "Choosing between `<img>` and CSS `background-image` depends on the image's semantic role. Use `<img>` for informative content and `background-image` for visual decoration that adds no meaning to the document.",
+                    "tags": [
+                        "html",
+                        "images",
+                        "css",
+                        "semantics"
+                    ]
+                },
+                {
+                    "question_id": "html-images-03",
+                    "difficulty": "medium",
+                    "question_pt": "O que faz o elemento `<figure>` com `<figcaption>` em relação a uma imagem?",
+                    "question_en": "What does the `<figure>` element with `<figcaption>` do in relation to an image?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Adiciona um efeito visual de moldura à imagem automaticamente via CSS."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Agrupa semanticamente a imagem e sua legenda, indicando que a legenda descreve o conteúdo da figura."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Oculta a imagem de leitores de tela, tornando-a puramente decorativa."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Permite que a imagem seja exibida em tela cheia ao ser clicada."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Substitui o atributo `alt`, tornando-o desnecessário."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Automatically adds a visual frame effect to the image via CSS."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Semantically groups the image and its caption, indicating that the caption describes the figure's content."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Hides the image from screen readers, making it purely decorative."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Allows the image to be displayed fullscreen when clicked."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Replaces the `alt` attribute, making it unnecessary."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`<figure>` é um elemento semântico que envolve conteúdo auto-suficiente (imagens, diagramas, código) junto com sua legenda opcional `<figcaption>`. Isso comunica ao navegador e tecnologias assistivas que a legenda está associada ao conteúdo da figura — o `alt` ainda é necessário na `<img>` interna.",
+                    "explanation_en": "`<figure>` is a semantic element that wraps self-contained content (images, diagrams, code) along with its optional `<figcaption>`. This communicates to browsers and assistive technologies that the caption is associated with the figure's content — `alt` is still required on the inner `<img>`.",
+                    "hint_pt": "Pense em `<figure>` como o equivalente HTML de uma figura numerada num livro científico, com sua legenda associada.",
+                    "hint_en": "Think of `<figure>` as the HTML equivalent of a numbered figure in a scientific book, with its associated caption.",
+                    "example_pt": "`<figure><img src=\"grafico.png\" alt=\"Gráfico de vendas 2024\"><figcaption>Figura 1: Crescimento de vendas em 2024.</figcaption></figure>`",
+                    "example_en": "`<figure><img src=\"chart.png\" alt=\"2024 sales chart\"><figcaption>Figure 1: Sales growth in 2024.</figcaption></figure>`",
+                    "analogy_pt": "É como um quadro numa exposição de arte: `<figure>` é a moldura, `<img>` é a obra, e `<figcaption>` é a plaquinha com o título e autor.",
+                    "analogy_en": "It's like a piece in an art exhibition: `<figure>` is the frame, `<img>` is the artwork, and `<figcaption>` is the placard with the title and author.",
+                    "topic_explanation_pt": "Os elementos `<figure>` e `<figcaption>` fornecem semântica para conteúdo visual auto-suficiente. `<figure>` pode conter imagens, vídeos, código ou qualquer conteúdo referenciado no texto principal, e `<figcaption>` fornece sua legenda descritiva.",
+                    "topic_explanation_en": "The `<figure>` and `<figcaption>` elements provide semantics for self-contained visual content. `<figure>` can contain images, videos, code, or any content referenced from the main text, and `<figcaption>` provides its descriptive caption.",
+                    "tags": [
+                        "html",
+                        "images",
+                        "figure",
+                        "figcaption",
+                        "semantics"
+                    ]
+                },
+                {
+                    "question_id": "html-images-04",
+                    "difficulty": "medium",
+                    "question_pt": "Qual é a função do elemento `<picture>` e quando ele deve ser usado em vez de `<img>` simples?",
+                    "question_en": "What is the function of the `<picture>` element and when should it be used instead of a simple `<img>`?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Exibir múltiplas imagens em um carrossel automático."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Fornecer direção artística ou suporte a diferentes formatos/tamanhos para diferentes condições de viewport, resolução ou suporte do navegador."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Criar um link clicável em torno de uma imagem."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Aplicar filtros CSS diretamente à imagem sem JavaScript."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Carregar a imagem apenas quando ela entrar na área visível."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Display multiple images in an automatic carousel."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Provide art direction or support different formats/sizes for different viewport conditions, resolution, or browser support."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Create a clickable link around an image."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Apply CSS filters directly to the image without JavaScript."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Load the image only when it enters the visible area."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`<picture>` contém múltiplos elementos `<source>` com diferentes condições (`media`, `type`) e um `<img>` fallback. O navegador escolhe o `<source>` mais adequado. Útil para: servir WebP para navegadores modernos com JPEG como fallback, ou imagens recortadas diferentemente para mobile vs. desktop.",
+                    "explanation_en": "`<picture>` contains multiple `<source>` elements with different conditions (`media`, `type`) and a fallback `<img>`. The browser chooses the most appropriate `<source>`. Useful for: serving WebP for modern browsers with JPEG as fallback, or differently cropped images for mobile vs. desktop.",
+                    "hint_pt": "O `<picture>` é como um cardápio com opções: o navegador escolhe o melhor prato (formato/tamanho) que ele consegue servir.",
+                    "hint_en": "The `<picture>` element is like a menu with options: the browser picks the best dish (format/size) it can serve.",
+                    "example_pt": "`<picture><source srcset=\"img.webp\" type=\"image/webp\"><source srcset=\"img.jpg\" type=\"image/jpeg\"><img src=\"img.jpg\" alt=\"Paisagem\"></picture>`",
+                    "example_en": "`<picture><source srcset=\"img.webp\" type=\"image/webp\"><source srcset=\"img.jpg\" type=\"image/jpeg\"><img src=\"img.jpg\" alt=\"Landscape\"></picture>`",
+                    "analogy_pt": "É como um adaptador de tomada universal: o dispositivo (navegador) escolhe o encaixe (formato) compatível com ele.",
+                    "analogy_en": "It's like a universal power adapter: the device (browser) picks the compatible plug type (format).",
+                    "topic_explanation_pt": "O elemento `<picture>` habilita imagens responsivas avançadas. Permite direção artística (diferentes composições por viewport) e negotiation de formato (WebP vs. JPEG). O `<img>` dentro do `<picture>` serve como fallback e é onde `alt` deve sempre ser definido.",
+                    "topic_explanation_en": "The `<picture>` element enables advanced responsive images. It allows art direction (different compositions per viewport) and format negotiation (WebP vs. JPEG). The `<img>` inside `<picture>` serves as a fallback and is where `alt` must always be defined.",
+                    "tags": [
+                        "html",
+                        "images",
+                        "picture",
+                        "responsive",
+                        "webp"
+                    ]
+                },
+                {
+                    "question_id": "html-images-05",
+                    "difficulty": "hard",
+                    "question_pt": "Como os atributos `srcset` e `sizes` do elemento `<img>` trabalham juntos para servir imagens responsivas?",
+                    "question_en": "How do the `srcset` and `sizes` attributes of the `<img>` element work together to serve responsive images?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`srcset` lista imagens para diferentes idiomas e `sizes` define qual usar por região geográfica."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`srcset` lista candidatos de imagem com seus tamanhos intrínsecos (em `w` ou densidade em `x`), e `sizes` descreve o tamanho que a imagem ocupará no layout em diferentes viewports — o navegador usa ambos para escolher o candidato mais eficiente."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`srcset` é um alias de `src` para múltiplos arquivos e `sizes` define o tamanho do arquivo máximo aceito."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`srcset` funciona apenas com imagens WebP e `sizes` define a qualidade de compressão."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`sizes` substitui completamente `srcset` em navegadores modernos."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`srcset` lists images for different languages and `sizes` defines which to use per geographic region."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`srcset` lists image candidates with their intrinsic sizes (in `w` or density in `x`), and `sizes` describes how much space the image will occupy in the layout at different viewports — the browser uses both to pick the most efficient candidate."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`srcset` is an alias for `src` for multiple files and `sizes` defines the maximum accepted file size."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`srcset` only works with WebP images and `sizes` defines the compression quality."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`sizes` completely replaces `srcset` in modern browsers."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`srcset` fornece ao navegador um menu de candidatos: `<img srcset=\"img-400.jpg 400w, img-800.jpg 800w\">`. `sizes` diz qual fatia do viewport a imagem ocupará: `sizes=\"(max-width: 600px) 100vw, 50vw\"`. Com ambos, o navegador calcula qual candidato baixar considerando o DPR e o tamanho do layout — economia de banda em dispositivos móveis.",
+                    "explanation_en": "`srcset` gives the browser a menu of candidates: `<img srcset=\"img-400.jpg 400w, img-800.jpg 800w\">`. `sizes` tells it what slice of the viewport the image will occupy: `sizes=\"(max-width: 600px) 100vw, 50vw\"`. With both, the browser calculates which candidate to download considering DPR and layout size — saving bandwidth on mobile devices.",
+                    "hint_pt": "`srcset` diz \"aqui estão minhas opções\". `sizes` diz \"em cada contexto, eu ocupo este espaço\". O navegador faz a matemática.",
+                    "hint_en": "`srcset` says 'here are my options'. `sizes` says 'in each context, I occupy this space'. The browser does the math.",
+                    "example_pt": "`<img srcset=\"img-sm.jpg 480w, img-md.jpg 800w, img-lg.jpg 1200w\" sizes=\"(max-width: 768px) 100vw, 50vw\" src=\"img-md.jpg\" alt=\"Foto responsiva\">`",
+                    "example_en": "`<img srcset=\"img-sm.jpg 480w, img-md.jpg 800w, img-lg.jpg 1200w\" sizes=\"(max-width: 768px) 100vw, 50vw\" src=\"img-md.jpg\" alt=\"Responsive photo\">`",
+                    "analogy_pt": "É como pedir uma pizza: `srcset` é o cardápio de tamanhos (P, M, G), e `sizes` é você dizendo \"para almoço solo peço tamanho P, para festa peço tamanho G\" — a pizzaria (navegador) entrega o tamanho certo.",
+                    "analogy_en": "It's like ordering pizza: `srcset` is the size menu (S, M, L), and `sizes` is you saying 'for a solo lunch I'll get S, for a party I'll get L' — the pizzeria (browser) delivers the right size.",
+                    "topic_explanation_pt": "Imagens responsivas com `srcset` e `sizes` otimizam performance: o navegador baixa apenas a imagem necessária para o contexto atual (viewport + DPR), evitando desperdício de banda em mobile e garantindo nitidez em telas de alta resolução.",
+                    "topic_explanation_en": "Responsive images with `srcset` and `sizes` optimize performance: the browser downloads only the image needed for the current context (viewport + DPR), avoiding bandwidth waste on mobile and ensuring sharpness on high-resolution screens.",
+                    "tags": [
+                        "html",
+                        "images",
+                        "srcset",
+                        "sizes",
+                        "responsive",
+                        "performance"
+                    ]
+                }
+            ]
+        },
+        {
+            "topic_id": "html-video-audio",
+            "name_pt": "Vídeo e Áudio em HTML",
+            "name_en": "Video and Audio in HTML",
+            "questions": [
+                {
+                    "question_id": "html-video-audio-01",
+                    "difficulty": "easy",
+                    "question_pt": "Qual atributo do elemento `<video>` exibe controles nativos de reprodução (play, pause, volume)?",
+                    "question_en": "Which attribute of the `<video>` element displays native playback controls (play, pause, volume)?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`autoplay` — inicia o vídeo automaticamente ao carregar."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`controls` — exibe a barra de controles nativos do navegador."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`loop` — faz o vídeo repetir indefinidamente."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`muted` — remove o áudio do vídeo."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`preload` — define quanto do vídeo é pré-carregado."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`autoplay` — starts the video automatically on load."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`controls` — displays the browser's native control bar."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`loop` — makes the video repeat indefinitely."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`muted` — removes the video's audio."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`preload` — defines how much of the video is preloaded."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "O atributo booleano `controls` instrui o navegador a renderizar sua interface nativa de controles de mídia. Sem ele, o vídeo seria exibido sem nenhum controle visível — o usuário não poderia dar play, pausar ou ajustar volume sem JavaScript personalizado.",
+                    "explanation_en": "The boolean `controls` attribute instructs the browser to render its native media controls interface. Without it, the video would be displayed with no visible controls — the user couldn't play, pause, or adjust volume without custom JavaScript.",
+                    "hint_pt": "O atributo se chama exatamente como o que ele habilita: controles.",
+                    "hint_en": "The attribute is named exactly after what it enables: controls.",
+                    "example_pt": "`<video src=\"filme.mp4\" controls></video>`",
+                    "example_en": "`<video src=\"movie.mp4\" controls></video>`",
+                    "analogy_pt": "Sem `controls`, o vídeo é como uma TV sem controle remoto e sem botões — você vê a tela mas não consegue interagir.",
+                    "analogy_en": "Without `controls`, the video is like a TV without a remote or buttons — you see the screen but can't interact.",
+                    "topic_explanation_pt": "Os elementos `<video>` e `<audio>` do HTML5 permitem incorporar mídia nativamente, sem plugins. Atributos como `controls`, `autoplay`, `loop`, `muted` e `preload` controlam o comportamento de reprodução. Múltiplas fontes podem ser fornecidas com `<source>` para compatibilidade entre navegadores.",
+                    "topic_explanation_en": "HTML5's `<video>` and `<audio>` elements allow embedding media natively, without plugins. Attributes like `controls`, `autoplay`, `loop`, `muted`, and `preload` control playback behavior. Multiple sources can be provided with `<source>` for cross-browser compatibility.",
+                    "tags": [
+                        "html",
+                        "video",
+                        "audio",
+                        "media",
+                        "controls"
+                    ]
+                },
+                {
+                    "question_id": "html-video-audio-02",
+                    "difficulty": "easy",
+                    "question_pt": "Por que é recomendado usar o elemento `<track>` junto com `<video>`?",
+                    "question_en": "Why is it recommended to use the `<track>` element together with `<video>`?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Para definir a resolução máxima de reprodução do vídeo."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Para adicionar legendas, transcrições ou descrições de áudio em arquivos WebVTT, melhorando a acessibilidade."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Para sincronizar o vídeo com uma faixa de áudio separada."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Para definir o intervalo de tempo de início e fim do vídeo."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Para forçar o carregamento do vídeo antes de qualquer outro recurso da página."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "To define the maximum playback resolution of the video."
+                        },
+                        {
+                            "label": "B",
+                            "text": "To add subtitles, transcripts, or audio descriptions in WebVTT files, improving accessibility."
+                        },
+                        {
+                            "label": "C",
+                            "text": "To synchronize the video with a separate audio track."
+                        },
+                        {
+                            "label": "D",
+                            "text": "To define the start and end time interval of the video."
+                        },
+                        {
+                            "label": "E",
+                            "text": "To force the video to load before any other page resource."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`<track>` referencia arquivos WebVTT (.vtt) contendo texto cronometrado — legendas (`subtitles`), closed captions (`captions`), capítulos (`chapters`) ou descrições (`descriptions`). É fundamental para acessibilidade de usuários surdos ou com baixa audição, e para vídeos em idiomas estrangeiros.",
+                    "explanation_en": "`<track>` references WebVTT (.vtt) files containing timed text — `subtitles`, `captions`, `chapters`, or `descriptions`. It is fundamental for accessibility for deaf or hard-of-hearing users, and for videos in foreign languages.",
+                    "hint_pt": "Pense em `<track>` como os arquivos de legenda que você baixa para assistir filmes — mas integrado nativamente ao HTML.",
+                    "hint_en": "Think of `<track>` as the subtitle files you download to watch movies — but natively integrated into HTML.",
+                    "example_pt": "`<video src=\"aula.mp4\" controls><track src=\"legendas-pt.vtt\" kind=\"subtitles\" srclang=\"pt\" label=\"Português\"></video>`",
+                    "example_en": "`<video src=\"lesson.mp4\" controls><track src=\"subtitles-en.vtt\" kind=\"subtitles\" srclang=\"en\" label=\"English\"></video>`",
+                    "analogy_pt": "É como os painéis de texto de um filme mudo: o conteúdo visual existe, mas `<track>` garante que quem não pode ouvir também receba a informação.",
+                    "analogy_en": "It's like the text cards in a silent film: the visual content exists, but `<track>` ensures those who can't hear also receive the information.",
+                    "topic_explanation_pt": "O elemento `<track>` especifica faixas de texto cronometradas para elementos `<video>` ou `<audio>`. Arquivos WebVTT (.vtt) definem o texto e os timestamps. O atributo `kind` pode ser `subtitles`, `captions`, `descriptions`, `chapters` ou `metadata`.",
+                    "topic_explanation_en": "The `<track>` element specifies timed text tracks for `<video>` or `<audio>` elements. WebVTT (.vtt) files define the text and timestamps. The `kind` attribute can be `subtitles`, `captions`, `descriptions`, `chapters`, or `metadata`.",
+                    "tags": [
+                        "html",
+                        "video",
+                        "track",
+                        "webvtt",
+                        "accessibility",
+                        "subtitles"
+                    ]
+                },
+                {
+                    "question_id": "html-video-audio-03",
+                    "difficulty": "medium",
+                    "question_pt": "Por que fornecer múltiplos elementos `<source>` dentro de `<video>` é uma boa prática?",
+                    "question_en": "Why is providing multiple `<source>` elements inside `<video>` a good practice?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Para que o vídeo seja reproduzido em loop automático após terminar."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Para compatibilidade entre navegadores: o navegador testa os candidatos em ordem e usa o primeiro formato que suporta, com o texto interno como fallback para navegadores sem suporte a `<video>`."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Para reproduzir múltiplos vídeos simultaneamente na mesma janela."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Para que o vídeo carregue mais rápido usando download paralelo de partes."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Para definir qualidades diferentes que o usuário pode selecionar manualmente."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "So the video loops automatically after it ends."
+                        },
+                        {
+                            "label": "B",
+                            "text": "For cross-browser compatibility: the browser tests candidates in order and uses the first format it supports, with inner text as fallback for browsers without `<video>` support."
+                        },
+                        {
+                            "label": "C",
+                            "text": "To play multiple videos simultaneously in the same window."
+                        },
+                        {
+                            "label": "D",
+                            "text": "So the video loads faster using parallel part downloads."
+                        },
+                        {
+                            "label": "E",
+                            "text": "To define different qualities the user can manually select."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "Nem todos os navegadores suportam os mesmos codecs. Fornecer `<source type=\"video/webm\">` e `<source type=\"video/mp4\">` garante compatibilidade: navegadores mais modernos podem usar WebM (mais eficiente), enquanto outros usam MP4. O texto dentro do `<video>` aparece apenas em navegadores que não suportam o elemento.",
+                    "explanation_en": "Not all browsers support the same codecs. Providing `<source type=\"video/webm\">` and `<source type=\"video/mp4\">` ensures compatibility: modern browsers may use WebM (more efficient), while others use MP4. Text inside `<video>` appears only in browsers that don't support the element.",
+                    "hint_pt": "Pense em ter a mesma mensagem traduzida em vários idiomas — o leitor usa a versão que entende.",
+                    "hint_en": "Think of having the same message translated into multiple languages — the reader uses the version they understand.",
+                    "example_pt": "`<video controls><source src=\"video.webm\" type=\"video/webm\"><source src=\"video.mp4\" type=\"video/mp4\">Seu navegador não suporta vídeo HTML5.</video>`",
+                    "example_en": "`<video controls><source src=\"video.webm\" type=\"video/webm\"><source src=\"video.mp4\" type=\"video/mp4\">Your browser does not support HTML5 video.</video>`",
+                    "analogy_pt": "É como um menu de restaurante em vários idiomas: o garçom te dá o que você consegue ler.",
+                    "analogy_en": "It's like a restaurant menu in multiple languages: the waiter gives you the one you can read.",
+                    "topic_explanation_pt": "Múltiplos `<source>` dentro de `<video>` ou `<audio>` garantem compatibilidade de codec entre navegadores. O atributo `type` ajuda o navegador a evitar downloads desnecessários — ele verifica se suporta o tipo antes de tentar baixar o arquivo.",
+                    "topic_explanation_en": "Multiple `<source>` elements inside `<video>` or `<audio>` ensure codec compatibility across browsers. The `type` attribute helps the browser avoid unnecessary downloads — it checks if it supports the type before attempting to download the file.",
+                    "tags": [
+                        "html",
+                        "video",
+                        "source",
+                        "codec",
+                        "compatibility"
+                    ]
+                },
+                {
+                    "question_id": "html-video-audio-04",
+                    "difficulty": "medium",
+                    "question_pt": "Quando é seguro usar o atributo `autoplay` em um elemento `<video>`?",
+                    "question_en": "When is it safe to use the `autoplay` attribute on a `<video>` element?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Sempre, pois o autoplay melhora a experiência do usuário ao eliminar a necessidade de clicar em play."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Apenas com `muted` junto: navegadores modernos bloqueiam autoplay com áudio por padrão (política de autoplay); com `muted` o vídeo inicia silencioso e o usuário pode ativar o som."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Nunca — o autoplay é considerado depreciado no HTML5."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Apenas em navegadores baseados no Firefox."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Apenas quando o vídeo dura menos de 30 segundos."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Always, because autoplay improves user experience by eliminating the need to click play."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Only with `muted` combined: modern browsers block autoplay with audio by default (autoplay policy); with `muted` the video starts silently and the user can enable sound."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Never — autoplay is considered deprecated in HTML5."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Only in Firefox-based browsers."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Only when the video is shorter than 30 seconds."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "A política de autoplay dos navegadores modernos (Chrome, Firefox, Safari) bloqueia vídeos com som que tentam tocar automaticamente sem interação do usuário — isso evita experiências intrusivas. A combinação `autoplay muted` é permitida. Para vídeos com áudio, o usuário deve interagir primeiro.",
+                    "explanation_en": "The autoplay policy of modern browsers (Chrome, Firefox, Safari) blocks videos with sound that attempt to play automatically without user interaction — preventing intrusive experiences. The combination `autoplay muted` is allowed. For videos with audio, the user must interact first.",
+                    "hint_pt": "Navegadores protegem o usuário de sons inesperados. A solução é começar mudo e deixar o usuário decidir.",
+                    "hint_en": "Browsers protect users from unexpected sounds. The solution is to start muted and let the user decide.",
+                    "example_pt": "`<video src=\"bg.mp4\" autoplay muted loop playsinline></video>` — padrão para vídeos de fundo.",
+                    "example_en": "`<video src=\"bg.mp4\" autoplay muted loop playsinline></video>` — standard for background videos.",
+                    "analogy_pt": "É como um vendedor que começa a falar alto sem ser chamado — os navegadores aprenderam a \"bloquear\" esse comportamento intrusivo.",
+                    "analogy_en": "It's like a salesperson who starts talking loudly without being called — browsers have learned to 'block' this intrusive behavior.",
+                    "topic_explanation_pt": "A política de autoplay existe para proteger os usuários de conteúdo de áudio não solicitado. Vídeos com `autoplay` mas sem `muted` são bloqueados na maioria dos navegadores modernos. `playsinline` é importante em iOS para evitar que o vídeo abra em tela cheia.",
+                    "topic_explanation_en": "The autoplay policy exists to protect users from unsolicited audio content. Videos with `autoplay` but without `muted` are blocked in most modern browsers. `playsinline` is important on iOS to prevent the video from opening fullscreen.",
+                    "tags": [
+                        "html",
+                        "video",
+                        "autoplay",
+                        "muted",
+                        "browser-policy"
+                    ]
+                },
+                {
+                    "question_id": "html-video-audio-05",
+                    "difficulty": "hard",
+                    "question_pt": "Qual é a diferença entre os valores `none`, `metadata` e `auto` do atributo `preload` no elemento `<video>`, e qual impacta menos a performance de carregamento inicial da página?",
+                    "question_en": "What is the difference between the `none`, `metadata`, and `auto` values of the `preload` attribute on the `<video>` element, and which impacts the initial page load performance the least?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`none` não baixa nada até o usuário iniciar; `metadata` baixa apenas dimensões/duração; `auto` deixa o navegador decidir quanto baixar. `none` tem menor impacto."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`none` baixa tudo imediatamente; `metadata` baixa apenas o thumbnail; `auto` não baixa nada. `auto` tem menor impacto."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Os três valores são equivalentes em termos de performance — a diferença é apenas visual."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`metadata` baixa o vídeo completo mas sem áudio; `auto` baixa tudo com áudio; `none` é para vídeos sem legendas."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`preload` não tem efeito em navegadores modernos — todos eles ignoram o atributo."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`none` downloads nothing until the user initiates; `metadata` downloads only dimensions/duration; `auto` lets the browser decide how much to download. `none` has the least impact."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`none` downloads everything immediately; `metadata` downloads only the thumbnail; `auto` downloads nothing. `auto` has the least impact."
+                        },
+                        {
+                            "label": "C",
+                            "text": "All three values are equivalent in terms of performance — the difference is only visual."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`metadata` downloads the full video but without audio; `auto` downloads everything with audio; `none` is for videos without subtitles."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`preload` has no effect in modern browsers — they all ignore the attribute."
+                        }
+                    ],
+                    "correct_option": "A",
+                    "explanation_pt": "`preload=\"none\"`: nenhum dado do vídeo é baixado até o usuário interagir — melhor para LCP/performance quando o vídeo não está acima da dobra. `preload=\"metadata\"`: baixa apenas os metadados (duração, dimensões, primeiro frame) — equilibrado. `preload=\"auto\"` (ou omitido): o navegador decide, podendo baixar o vídeo inteiro. Para vídeos não críticos, `preload=\"none\"` ou `preload=\"metadata\"` economiza mais banda.",
+                    "explanation_en": "`preload=\"none\"`: no video data is downloaded until the user interacts — best for LCP/performance when the video is not above the fold. `preload=\"metadata\"`: downloads only metadata (duration, dimensions, first frame) — balanced. `preload=\"auto\"` (or omitted): the browser decides, potentially downloading the entire video. For non-critical videos, `preload=\"none\"` or `preload=\"metadata\"` saves the most bandwidth.",
+                    "hint_pt": "O nome diz tudo: `none` pré-carrega nada, `metadata` pré-carrega só metadados, `auto` deixa o navegador decidir.",
+                    "hint_en": "The name says it all: `none` preloads nothing, `metadata` preloads only metadata, `auto` lets the browser decide.",
+                    "example_pt": "`<video src=\"webinar.mp4\" controls preload=\"none\">` — ideal para vídeos longos fora da área visível inicial.",
+                    "example_en": "`<video src=\"webinar.mp4\" controls preload=\"none\">` — ideal for long videos outside the initial visible area.",
+                    "analogy_pt": "É como um restaurante de delivery: `none` só começa a preparar quando você pede; `metadata` prepara o molho de antemão; `auto` já cozinha tudo antes de você ligar.",
+                    "analogy_en": "It's like a delivery restaurant: `none` only starts preparing when you order; `metadata` prepares the sauce in advance; `auto` cooks everything before you even call.",
+                    "topic_explanation_pt": "O atributo `preload` controla o comportamento de pré-carregamento do navegador para elementos de mídia. Em contextos de performance web, `preload=\"none\"` combinado com lazy loading (Intersection Observer) é a estratégia ideal para vídeos abaixo da dobra, reduzindo o impacto no LCP e no consumo de dados.",
+                    "topic_explanation_en": "The `preload` attribute controls the browser's preloading behavior for media elements. In web performance contexts, `preload=\"none\"` combined with lazy loading (Intersection Observer) is the ideal strategy for below-the-fold videos, reducing impact on LCP and data consumption.",
+                    "tags": [
+                        "html",
+                        "video",
+                        "preload",
+                        "performance",
+                        "loading"
+                    ]
+                }
+            ]
+        },
+        {
+            "topic_id": "html-table-basics",
+            "name_pt": "Tabelas HTML: o básico",
+            "name_en": "HTML Tables: The Basics",
+            "questions": [
+                {
+                    "question_id": "html-table-basics-01",
+                    "difficulty": "easy",
+                    "question_pt": "Qual é a estrutura mínima necessária para criar uma tabela HTML com um cabeçalho e uma linha de dados?",
+                    "question_en": "What is the minimum structure needed to create an HTML table with a header and a data row?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`<table>` contendo `<tr>` com `<td>` apenas, sem elementos de cabeçalho."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<table>` contendo ao menos uma `<tr>` com `<th>` para cabeçalho e outra `<tr>` com `<td>` para dados."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<table>` contendo `<thead>` e `<tbody>` obrigatoriamente, sem os quais o HTML é inválido."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`<grid>` contendo `<row>` e `<col>` — `<table>` foi depreciado no HTML5."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`<table>` com um atributo `rows` e `cols` definindo as dimensões."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`<table>` containing `<tr>` with `<td>` only, without header elements."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<table>` containing at least one `<tr>` with `<th>` for the header and another `<tr>` with `<td>` for data."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<table>` containing `<thead>` and `<tbody>` mandatorily, without which the HTML is invalid."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`<grid>` containing `<row>` and `<col>` — `<table>` was deprecated in HTML5."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`<table>` with a `rows` and `cols` attribute defining the dimensions."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "Uma tabela HTML mínima: `<table>` envolve tudo. `<tr>` (table row) define linhas. `<th>` (table header) define células de cabeçalho (negrito e centralizado por padrão). `<td>` (table data) define células de dados. `<thead>` e `<tbody>` são recomendados mas opcionais.",
+                    "explanation_en": "A minimal HTML table: `<table>` wraps everything. `<tr>` (table row) defines rows. `<th>` (table header) defines header cells (bold and centered by default). `<td>` (table data) defines data cells. `<thead>` and `<tbody>` are recommended but optional.",
+                    "hint_pt": "Memorize: `<table>` > `<tr>` > `<th>` ou `<td>`. Como uma planilha, mas em HTML.",
+                    "hint_en": "Memorize: `<table>` > `<tr>` > `<th>` or `<td>`. Like a spreadsheet, but in HTML.",
+                    "example_pt": "`<table><tr><th>Nome</th><th>Idade</th></tr><tr><td>Ana</td><td>30</td></tr></table>`",
+                    "example_en": "`<table><tr><th>Name</th><th>Age</th></tr><tr><td>Ana</td><td>30</td></tr></table>`",
+                    "analogy_pt": "Uma tabela HTML é como uma planilha do Excel: `<table>` é a planilha, `<tr>` é uma linha, `<th>` é o título da coluna, `<td>` é uma célula de dado.",
+                    "analogy_en": "An HTML table is like an Excel spreadsheet: `<table>` is the spreadsheet, `<tr>` is a row, `<th>` is the column title, `<td>` is a data cell.",
+                    "topic_explanation_pt": "Tabelas HTML (`<table>`) são usadas para representar dados tabulares — informações com relação natural de linhas e colunas. Não devem ser usadas para layout. Os elementos básicos são `<tr>` (linha), `<th>` (cabeçalho) e `<td>` (dado).",
+                    "topic_explanation_en": "HTML tables (`<table>`) are used to represent tabular data — information with a natural row-column relationship. They should not be used for layout. The basic elements are `<tr>` (row), `<th>` (header), and `<td>` (data).",
+                    "tags": [
+                        "html",
+                        "table",
+                        "th",
+                        "td",
+                        "tr",
+                        "fundamentals"
+                    ]
+                },
+                {
+                    "question_id": "html-table-basics-02",
+                    "difficulty": "easy",
+                    "question_pt": "O que os atributos `colspan` e `rowspan` fazem em células de tabela?",
+                    "question_en": "What do the `colspan` and `rowspan` attributes do in table cells?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Definem a cor e o estilo visual da célula."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`colspan` mescla a célula horizontalmente por N colunas; `rowspan` mescla verticalmente por N linhas."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Definem o número total de colunas e linhas da tabela."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`colspan` ordena a coluna; `rowspan` ordena a linha."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Criam novas colunas e linhas dinamicamente na tabela."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "They define the color and visual style of the cell."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`colspan` merges the cell horizontally across N columns; `rowspan` merges it vertically across N rows."
+                        },
+                        {
+                            "label": "C",
+                            "text": "They define the total number of columns and rows in the table."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`colspan` sorts the column; `rowspan` sorts the row."
+                        },
+                        {
+                            "label": "E",
+                            "text": "They dynamically create new columns and rows in the table."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`colspan=\"2\"` faz uma célula ocupar o espaço de 2 colunas na mesma linha. `rowspan=\"3\"` faz a célula ocupar o espaço de 3 linhas na mesma coluna. São essenciais para criar cabeçalhos agrupados ou células de resumo que abrangem múltiplas linhas/colunas.",
+                    "explanation_en": "`colspan=\"2\"` makes a cell occupy the space of 2 columns in the same row. `rowspan=\"3\"` makes the cell occupy the space of 3 rows in the same column. They are essential for creating grouped headers or summary cells spanning multiple rows/columns.",
+                    "hint_pt": "`col` = coluna (horizontal), `row` = linha (vertical). `span` = quantas unidades a célula ocupa.",
+                    "hint_en": "`col` = column (horizontal), `row` = row (vertical). `span` = how many units the cell occupies.",
+                    "example_pt": "`<th colspan=\"2\">Endereço</th>` ocupa 2 colunas. Abaixo viriam `<td>Rua</td><td>Número</td>`.",
+                    "example_en": "`<th colspan=\"2\">Address</th>` spans 2 columns. Below would come `<td>Street</td><td>Number</td>`.",
+                    "analogy_pt": "É como mesclar células no Excel: colspan = mesclar na horizontal, rowspan = mesclar na vertical.",
+                    "analogy_en": "It's like merging cells in Excel: colspan = merge horizontally, rowspan = merge vertically.",
+                    "topic_explanation_pt": "`colspan` e `rowspan` permitem criar tabelas complexas com células que abrangem múltiplas colunas ou linhas, necessárias para cabeçalhos agrupados e layouts de dados hierárquicos. Ao usar `rowspan`, as células nas linhas seguintes devem omitir a célula abrangida.",
+                    "topic_explanation_en": "`colspan` and `rowspan` allow creating complex tables with cells spanning multiple columns or rows, necessary for grouped headers and hierarchical data layouts. When using `rowspan`, cells in subsequent rows must omit the spanned cell.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "colspan",
+                        "rowspan",
+                        "merge"
+                    ]
+                },
+                {
+                    "question_id": "html-table-basics-03",
+                    "difficulty": "medium",
+                    "question_pt": "Qual é o propósito semântico dos elementos `<thead>`, `<tbody>` e `<tfoot>` numa tabela HTML?",
+                    "question_en": "What is the semantic purpose of `<thead>`, `<tbody>`, and `<tfoot>` elements in an HTML table?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "São obrigatórios e substituem `<tr>`, `<th>` e `<td>` no HTML5."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Agrupam semanticamente as seções da tabela (cabeçalho, corpo, rodapé), melhorando acessibilidade, estilização e, historicamente, impressão (thead/tfoot se repetiam em cada página impressa)."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Definem estilos de borda automáticos para cada seção da tabela."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Permitem que as seções da tabela sejam reordenadas dinamicamente via drag-and-drop."
+                        },
+                        {
+                            "label": "E",
+                            "text": "São depreciados no HTML5 e não devem mais ser usados."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "They are mandatory and replace `<tr>`, `<th>`, and `<td>` in HTML5."
+                        },
+                        {
+                            "label": "B",
+                            "text": "They semantically group table sections (header, body, footer), improving accessibility, styling, and historically printing (thead/tfoot repeated on each printed page)."
+                        },
+                        {
+                            "label": "C",
+                            "text": "They define automatic border styles for each table section."
+                        },
+                        {
+                            "label": "D",
+                            "text": "They allow table sections to be dynamically reordered via drag-and-drop."
+                        },
+                        {
+                            "label": "E",
+                            "text": "They are deprecated in HTML5 and should no longer be used."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`<thead>` envolve as linhas de cabeçalho; `<tbody>` envolve as linhas de dados; `<tfoot>` envolve o rodapé (totais, somas). Eles adicionam semântica e permitem estilização independente via CSS. Originalmente, `<thead>` e `<tfoot>` eram repetidos em impressões multi-página. Tecnologias assistivas os usam para navegação.",
+                    "explanation_en": "`<thead>` wraps header rows; `<tbody>` wraps data rows; `<tfoot>` wraps the footer (totals, sums). They add semantics and allow independent CSS styling. Originally, `<thead>` and `<tfoot>` were repeated on multi-page prints. Assistive technologies use them for navigation.",
+                    "hint_pt": "Pense neles como as seções de um relatório financeiro: cabeçalho com os nomes das colunas, corpo com os dados, rodapé com os totais.",
+                    "hint_en": "Think of them as the sections of a financial report: a header with column names, a body with data, a footer with totals.",
+                    "example_pt": "`<table><thead><tr><th>Produto</th><th>Preço</th></tr></thead><tbody><tr><td>A</td><td>R$10</td></tr></tbody><tfoot><tr><td>Total</td><td>R$10</td></tr></tfoot></table>`",
+                    "example_en": "`<table><thead><tr><th>Product</th><th>Price</th></tr></thead><tbody><tr><td>A</td><td>$10</td></tr></tbody><tfoot><tr><td>Total</td><td>$10</td></tr></tfoot></table>`",
+                    "analogy_pt": "É como um livro: `<thead>` é o cabeçalho de cada página, `<tbody>` é o conteúdo, e `<tfoot>` é o rodapé com notas de rodapé.",
+                    "analogy_en": "It's like a book: `<thead>` is the page header, `<tbody>` is the content, and `<tfoot>` is the footer with footnotes.",
+                    "topic_explanation_pt": "Os elementos de seção de tabela (`<thead>`, `<tbody>`, `<tfoot>`) são opcionais mas altamente recomendados. Eles permitem CSS targetado por seção (`thead tr { background: gray }`), melhoram a acessibilidade para leitores de tela e facilitam scripts que manipulam apenas o corpo da tabela.",
+                    "topic_explanation_en": "Table section elements (`<thead>`, `<tbody>`, `<tfoot>`) are optional but highly recommended. They allow section-targeted CSS (`thead tr { background: gray }`), improve accessibility for screen readers, and facilitate scripts that manipulate only the table body.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "thead",
+                        "tbody",
+                        "tfoot",
+                        "semantics"
+                    ]
+                },
+                {
+                    "question_id": "html-table-basics-04",
+                    "difficulty": "medium",
+                    "question_pt": "Quando é apropriado usar tabelas HTML e quando elas NÃO devem ser usadas?",
+                    "question_en": "When is it appropriate to use HTML tables, and when should they NOT be used?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Tabelas são a melhor opção para qualquer layout de múltiplas colunas no HTML moderno."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Use tabelas apenas para dados tabulares genuínos (planilhas, horários, comparações). Nunca as use para layout de página — isso prejudica acessibilidade, responsividade e manutenção."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Tabelas só devem ser usadas para dados numéricos; textos pertencem a listas ou parágrafos."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Tabelas são depreciadas no HTML5 e devem ser substituídas por CSS Grid em todos os casos."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Tabelas são obrigatórias para formulários com múltiplos campos."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Tables are the best option for any multi-column layout in modern HTML."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Use tables only for genuine tabular data (spreadsheets, schedules, comparisons). Never use them for page layout — this harms accessibility, responsiveness, and maintenance."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Tables should only be used for numeric data; text belongs in lists or paragraphs."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Tables are deprecated in HTML5 and should be replaced by CSS Grid in all cases."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Tables are mandatory for forms with multiple fields."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "Tabelas têm uma semântica muito específica: dados com relação de linhas e colunas (ex: horário de aulas, comparação de preços). Usá-las para layout de página (prática dos anos 90) quebra a semântica, dificulta a leitura por leitores de tela, e torna o design não-responsivo. CSS Grid e Flexbox substituem completamente o layout por tabelas.",
+                    "explanation_en": "Tables have a very specific semantic: data with a row-column relationship (e.g., class schedule, price comparison). Using them for page layout (a 1990s practice) breaks semantics, makes screen reader navigation difficult, and makes design non-responsive. CSS Grid and Flexbox completely replace table-based layout.",
+                    "hint_pt": "Faça a pergunta: 'se eu retirar o CSS, ainda faz sentido como uma planilha?' Se sim, use `<table>`. Se não, use CSS Grid/Flexbox.",
+                    "hint_en": "Ask yourself: 'if I remove the CSS, does it still make sense as a spreadsheet?' If yes, use `<table>`. If not, use CSS Grid/Flexbox.",
+                    "example_pt": "Correto: tabela de preços de planos. Incorreto: usar `<table>` para alinhar o cabeçalho, sidebar e conteúdo principal de uma página.",
+                    "example_en": "Correct: a pricing table. Incorrect: using `<table>` to align the header, sidebar, and main content of a page.",
+                    "analogy_pt": "Usar tabelas para layout é como usar um carro como sofá — tecnicamente é possível, mas não é para isso que foi projetado.",
+                    "analogy_en": "Using tables for layout is like using a car as a sofa — technically possible, but not what it was designed for.",
+                    "topic_explanation_pt": "O abuso de tabelas para layout foi comum nos anos 90-2000, mas cria problemas sérios de acessibilidade e manutenção. Leitores de tela interpretam tabelas como dados tabulares, navegando célula a célula. Para layout, sempre use CSS (Grid, Flexbox ou posicionamento).",
+                    "topic_explanation_en": "Abusing tables for layout was common in the 90s-2000s, but creates serious accessibility and maintenance problems. Screen readers interpret tables as tabular data, navigating cell by cell. For layout, always use CSS (Grid, Flexbox, or positioning).",
+                    "tags": [
+                        "html",
+                        "table",
+                        "layout",
+                        "accessibility",
+                        "best-practices"
+                    ]
+                },
+                {
+                    "question_id": "html-table-basics-05",
+                    "difficulty": "hard",
+                    "question_pt": "Como o elemento `<colgroup>` com `<col>` melhora a manutenção e o estilo de uma tabela HTML?",
+                    "question_en": "How does the `<colgroup>` element with `<col>` improve the maintenance and styling of an HTML table?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`<colgroup>` é obrigatório e substitui todos os `<tr>` e `<td>` da tabela."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Permite aplicar estilos a colunas inteiras com um único seletor CSS, em vez de adicionar classes a cada `<td>` individualmente — e documenta a estrutura de colunas no HTML."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<colgroup>` define a largura e cor de fundo automaticamente baseado no conteúdo."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`<col>` transforma cada coluna num elemento `<div>`, permitindo layout flexível."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`<colgroup>` só tem efeito em tabelas com `<thead>` e `<tfoot>` definidos."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`<colgroup>` is mandatory and replaces all `<tr>` and `<td>` in the table."
+                        },
+                        {
+                            "label": "B",
+                            "text": "It allows applying styles to entire columns with a single CSS selector, instead of adding classes to each `<td>` individually — and documents the column structure in the HTML."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`<colgroup>` automatically defines width and background color based on content."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`<col>` transforms each column into a `<div>` element, allowing flexible layout."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`<colgroup>` only takes effect in tables with `<thead>` and `<tfoot>` defined."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`<colgroup>` (colocado imediatamente após `<table>`) define grupos de colunas, e `<col>` representa cada coluna. Isso permite estilizar colunas inteiras via CSS (`col.destaque { background: yellow }`) sem precisar adicionar a mesma classe a cada `<td>` de cada linha. Suporta apenas um subconjunto de propriedades CSS (background, width, border, visibility).",
+                    "explanation_en": "`<colgroup>` (placed immediately after `<table>`) defines column groups, and `<col>` represents each column. This allows styling entire columns via CSS (`col.highlight { background: yellow }`) without needing to add the same class to every `<td>` in every row. It supports only a subset of CSS properties (background, width, border, visibility).",
+                    "hint_pt": "Imagine uma tabela de 50 linhas onde a 3ª coluna precisa de fundo cinza. Sem `<col>`, você precisa editar 50 `<td>`. Com `<col>`, um seletor CSS resolve.",
+                    "hint_en": "Imagine a 50-row table where the 3rd column needs a gray background. Without `<col>`, you need to edit 50 `<td>` elements. With `<col>`, one CSS selector solves it.",
+                    "example_pt": "`<table><colgroup><col><col class=\"destaque\"><col></colgroup>...</table>` — a 2ª coluna recebe o estilo definido para `.destaque`.",
+                    "example_en": "`<table><colgroup><col><col class=\"highlight\"><col></colgroup>...</table>` — the 2nd column receives the style defined for `.highlight`.",
+                    "analogy_pt": "É como pintar uma faixa vertical numa parede de azulejos: sem `<col>` você pinta azulejo por azulejo, com `<col>` você usa um rolo de pintura para a faixa inteira.",
+                    "analogy_en": "It's like painting a vertical stripe on a tiled wall: without `<col>` you paint tile by tile, with `<col>` you use a roller for the entire stripe.",
+                    "topic_explanation_pt": "`<colgroup>` e `<col>` permitem definir a estrutura de colunas de uma tabela no início do HTML e aplicar estilos em nível de coluna. `<col span=\"2\">` pode representar 2 colunas com o mesmo estilo. As propriedades CSS aplicáveis são limitadas a `background`, `border`, `width` e `visibility`.",
+                    "topic_explanation_en": "`<colgroup>` and `<col>` allow defining the column structure of a table at the start of the HTML and applying column-level styles. `<col span=\"2\">` can represent 2 columns with the same style. The applicable CSS properties are limited to `background`, `border`, `width`, and `visibility`.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "colgroup",
+                        "col",
+                        "styling"
+                    ]
+                }
+            ]
+        },
+        {
+            "topic_id": "html-table-accessibility",
+            "name_pt": "Acessibilidade em tabelas HTML",
+            "name_en": "HTML Table Accessibility",
+            "questions": [
+                {
+                    "question_id": "html-table-accessibility-01",
+                    "difficulty": "easy",
+                    "question_pt": "Qual atributo no elemento `<table>` fornece uma descrição curta da tabela para leitores de tela?",
+                    "question_en": "Which attribute on the `<table>` element provides a short description of the table for screen readers?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`summary` — define o propósito geral da tabela (depreciado no HTML5)."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<caption>` — elemento filho de `<table>` que fornece um título/legenda visível e acessível."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`alt` — mesmo atributo usado em imagens, mas aplicado à tabela."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`title` — exibe uma dica ao passar o mouse sobre a tabela."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`aria-description` — atributo ARIA exclusivo para tabelas."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`summary` — defines the general purpose of the table (deprecated in HTML5)."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`<caption>` — a child element of `<table>` that provides a visible and accessible title/legend."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`alt` — the same attribute used on images, but applied to the table."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`title` — displays a tooltip when hovering over the table."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`aria-description` — an ARIA attribute exclusive to tables."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "O elemento `<caption>` deve ser o primeiro filho de `<table>`. Ele fornece um título visível e é anunciado por leitores de tela ao entrar na tabela, ajudando usuários a entender o propósito antes de navegar pelas células. O atributo `summary` existia para esse fim mas foi depreciado no HTML5 em favor de `<caption>` e `aria-describedby`.",
+                    "explanation_en": "The `<caption>` element must be the first child of `<table>`. It provides a visible title and is announced by screen readers when entering the table, helping users understand the purpose before navigating the cells. The `summary` attribute served this purpose but was deprecated in HTML5 in favor of `<caption>` and `aria-describedby`.",
+                    "hint_pt": "Pense em `<caption>` como o título de uma tabela num relatório — o leitor sabe o que vai encontrar antes de ler os dados.",
+                    "hint_en": "Think of `<caption>` as the title of a table in a report — the reader knows what to expect before reading the data.",
+                    "example_pt": "`<table><caption>Horário de aulas — 1º semestre 2025</caption><tr>...</tr></table>`",
+                    "example_en": "`<table><caption>Class schedule — 1st semester 2025</caption><tr>...</tr></table>`",
+                    "analogy_pt": "O `<caption>` é como o título de um capítulo: antes de mergulhar no conteúdo, você sabe do que se trata.",
+                    "analogy_en": "The `<caption>` is like a chapter title: before diving into the content, you know what it's about.",
+                    "topic_explanation_pt": "Tabelas acessíveis requerem estrutura semântica adicional. `<caption>` fornece um título descritivo, `<th>` com `scope` identifica células de cabeçalho, e atributos ARIA podem complementar quando necessário. Leitores de tela como NVDA e JAWS usam esses elementos para permitir navegação eficiente por tabelas complexas.",
+                    "topic_explanation_en": "Accessible tables require additional semantic structure. `<caption>` provides a descriptive title, `<th>` with `scope` identifies header cells, and ARIA attributes can complement when needed. Screen readers like NVDA and JAWS use these elements to allow efficient navigation through complex tables.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "accessibility",
+                        "caption",
+                        "screen-reader"
+                    ]
+                },
+                {
+                    "question_id": "html-table-accessibility-02",
+                    "difficulty": "easy",
+                    "question_pt": "Qual é o propósito do atributo `scope` no elemento `<th>` para acessibilidade de tabelas?",
+                    "question_en": "What is the purpose of the `scope` attribute on the `<th>` element for table accessibility?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Define a largura da célula de cabeçalho em pixels."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Informa a leitores de tela se o cabeçalho se aplica à coluna (`col`), à linha (`row`), a um grupo de colunas (`colgroup`) ou de linhas (`rowgroup`)."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Oculta o cabeçalho de usuários visuais, mantendo-o apenas para leitores de tela."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Define se o cabeçalho pode ser clicado para ordenar a coluna."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Especifica a fonte CSS aplicada ao texto do cabeçalho."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Defines the header cell's width in pixels."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Informs screen readers whether the header applies to the column (`col`), the row (`row`), a column group (`colgroup`), or a row group (`rowgroup`)."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Hides the header from visual users, keeping it only for screen readers."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Defines whether the header can be clicked to sort the column."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Specifies the CSS font applied to the header text."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "`scope=\"col\"` indica que o `<th>` é cabeçalho da coluna abaixo dele. `scope=\"row\"` indica que é cabeçalho da linha à sua direita. Sem `scope`, leitores de tela tentam inferir o contexto, muitas vezes erroneamente em tabelas complexas. É a forma mais simples e recomendada de criar tabelas acessíveis.",
+                    "explanation_en": "`scope=\"col\"` indicates the `<th>` is a header for the column below it. `scope=\"row\"` indicates it's a header for the row to its right. Without `scope`, screen readers try to infer the context, often incorrectly in complex tables. It's the simplest and recommended way to create accessible tables.",
+                    "hint_pt": "Escopo responde: 'este cabeçalho é de coluna ou de linha?' — essencial para leitores de tela navegarem tabelas.",
+                    "hint_en": "Scope answers: 'is this a column or row header?' — essential for screen readers to navigate tables.",
+                    "example_pt": "`<tr><th scope=\"col\">Nome</th><th scope=\"col\">Nota</th></tr>` e `<tr><th scope=\"row\">Ana</th><td>9.5</td></tr>`",
+                    "example_en": "`<tr><th scope=\"col\">Name</th><th scope=\"col\">Grade</th></tr>` and `<tr><th scope=\"row\">Ana</th><td>9.5</td></tr>`",
+                    "analogy_pt": "Sem `scope`, o leitor de tela tem que adivinhar se o cabeçalho é de uma coluna ou linha — como tentar ler um mapa sem legenda.",
+                    "analogy_en": "Without `scope`, the screen reader has to guess if the header is for a column or row — like trying to read a map without a legend.",
+                    "topic_explanation_pt": "O atributo `scope` é o método mais direto para associar cabeçalhos `<th>` às suas células de dados em tabelas simples. Para tabelas muito complexas com múltiplos níveis de cabeçalho, os atributos `id` e `headers` oferecem controle mais granular.",
+                    "topic_explanation_en": "The `scope` attribute is the most straightforward method to associate `<th>` headers with their data cells in simple tables. For very complex tables with multiple header levels, the `id` and `headers` attributes offer more granular control.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "accessibility",
+                        "scope",
+                        "screen-reader",
+                        "th"
+                    ]
+                },
+                {
+                    "question_id": "html-table-accessibility-03",
+                    "difficulty": "medium",
+                    "question_pt": "Em tabelas complexas com múltiplos níveis de cabeçalho, como os atributos `id` e `headers` melhoram a acessibilidade além do que `scope` pode oferecer?",
+                    "question_en": "In complex tables with multiple header levels, how do the `id` and `headers` attributes improve accessibility beyond what `scope` can offer?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Permitem que células de dados façam referência explícita a múltiplos cabeçalhos, criando uma relação direta e não-ambígua para leitores de tela navegarem tabelas com cabeçalhos duplos ou cruzados."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`id` aplica um identificador visual e `headers` define a cor do cabeçalho."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Substituem completamente `scope` e `<caption>` em tabelas modernas."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Permitem que a tabela seja ordenada por múltiplas colunas simultaneamente."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`headers` é apenas um alias de `aria-labelledby` específico para tabelas."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "They allow data cells to explicitly reference multiple headers, creating a direct and unambiguous relationship for screen readers navigating tables with double or crossed headers."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`id` applies a visual identifier and `headers` defines the header color."
+                        },
+                        {
+                            "label": "C",
+                            "text": "They completely replace `scope` and `<caption>` in modern tables."
+                        },
+                        {
+                            "label": "D",
+                            "text": "They allow the table to be sorted by multiple columns simultaneously."
+                        },
+                        {
+                            "label": "E",
+                            "text": "`headers` is just an alias for `aria-labelledby` specific to tables."
+                        }
+                    ],
+                    "correct_option": "A",
+                    "explanation_pt": "Em tabelas com cabeçalhos em dois eixos (ex: dias da semana × turmas), `scope` pode ser ambíguo. A solução: cada `<th>` recebe um `id` único. Cada `<td>` usa `headers=\"id-col id-linha\"` listando os IDs dos cabeçalhos relevantes. O leitor de tela anuncia todos os cabeçalhos associados antes de ler o dado da célula.",
+                    "explanation_en": "In tables with headers on two axes (e.g., days of the week × classes), `scope` can be ambiguous. The solution: each `<th>` receives a unique `id`. Each `<td>` uses `headers=\"id-col id-row\"` listing the IDs of relevant headers. The screen reader announces all associated headers before reading the cell's data.",
+                    "hint_pt": "Imagine uma grade horária: a célula 'Matemática' está na interseção de 'Segunda-feira' e 'Turma A'. Como o leitor de tela sabe os dois cabeçalhos? Usando `headers`.",
+                    "hint_en": "Imagine a timetable: the 'Math' cell is at the intersection of 'Monday' and 'Class A'. How does the screen reader know both headers? By using `headers`.",
+                    "example_pt": "`<th id=\"seg\">Segunda</th>` ... `<th id=\"turmaA\">Turma A</th>` ... `<td headers=\"seg turmaA\">Matemática</td>`",
+                    "example_en": "`<th id=\"mon\">Monday</th>` ... `<th id=\"classA\">Class A</th>` ... `<td headers=\"mon classA\">Math</td>`",
+                    "analogy_pt": "É como coordenadas num mapa: `headers` diz 'esta célula está na latitude X e longitude Y', permitindo que o leitor de tela diga 'Segunda-feira, Turma A: Matemática'.",
+                    "analogy_en": "It's like coordinates on a map: `headers` says 'this cell is at latitude X and longitude Y', allowing the screen reader to say 'Monday, Class A: Math'.",
+                    "topic_explanation_pt": "Para tabelas com cabeçalhos duplos ou aninhados, a combinação de `id` nos `<th>` e `headers` nos `<td>` cria uma rede de associações explícitas. Esta técnica é mais robusta que `scope` em casos complexos, mas também mais verbosa — use `scope` para tabelas simples e `id/headers` para tabelas com múltiplos níveis de cabeçalho.",
+                    "topic_explanation_en": "For tables with double or nested headers, combining `id` on `<th>` and `headers` on `<td>` creates a network of explicit associations. This technique is more robust than `scope` in complex cases, but also more verbose — use `scope` for simple tables and `id/headers` for tables with multiple header levels.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "accessibility",
+                        "id",
+                        "headers",
+                        "screen-reader",
+                        "advanced"
+                    ]
+                },
+                {
+                    "question_id": "html-table-accessibility-04",
+                    "difficulty": "medium",
+                    "question_pt": "Qual papel ARIA (`role`) deve ser evitado em tabelas HTML nativas e por quê?",
+                    "question_en": "Which ARIA `role` should be avoided on native HTML tables and why?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "`role=\"presentation\"` (ou `role=\"none\"`) remove a semântica nativa da tabela, fazendo leitores de tela ignorarem toda a estrutura de linhas e colunas."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`role=\"grid\"` deve ser evitado pois desativa a navegação por teclado."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`role=\"table\"` é redundante mas não prejudica a acessibilidade."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`role=\"list\"` converte a tabela em uma lista de itens, melhorando a leitura."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Qualquer `role` em uma tabela HTML é automaticamente ignorado pelos navegadores."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "`role=\"presentation\"` (or `role=\"none\"`) removes the native semantics of the table, causing screen readers to ignore the entire row and column structure."
+                        },
+                        {
+                            "label": "B",
+                            "text": "`role=\"grid\"` should be avoided because it disables keyboard navigation."
+                        },
+                        {
+                            "label": "C",
+                            "text": "`role=\"table\"` is redundant but does not harm accessibility."
+                        },
+                        {
+                            "label": "D",
+                            "text": "`role=\"list\"` converts the table into a list of items, improving readability."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Any `role` on an HTML table is automatically ignored by browsers."
+                        }
+                    ],
+                    "correct_option": "A",
+                    "explanation_pt": "`role=\"presentation\"` ou `role=\"none\"` instrui tecnologias assistivas a ignorar a semântica do elemento e tratar seus filhos como texto simples. Em uma `<table>`, isso remove toda a estrutura de cabeçalhos, linhas e colunas — o leitor de tela lê as células como texto corrido, sem contexto. Era erroneamente usado para \"resetar\" estilos de tabela, mas o efeito em acessibilidade é grave.",
+                    "explanation_en": "`role=\"presentation\"` or `role=\"none\"` instructs assistive technologies to ignore the element's semantics and treat its children as plain text. On a `<table>`, this removes the entire header, row, and column structure — the screen reader reads cells as running text, without context. It was mistakenly used to 'reset' table styles, but the accessibility impact is severe.",
+                    "hint_pt": "ARIA pode adicionar semântica, mas também pode removê-la. `presentation` é literalmente 'ignore esta estrutura'.",
+                    "hint_en": "ARIA can add semantics, but it can also remove them. `presentation` literally means 'ignore this structure'.",
+                    "example_pt": "`<table role=\"presentation\">` — NUNCA fazer isso para tabelas de dados. Só aceitável para `<table>` usada estritamente para layout (e mesmo assim, prefira CSS).",
+                    "example_en": "`<table role=\"presentation\">` — NEVER do this for data tables. Only acceptable for `<table>` used strictly for layout (and even then, prefer CSS).",
+                    "analogy_pt": "É como arrancar todas as placas de sinalização de uma rodovia e dizer 'confiem na intuição'. Os motoristas (leitores de tela) ficam desorientados.",
+                    "analogy_en": "It's like removing all road signs from a highway and saying 'trust your instincts'. The drivers (screen readers) become disoriented.",
+                    "topic_explanation_pt": "O princípio de acessibilidade ARIA #1: \"Não use ARIA se o HTML nativo já resolve\". Para tabelas de dados, o HTML semântico puro (`<th>`, `scope`, `<caption>`) é superior. ARIA é para lacunas onde o HTML não tem semântica suficiente, não para remover a semântica já existente.",
+                    "topic_explanation_en": "ARIA accessibility principle #1: 'Don't use ARIA if native HTML already solves it'. For data tables, pure semantic HTML (`<th>`, `scope`, `<caption>`) is superior. ARIA is for gaps where HTML lacks sufficient semantics, not for removing existing semantics.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "accessibility",
+                        "aria",
+                        "role",
+                        "presentation"
+                    ]
+                },
+                {
+                    "question_id": "html-table-accessibility-05",
+                    "difficulty": "hard",
+                    "question_pt": "Como você tornaria uma tabela de dados grande e complexa acessível e navegável para usuários de teclado e leitores de tela, combinando múltiplas técnicas HTML e ARIA?",
+                    "question_en": "How would you make a large and complex data table accessible and navigable for keyboard and screen reader users, combining multiple HTML and ARIA techniques?",
+                    "options_pt": [
+                        {
+                            "label": "A",
+                            "text": "Usar apenas `tabindex=\"0\"` em cada célula para habilitar navegação por teclado."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Combinar: `<caption>` descritivo + `<th scope>` ou `id/headers` + `aria-sort` em cabeçalhos ordenáveis + `role=\"grid\"` se houver interatividade de grade + `aria-rowcount/aria-colcount` para tabelas virtualizadas."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Converter a tabela em uma série de listas aninhadas com `<ul>` e `<li>`."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Adicionar `aria-label` em cada `<td>` com o texto completo 'Coluna X, Linha Y: valor'."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Usar JavaScript para anunciar via `alert()` o conteúdo de cada célula ao receber foco."
+                        }
+                    ],
+                    "options_en": [
+                        {
+                            "label": "A",
+                            "text": "Use only `tabindex=\"0\"` on each cell to enable keyboard navigation."
+                        },
+                        {
+                            "label": "B",
+                            "text": "Combine: descriptive `<caption>` + `<th scope>` or `id/headers` + `aria-sort` on sortable headers + `role=\"grid\"` if there is grid interactivity + `aria-rowcount/aria-colcount` for virtualized tables."
+                        },
+                        {
+                            "label": "C",
+                            "text": "Convert the table into a series of nested lists with `<ul>` and `<li>`."
+                        },
+                        {
+                            "label": "D",
+                            "text": "Add `aria-label` on each `<td>` with the full text 'Column X, Row Y: value'."
+                        },
+                        {
+                            "label": "E",
+                            "text": "Use JavaScript to announce via `alert()` the content of each cell when it receives focus."
+                        }
+                    ],
+                    "correct_option": "B",
+                    "explanation_pt": "A solução completa combina várias camadas: (1) `<caption>` com descrição da tabela; (2) `<th scope>` para tabelas simples ou `id/headers` para tabelas complexas; (3) `aria-sort=\"ascending|descending|none\"` em colunas ordenáveis — atualizado via JS após ordenação; (4) `role=\"grid\"` + `aria-multiselectable` para tabelas interativas tipo grade; (5) `aria-rowcount` e `aria-colcount` para tabelas virtualizadas que não renderizam todas as linhas no DOM.",
+                    "explanation_en": "The complete solution combines several layers: (1) `<caption>` with table description; (2) `<th scope>` for simple tables or `id/headers` for complex ones; (3) `aria-sort=\"ascending|descending|none\"` on sortable columns — updated via JS after sorting; (4) `role=\"grid\"` + `aria-multiselectable` for interactive grid-like tables; (5) `aria-rowcount` and `aria-colcount` for virtualized tables that don't render all rows in the DOM.",
+                    "hint_pt": "Acessibilidade em tabelas complexas é em camadas: estrutura nativa → ARIA para estado interativo → ARIA para informações de escala (virtualização).",
+                    "hint_en": "Accessibility in complex tables is layered: native structure → ARIA for interactive state → ARIA for scale information (virtualization).",
+                    "example_pt": "`<th scope=\"col\" aria-sort=\"ascending\" onclick=\"sortTable()\">Nome</th>` — o usuário de leitor de tela sabe que a coluna está ordenada e que pode reordenar.",
+                    "example_en": "`<th scope=\"col\" aria-sort=\"ascending\" onclick=\"sortTable()\">Name</th>` — the screen reader user knows the column is sorted and can re-sort.",
+                    "analogy_pt": "É como construir uma rua acessível: o asfalto (HTML) é a base, as faixas (scope/caption) dão estrutura, os semáforos sonoros (ARIA) dão contexto interativo, e o mapa de localização (aria-rowcount) diz onde você está numa cidade grande.",
+                    "analogy_en": "It's like building an accessible street: the asphalt (HTML) is the foundation, the lanes (scope/caption) provide structure, the audio traffic lights (ARIA) give interactive context, and the location map (aria-rowcount) tells you where you are in a large city.",
+                    "topic_explanation_pt": "Tabelas acessíveis avançadas requerem uma combinação de HTML semântico nativo e ARIA complementar. `aria-sort` informa o estado de ordenação, `role=\"grid\"` ativa padrões de interação de grade (setas de teclado), e atributos de contagem virtual permitem tabelas de alta performance com renderização parcial mantendo a contexto completo para leitores de tela.",
+                    "topic_explanation_en": "Advanced accessible tables require a combination of native semantic HTML and complementary ARIA. `aria-sort` communicates sort state, `role=\"grid\"` activates grid interaction patterns (keyboard arrows), and virtual count attributes enable high-performance tables with partial rendering while maintaining full context for screen readers.",
+                    "tags": [
+                        "html",
+                        "table",
+                        "accessibility",
+                        "aria",
+                        "aria-sort",
+                        "role-grid",
+                        "advanced"
+                    ]
+                }
+            ]
         }
-    ]
+    ],
+    "version": "1.6"
 }

@@ -59,10 +59,10 @@ Legenda de status: `pending` (não iniciado), `in_progress`, `done`.
 | 6 | html-advanced-text | Recursos avançados de texto | Advanced text features | done |
 | 7 | html-structuring-documents | Estruturação de documentos (semântica) | Structuring documents | done |
 | 8 | html-creating-links | Criando links | Creating links | done |
-| 9 | html-images | Imagens | Images | pending |
-| 10 | html-video-audio | Vídeo e áudio | Video and audio | pending |
-| 11 | html-table-basics | Tabelas: o básico | Table basics | pending |
-| 12 | html-table-accessibility | Acessibilidade em tabelas | Table accessibility | pending |
+| 9 | html-images | Imagens | Images | done |
+| 10 | html-video-audio | Vídeo e áudio | Video and audio | done |
+| 11 | html-table-basics | Tabelas: o básico | Table basics | done |
+| 12 | html-table-accessibility | Acessibilidade em tabelas | Table accessibility | done |
 | 13 | html-forms-buttons | Formulários e botões (introdução) | Forms and buttons | pending |
 | 14 | html-debugging | Debugando HTML | Debugging HTML | pending |
 

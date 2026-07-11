@@ -3,6 +3,7 @@ import type { Question } from '../session/types'
 export const internetFundamentalsQuestions: Question[] = [
   {
     id: "web-rendering-01",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -21,6 +22,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-02",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -39,6 +41,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-03",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -57,6 +60,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-04",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -75,6 +79,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-05",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -93,6 +98,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-06",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -111,6 +117,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-07",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -129,6 +136,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-08",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -147,6 +155,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-09",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -165,6 +174,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-10",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -183,6 +193,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-11",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -201,6 +212,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-12",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -219,6 +231,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-13",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -237,6 +250,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-14",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -255,6 +269,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-15",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -273,6 +288,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-16",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -291,6 +307,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-17",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -309,6 +326,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-18",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -327,6 +345,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-19",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -345,6 +364,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "web-rendering-20",
+    topicId: "web-rendering-patterns",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -363,6 +383,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-01",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -381,6 +402,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-02",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -399,6 +421,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-03",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -417,6 +440,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-04",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -435,6 +459,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-05",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -453,6 +478,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-06",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -471,6 +497,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-07",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -489,6 +516,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-08",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -507,6 +535,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-09",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -525,6 +554,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-10",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -543,6 +573,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-11",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -561,6 +592,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-12",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -579,6 +611,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-13",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -597,6 +630,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-14",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -615,6 +649,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-15",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -633,6 +668,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-16",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -651,6 +687,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-17",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -669,6 +706,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-18",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -687,6 +725,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-19",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -705,6 +744,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "http-cache-cdn-20",
+    topicId: "http-cache-cdn",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -723,6 +763,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-01",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -741,6 +782,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-02",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -759,6 +801,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-03",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 2,
@@ -777,6 +820,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-04",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -795,6 +839,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-05",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -813,6 +858,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-06",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -831,6 +877,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-07",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -849,6 +896,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-08",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -867,6 +915,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-09",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -885,6 +934,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-10",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 3,
@@ -903,6 +953,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-11",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -921,6 +972,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-12",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -939,6 +991,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-13",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -957,6 +1010,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-14",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -975,6 +1029,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-15",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -993,6 +1048,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-16",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -1011,6 +1067,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-17",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -1029,6 +1086,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-18",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -1047,6 +1105,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-19",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
@@ -1065,6 +1124,7 @@ export const internetFundamentalsQuestions: Question[] = [
   },
   {
     id: "browser-rendering-20",
+    topicId: "browser-rendering-pipeline",
     domain: "internet_fundamentals",
     type: "multiple_choice",
     difficulty: 4,
