@@ -15,5 +15,8 @@
   "packageManager": "pnpm@10.34.1",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@sentry/nextjs": "^10.65.0"
   }
 }
